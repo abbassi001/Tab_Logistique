@@ -1,0 +1,70 @@
+security:
+    # Encodage des mots de passe
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    # Hiérarchie des rôles
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_USER]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
+
+    # Provider utilisateur
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    firewalls:
+        # Pas de sécurité pour le dev (profiler, assets, etc.)
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            lazy: true
+            provider: app_user_provider
+            custom_authenticator: App\Security\SecurityControllerAuthenticator
+            logout:
+                path: app_logout
+                # target: app_any_route
+
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+                path: /
+                # always_remember_me: true
+
+when@test:
+    security:
+        password_hashers:
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4
+                time_cost: 3
+                memory_cost: 10
+
+
+    access_control:
+        # Pages publiques
+        - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+        
+        # Pages sécurisées nécessitant au moins un rôle utilisateur
+        - { path: ^/expediteur, roles: ROLE_USER }
+        - { path: ^/destinataire, roles: ROLE_USER }
+        - { path: ^/transport, roles: ROLE_USER }
+        - { path: ^/colis, roles: ROLE_USER }
+        - { path: ^/warehouse, roles: ROLE_USER }
+        - { path: ^/statut, roles: ROLE_USER }
+        - { path: ^/photo, roles: ROLE_USER }
+        - { path: ^/document, roles: ROLE_USER }
+        
+        # Pages administratives
+        - { path: ^/register, roles: ROLE_ADMIN }
+        - { path: ^/employe, roles: ROLE_ADMIN }
+        - { path: ^/departement, roles: ROLE_ADMIN }
+        
+        # Restreindre toutes les autres routes (optionnel, mais recommandé)
+        - { path: ^/, roles: ROLE_USER }
+

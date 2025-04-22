@@ -1,0 +1,305 @@
+/* Main CSS file for TAB Logistique */
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --accent-color: #ffc107;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --info-color: #0dcaf0;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --sidebar-width: 250px;
+    --header-height: 60px;
+    --border-radius: 0.375rem;
+    --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --transition-speed: 0.3s;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header styles */
+.navbar {
+    height: var(--header-height);
+    padding: 0 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.navbar-dark .navbar-brand i {
+    color: var(--accent-color);
+}
+
+.navbar-nav .nav-link {
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    position: relative;
+    transition: all var(--transition-speed);
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+}
+
+.search-form {
+    position: relative;
+    width: 300px;
+}
+
+.search-form input {
+    padding-right: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.search-form input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.search-form input:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: white;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+}
+
+.search-form .search-btn {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+}
+
+.search-form .search-btn:hover {
+    color: white;
+}
+
+/* Dropdown styles */
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-radius: calc(var(--border-radius) - 0.125rem);
+}
+
+.dropdown-item {
+    padding: 0.6rem 1.5rem;
+    color: var(--dark-color);
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.dropdown-item i {
+    color: var(--primary-color);
+    width: 20px;
+    text-align: center;
+}
+
+.dropdown-divider {
+    margin: 0.5rem 0;
+    opacity: 0.1;
+}
+
+/* Sidebar styles */
+.sidebar {
+    min-height: calc(100vh - var(--header-height));
+    background: linear-gradient(to bottom, #343a40, #212529);
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+    width: var(--sidebar-width);
+    box-shadow: 4px 0 10px -5px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    transition: all var(--transition-speed);
+}
+
+.sidebar-heading {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 1rem 1rem 0.5rem;
+    margin-bottom: 0;
+}
+
+.sidebar .nav-item {
+    margin-bottom: 0.25rem;
+    padding: 0 1rem;
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.7rem 1rem;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-speed);
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar .nav-link i {
+    width: 24px;
+    margin-right: 0.5rem;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.sidebar .nav-link:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.sidebar .nav-link.active {
+    color: white;
+    background: linear-gradient(to right, var(--primary-color), #0b5ed7);
+    box-shadow: 0 4px 20px rgba(13, 110, 253, 0.3);
+}
+
+.sidebar .nav-link.active i {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Main content styles */
+main {
+    min-height: calc(100vh - var(--header-height));
+    position: relative;
+}
+
+.content {
+    padding: 1.5rem;
+    width: 100%;
+}
+
+/* Card styles */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: all var(--transition-speed);
+}
+
+.card-header {
+    padding: 1rem 1.25rem;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Button styles */
+.btn {
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+    transition: all 0.25s;
+}
+
+.btn-primary, .btn-success, .btn-danger, .btn-warning, .btn-info {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background: linear-gradient(to right, var(--primary-color), #0b5ed7);
+    border: none;
+}
+
+.btn-outline-primary:hover {
+    background: linear-gradient(to right, var(--primary-color), #0b5ed7);
+    border-color: var(--primary-color);
+}
+
+/* Alert styles */
+.alert {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Table styles */
+.table {
+    font-size: 0.95rem;
+}
+
+.table th {
+    font-weight: 600;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-bottom-width: 1px;
+}
+
+.table-hover tbody tr {
+    transition: all var(--transition-speed);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Badge styles */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    border-radius: 50rem;
+}
+
+/* Footer styles */
+footer {
+    background: linear-gradient(to right, #212529, #343a40);
+    color: rgba(255, 255, 255, 0.75);
+    padding: 1.5rem 0;
+    margin-top: auto;
+    font-size: 0.9rem;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        box-shadow: none;
+    }
+    
+    .sidebar .nav-link:hover {
+        transform: none;
+    }
+    
+    .search-form {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+}
+
+/* Common helper classes */
+.hover-shadow {
+    transition: all 0.3s ease;
+}
+
+.hover-shadow:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}

@@ -1,0 +1,58 @@
+/* admin-forms.css */
+
+/* Conteneur de formulaire */
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Style des labels */
+.form-label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+/* Mise en valeur des champs de formulaire au focus */
+.form-control:focus, .form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Style pour les select */
+.form-select {
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* Boutons du formulaire */
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 2rem;
+}
+
+/* Texte d'aide avec icône */
+.form-text-icon {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: #6c757d;
+}
+
+.form-text-icon i {
+  margin-right: 0.5rem;
+  margin-top: 0.125rem;
+}
+
+/* Animation des boutons */
+.btn-hover-effect {
+  transition: all 0.3s;
+}
+
+.btn-hover-effect:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

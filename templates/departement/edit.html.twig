@@ -1,0 +1,39 @@
+{# {% extends 'base.html.twig' %}
+
+{% block title %}Edit Departement{% endblock %}
+
+{% block body %}
+    <h1>Edit Departement</h1>
+
+    {{ include('departement/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_departement_index') }}">back to list</a>
+
+    {{ include('departement/_delete_form.html.twig') }}
+{% endblock %} #}
+
+
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Departement{% endblock %}
+
+{% block body %}
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Edit Departement</h1>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            {{ include('departement/_form.html.twig', {'button_label': 'Update'}) }}
+        </div>
+        
+        <div class="flex items-center justify-between mt-6">
+            <a href="{{ path('app_departement_index') }}" class="px-4 py-2 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
+                Back to list
+            </a>
+            
+            {{ include('departement/_delete_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

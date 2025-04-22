@@ -1,0 +1,195 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Transports{% endblock %}
+
+{% block body %}
+<div class="container-fluid p-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-truck me-2 text-primary"></i>Gestion des Transports
+            </h1>
+            <a href="{{ path('app_transport_new') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Ajouter un transport
+            </a>
+        </div>
+        
+        <div class="card-body">
+            <div class="table-responsive">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
+                            <input type="text" id="transportSearch" class="form-control" placeholder="Rechercher...">
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fas fa-filter me-1"></i>Filtrer
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Aérien</a></li>
+                                <li><a class="dropdown-item" href="#">Maritime</a></li>
+                                <li><a class="dropdown-item" href="#">Routier</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Tous</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            
+                <table class="table table-striped table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col"><i class="fas fa-tag me-1"></i>Type</th>
+                            <th scope="col"><i class="fas fa-building me-1"></i>Compagnie</th>
+                            <th scope="col"><i class="fas fa-hashtag me-1"></i>N° Vol/Navire</th>
+                            <th scope="col"><i class="fas fa-plane-departure me-1"></i>Départ</th>
+                            <th scope="col"><i class="fas fa-map-marker-alt me-1"></i>Lieu départ</th>
+                            <th scope="col"><i class="fas fa-plane-arrival me-1"></i>Arrivée</th>
+                            <th scope="col"><i class="fas fa-map-marker-alt me-1"></i>Lieu arrivée</th>
+                            <th scope="col" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for transport in transports %}
+                        <tr>
+                            <td>{{ transport.id }}</td>
+                            <td>
+                                {% if transport.typeTransport == 'Aérien' %}
+                                    <span class="badge bg-info text-white">
+                                        <i class="fas fa-plane me-1"></i>{{ transport.typeTransport }}
+                                    </span>
+                                {% elseif transport.typeTransport == 'Maritime' %}
+                                    <span class="badge bg-primary text-white">
+                                        <i class="fas fa-ship me-1"></i>{{ transport.typeTransport }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary text-white">
+                                        <i class="fas fa-truck me-1"></i>{{ transport.typeTransport }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>{{ transport.compagnieTransport }}</td>
+                            <td>{{ transport.numeroVolNavire }}</td>
+                            <td>{{ transport.dateDepart ? transport.dateDepart|date('d/m/Y H:i') : '-' }}</td>
+                            <td>{{ transport.lieuDepart }}</td>
+                            <td>{{ transport.dateArrivee ? transport.dateArrivee|date('d/m/Y H:i') : '-' }}</td>
+                            <td>{{ transport.lieuArrivee }}</td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ path('app_transport_show', {'id': transport.id}) }}" class="btn btn-info" title="Voir détails">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ path('app_transport_edit', {'id': transport.id}) }}" class="btn btn-warning" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        <button class="btn btn-danger delete-item" data-id="{{ transport.id }}" data-bs-toggle="modal" data-bs-target="#deleteModal" title="Supprimer">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center py-4">
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>Aucun transport trouvé
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination (if needed) -->
+            <div class="d-flex justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Précédent</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Suivant</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirmer la suppression
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer ce transport? Cette action est irréversible.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <form id="deleteForm" method="post" action="">
+                        <input type="hidden" name="_token" value="">
+                        <button class="btn btn-danger">Supprimer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const searchInput = document.getElementById('transportSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const filter = searchInput.value.toUpperCase();
+            const table = document.querySelector('table');
+            const tr = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < tr.length; i++) {
+                let found = false;
+                const td = tr[i].getElementsByTagName('td');
+                for (let j = 0; j < td.length; j++) {
+                    const txtValue = td[j].textContent || td[j].innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                tr[i].style.display = found ? '' : 'none';
+            }
+        });
+    }
+    
+    // Set up delete modal
+    const deleteButtons = document.querySelectorAll('.delete-item');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const form = document.getElementById('deleteForm');
+            form.action = '/transport/' + id + '/delete';
+            const token = form.querySelector('input[name="_token"]');
+            token.value = '{{ csrf_token("delete") }}' + id;
+        });
+    });
+});
+</script>
+{% endblock %}
+
+{% endblock %}

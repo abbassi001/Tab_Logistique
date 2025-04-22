@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Impression des Colis</title>
+    <style>
+        @media print {
+            @page {
+                size: A4;
+                margin: 0.5cm;
+            }
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .colis-card {
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            padding: 15px;
+            break-inside: avoid;
+        }
+        
+        .header {
+            border-bottom: 2px solid #0d6efd;
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .logo {
+            font-weight: bold;
+            font-size: 24px;
+            color: #0d6efd;
+        }
+        
+        .qr-section {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        
+        .tracking-code {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .details {
+            margin: 15px 0;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        
+        .detail-label {
+            width: 150px;
+            font-weight: bold;
+        }
+        
+        .detail-value {
+            flex: 1;
+        }
+        
+        .print-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .print-btn {
+            background: #0d6efd;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+        
+        .col-6 {
+            flex: 0 0 50%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="print-header no-print">
+            <h1>Impression des colis</h1>
+            <button onclick="window.print()" class="print-btn">
+                <i class="fas fa-print"></i> Imprimer
+            </button>
+        </div>
+        
+        {% for coli in colis %}
+            <div class="colis-card {% if not loop.last %}page-break{% endif %}">
+                <div class="header">
+                    <div class="logo">TAB Logistique</div>
+                    <div class="date">{{ "now"|date("d/m/Y") }}</div>
+                </div>
+                
+                <div class="qr-section">
+                    <div>
+                        <canvas id="qr-{{ coli.id }}" width="150" height="150"></canvas>
+                        <div class="tracking-code">{{ coli.codeTracking }}</div>
+                    </div>
+                </div>
+                
+                <div class="details">
+                    <div class="detail-row">
+                        <div class="detail-label">ID Colis:</div>
+                        <div class="detail-value">{{ coli.id }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Référence:</div>
+                        <div class="detail-value">{{ coli.reference ?? 'N/A' }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Statut:</div>
+                        <div class="detail-value">
+                            {% set lastStatut = coli.statuts|last %}
+                            {{ lastStatut ? lastStatut.typeStatut.value|replace({'_': ' '})|title : 'Non défini' }}
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Date création:</div>
+                        <div class="detail-value">{{ coli.dateCreation ? coli.dateCreation|date('d/m/Y') : 'N/A' }}</div>
+                    </div>
+                </div>
+                
+                <div class="expediteur-destinataire">
+                    <div class="row">
+                        <div class="col-6">
+                            <h4>Expéditeur</h4>
+                            <div>{{ coli.expediteur ? coli.expediteur.nomEntrepriseIndividu : 'N/A' }}</div>
+                            {% if coli.expediteur %}
+                                <div>{{ coli.expediteur.adresseComplete ?? 'N/A' }}</div>
+                                <div>{{ coli.expediteur.telephone ?? 'N/A' }}</div>
+                                <div>{{ coli.expediteur.email ?? 'N/A' }}</div>
+                                <div>{{ coli.expediteur.pays ?? 'N/A' }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            <h4>Destinataire</h4>
+                            <div>{{ coli.destinataire ? coli.destinataire.nomEntrepriseIndividu : 'N/A' }}</div>
+                            {% if coli.destinataire %}
+                                <div>{{ coli.destinataire.adresseComplete ?? 'N/A' }}</div>
+                                <div>{{ coli.destinataire.telephone ?? 'N/A' }}</div>
+                                <div>{{ coli.destinataire.email ?? 'N/A' }}</div>
+                                <div>{{ coli.destinataire.pays ?? 'N/A' }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generate QR codes for each colis
+            {% for coli in colis %}
+                new QRious({
+                    element: document.getElementById('qr-{{ coli.id }}'),
+                    value: '{{ coli.codeTracking }}',
+                    size: 150,
+                    level: 'H' // High error correction level
+                });
+            {% endfor %}
+        });
+    </script>
+</body>
+</html>

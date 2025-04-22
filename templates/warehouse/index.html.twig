@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Warehouse List{% endblock %}
+
+{% block body %}
+    <h1>Warehouse List</h1>
+
+    <a href="{{ path('app_warehouse_new') }}" class="btn btn-success">Create new</a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Code UT</th>
+                <th>Nom Entreprise</th>
+                <th>Adresse</th>
+                <th>Code Postal</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for warehouse in warehouses %}
+            <tr>
+                <td>{{ warehouse.id }}</td>
+                <td>{{ warehouse.codeUt }}</td>
+                <td>{{ warehouse.nomEntreprise }}</td>
+                <td>{{ warehouse.adresseWarehouse }}</td>
+                <td>{{ warehouse.codePostal }}</td>
+                <td>
+                    <a href="{{ path('app_warehouse_show', {'id': warehouse.id}) }}" class="btn btn-sm btn-info">Show</a>
+                    <a href="{{ path('app_warehouse_edit', {'id': warehouse.id}) }}" class="btn btn-sm btn-warning">Edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

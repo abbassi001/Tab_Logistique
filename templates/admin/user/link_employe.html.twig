@@ -1,0 +1,26 @@
+{# templates/admin/user/link_employe.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Lier l'utilisateur à un employé{% endblock %}
+
+{% block body %}
+    <h1>Lier l'utilisateur {{ user.prenom }} {{ user.nom }} à un employé</h1>
+
+    {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+        <div class="mb-3">
+            {{ form_label(form.email) }}
+            {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.email) }}
+        </div>
+        
+        <div class="mb-3">
+            {{ form_label(form.employe) }}
+            {{ form_widget(form.employe, {'attr': {'class': 'form-select'}}) }}
+            {{ form_errors(form.employe) }}
+            <div class="form-text">Sélectionnez l'employé à lier à cet utilisateur.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <a href="{{ path('app_admin_user_index') }}" class="btn btn-secondary">Retour à la liste</a>
+    {{ form_end(form) }}
+{% endblock %}

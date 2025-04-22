@@ -1,0 +1,442 @@
+/**
+ * dashboard.js - Enhanced Dashboard Scripts
+ * TAB Logistique - Administration Dashboard
+ */
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all components
+    initializeCharts();
+    initializeCardAnimations();
+    setupActivityFeed();
+    setupAlertSystem();
+    setupTaskManagement();
+    initializeDataRefresh();
+});
+
+/**
+ * Initialize all charts in the dashboard
+ */
+function initializeCharts() {
+    // Statut Distribution Chart
+    initializeStatusChart();
+    
+    // Monthly Packages Chart
+    initializeMonthlyChart();
+    
+    // If we have a transport chart
+    const transportChartElement = document.getElementById('transportChart');
+    if (transportChartElement) {
+        initializeTransportChart();
+    }
+}
+
+/**
+ * Initialize status distribution chart
+ */
+function initializeStatusChart() {
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    if (!statusCtx) return;
+    
+    // Get data from the data attributes
+    const chartElement = statusCtx.canvas;
+    const labels = JSON.parse(chartElement.dataset.labels || '["En attente", "En transit", "Livré", "Problème", "Retourné"]');
+    const data = JSON.parse(chartElement.dataset.values || '[10, 20, 30, 5, 5]');
+    const colors = JSON.parse(chartElement.dataset.colors || '["#ffc107", "#0dcaf0", "#198754", "#dc3545", "#6c757d"]');
+    
+    const statusChart = new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors,
+                hoverBackgroundColor: colors.map(color => {
+                    // Darken the color for hover effect
+                    return color.replace('0.7', '1');
+                }),
+                borderWidth: 0,
+                hoverBorderWidth: 0
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 15,
+                        font: {
+                            size: 11
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.formattedValue;
+                            const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
+                            const percentage = Math.round((context.raw / total) * 100);
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            },
+            cutout: '70%',
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+    
+    // Add event listeners for filtering
+    const periodSelector = document.querySelector('.chart-period-selector');
+    if (periodSelector) {
+        periodSelector.addEventListener('change', function() {
+            // In a real app, this would fetch new data for the selected period
+            // For now, just show a loading state
+            statusChart.data.datasets[0].backgroundColor = statusChart.data.datasets[0].backgroundColor.map(c => c.replace('1)', '0.5)'));
+            statusChart.update();
+            
+            setTimeout(() => {
+                // Simulate data update after 500ms
+                statusChart.data.datasets[0].backgroundColor = colors;
+                statusChart.update();
+            }, 500);
+        });
+    }
+}
+
+/**
+ * Initialize monthly packages chart
+ */
+function initializeMonthlyChart() {
+    const monthlyCtx = document.getElementById('monthlyPackagesChart').getContext('2d');
+    if (!monthlyCtx) return;
+    
+    // Get data from the data attributes
+    const chartElement = monthlyCtx.canvas;
+    const sentData = JSON.parse(chartElement.dataset.sent || '[30, 40, 35, 50, 49, 60, 70, 91, 125, 150, 180, 210]');
+    const deliveredData = JSON.parse(chartElement.dataset.delivered || '[25, 35, 30, 45, 40, 50, 60, 80, 110, 130, 150, 180]');
+    
+    const monthlyChart = new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+            datasets: [{
+                label: 'Colis expédiés',
+                data: sentData,
+                borderColor: 'rgba(78, 115, 223, 1)',
+                backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
+                tension: 0.3,
+                fill: true
+            },
+            {
+                label: 'Colis livrés',
+                data: deliveredData,
+                borderColor: 'rgba(28, 200, 138, 1)',
+                backgroundColor: 'rgba(28, 200, 138, 0.05)',
+                pointBackgroundColor: 'rgba(28, 200, 138, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(28, 200, 138, 1)',
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 15,
+                        font: {
+                            size: 11
+                        }
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                }
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+    
+    // Add event listeners for filtering
+    const periodSelector = document.querySelectorAll('.chart-period-selector')[1]; // Second period selector for this chart
+    if (periodSelector) {
+        periodSelector.addEventListener('change', function() {
+            // In a real app, this would fetch new data for the selected period
+            // For now, just show a loading state
+            monthlyChart.data.datasets.forEach(dataset => {
+                dataset.borderColor = dataset.borderColor.replace('1)', '0.5)');
+            });
+            monthlyChart.update();
+            
+            setTimeout(() => {
+                // Simulate data update after 500ms
+                monthlyChart.data.datasets[0].borderColor = 'rgba(78, 115, 223, 1)';
+                monthlyChart.data.datasets[1].borderColor = 'rgba(28, 200, 138, 1)';
+                monthlyChart.update();
+            }, 500);
+        });
+    }
+}
+
+/**
+ * Initialize card animations on scroll
+ */
+function initializeCardAnimations() {
+    // Add animation classes to stat cards
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach((card, index) => {
+        card.classList.add('card-animate-ready');
+        
+        // Stagger the animations
+        setTimeout(() => {
+            card.classList.add('card-animated');
+        }, index * 100);
+    });
+    
+    // Add animation to chart cards
+    const chartCards = document.querySelectorAll('.chart-card');
+    chartCards.forEach((card, index) => {
+        card.classList.add('card-animate-ready');
+        
+        // Stagger the animations
+        setTimeout(() => {
+            card.classList.add('card-animated');
+        }, 400 + index * 150);
+    });
+}
+
+/**
+ * Setup activity feed functionality
+ */
+function setupActivityFeed() {
+    const activityItems = document.querySelectorAll('.activity-item');
+    
+    // Add hover effects
+    activityItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'rgba(13, 110, 253, 0.03)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+    
+    // Setup refresh button
+    const refreshButton = document.querySelector('.card-header .btn-circle');
+    if (refreshButton) {
+        refreshButton.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            icon.classList.remove('fa-sync-alt');
+            icon.classList.add('fa-spinner', 'fa-spin');
+            
+            // Simulate refresh after 1 second
+            setTimeout(() => {
+                icon.classList.remove('fa-spinner', 'fa-spin');
+                icon.classList.add('fa-sync-alt');
+                
+                // Show a notification
+                showNotification('Activités mises à jour', 'success');
+            }, 1000);
+        });
+    }
+}
+
+/**
+ * Setup alert system
+ */
+function setupAlertSystem() {
+    const alertItems = document.querySelectorAll('.card-header.bg-warning + .card-body .list-group-item');
+    
+    // Add hover effects
+    alertItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'rgba(255, 193, 7, 0.05)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+}
+
+/**
+ * Setup task management
+ */
+function setupTaskManagement() {
+    const taskCheckboxes = document.querySelectorAll('input[id^="task"]');
+    
+    // Add event listeners to task checkboxes
+    taskCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const taskLabel = this.nextElementSibling;
+            
+            if (this.checked) {
+                taskLabel.style.textDecoration = 'line-through';
+                taskLabel.style.color = '#6c757d';
+                
+                // In a real app, this would update the task status via AJAX
+                // For now, just show a notification
+                showNotification('Tâche marquée comme terminée', 'success');
+            } else {
+                taskLabel.style.textDecoration = '';
+                taskLabel.style.color = '';
+                
+                showNotification('Tâche remise en attente', 'info');
+            }
+        });
+    });
+    
+    // Setup add task button
+    const addTaskButton = document.querySelector('.card-header .btn-primary');
+    if (addTaskButton) {
+        addTaskButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // In a real app, this would open a modal to add a new task
+            // For now, just show a notification
+            showNotification('Fonctionnalité "Ajouter une tâche" pas encore implémentée', 'warning');
+        });
+    }
+}
+
+/**
+ * Initialize data refresh functionality
+ */
+function initializeDataRefresh() {
+    const refreshButton = document.getElementById('refreshDashboard');
+    if (refreshButton) {
+        refreshButton.addEventListener('click', function() {
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Actualisation...';
+            
+            // Show a loading overlay
+            const dashboardContainer = document.querySelector('.dashboard-container');
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.className = 'loading-overlay';
+            loadingOverlay.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div>';
+            loadingOverlay.style = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(255, 255, 255, 0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            `;
+            
+            dashboardContainer.style.position = 'relative';
+            dashboardContainer.appendChild(loadingOverlay);
+            
+            // Simulate data refresh after 1 second
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        });
+    }
+    
+    // Setup export buttons
+    setupExportButtons();
+}
+
+/**
+ * Setup export buttons functionality
+ */
+/**
+ * Setup export buttons functionality
+ */
+
+/**
+ * Setup export buttons functionality
+ */
+function setupExportButtons() {
+    // Sélectionner uniquement les boutons d'export dans le contexte du dashboard
+    // et non pas tous les éléments dropdown-item de la page
+    const exportButtons = document.querySelectorAll('.dashboard-container .dropdown-item');
+    
+    exportButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Vérifier si c'est un lien de déconnexion (contenant le mot "Déconnexion")
+            if (this.textContent.includes('Déconnexion') || this.href.includes('/logout')) {
+                return; // Ne rien faire, laisser le comportement par défaut
+            }
+            
+            e.preventDefault();
+            const exportType = this.textContent.trim();
+            showNotification(`Export ${exportType} en cours de développement`, 'info');
+        });
+    });
+}
+
+/**
+ * Show a notification
+ * @param {string} message - Message to display
+ * @param {string} type - Notification type (success, info, warning, danger)
+ */
+function showNotification(message, type = 'info') {
+    // Check if the notification container exists, create it if not
+    let notifContainer = document.getElementById('notification-container');
+    
+    if (!notifContainer) {
+        notifContainer = document.createElement('div');
+        notifContainer.id = 'notification-container';
+        notifContainer.style = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 300px;
+        `;
+        document.body.appendChild(notifContainer);
+    }
+    
+    // Create the notification
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show`;
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    // Add it to the container
+    notifContainer.appendChild(notification);
+    
+    // Remove it after 5 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 150);
+    }, 5000);
+}

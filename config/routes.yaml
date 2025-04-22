@@ -1,0 +1,10 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+# config/routes.yaml
+app_admin_dashboard:
+    path: /admin/dashboard
+    controller: App\Controller\AdminDashboardController::index

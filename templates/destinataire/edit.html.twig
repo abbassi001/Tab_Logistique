@@ -1,0 +1,233 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le Destinataire - TAB Logistique{% endblock %}
+
+{% block sidebar %}
+<nav class="col-md-2 d-none d-md-block sidebar">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_destinataire_index') }}">
+                    <i class="fas fa-users me-2"></i>Liste des Destinataires
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_destinataire_show', {'id': destinataire.id}) }}">
+                    <i class="fas fa-eye me-2"></i>Détails du Destinataire
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="#">
+                    <i class="fas fa-edit me-2"></i>Modifier le Destinataire
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block main_class %}col-md-10{% endblock %}
+
+{% block body %}
+    <!-- Messages flash -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show mb-4" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="container-fluid mx-auto px-4 py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-user-edit me-2 text-primary"></i>Modifier le Destinataire</h1>
+                <p class="text-muted">Mettre à jour les informations du destinataire</p>
+            </div>
+            <div>
+                <a href="{{ path('app_destinataire_index') }}" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-arrow-left me-1"></i>Retour à la liste
+                </a>
+                <a href="{{ path('app_destinataire_show', {'id': destinataire.id}) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-eye me-1"></i>Voir le détail
+                </a>
+            </div>
+        </div>
+
+        <!-- Identité mise en évidence -->
+        <div class="card shadow-sm mb-4 text-center border-primary border-top-0 border-end-0 border-bottom-0 border-3">
+            <div class="card-body py-3">
+                <h5 class="text-muted mb-1">Modifier les informations de</h5>
+                <span class="badge bg-primary fs-3 p-2">{{ destinataire.nom ?? destinataire.nomEntrepriseIndividu }}</span>
+            </div>
+        </div>
+
+        <!-- Formulaire de modification -->
+        <div class="card shadow-sm mb-4 border-warning border-top-0 border-end-0 border-bottom-0 border-3">
+            <div class="card-header bg-light py-3">
+                <h5 class="mb-0 fw-bold text-warning">
+                    <i class="fas fa-pen me-2"></i>Formulaire de modification
+                </h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+                    <div class="row g-3">
+                        <!-- Informations générales -->
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light py-2">
+                                    <h6 class="mb-0"><i class="fas fa-info-circle me-2 text-primary"></i>Informations générales</h6>
+                                </div>
+                                <div class="card-body">
+                                    {% for field in form %}
+                                        {% if field.vars.name matches '/nom|entreprise/i' %}
+                                            <div class="mb-3">
+                                                {{ form_label(field, null, {'label_attr': {'class': 'form-label'}}) }}
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                    {{ form_widget(field, {'attr': {'class': 'form-control'}}) }}
+                                                </div>
+                                                {{ form_errors(field) }}
+                                                <div class="form-text">Nom de l'entreprise ou de l'individu</div>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if field.vars.name matches '/telephone|phone/i' %}
+                                            <div class="mb-3">
+                                                {{ form_label(field, null, {'label_attr': {'class': 'form-label'}}) }}
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                                    {{ form_widget(field, {'attr': {'class': 'form-control'}}) }}
+                                                </div>
+                                                {{ form_errors(field) }}
+                                                <div class="form-text">Numéro de téléphone avec indicatif international</div>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if field.vars.name matches '/email|mail/i' %}
+                                            <div class="mb-3">
+                                                {{ form_label(field, null, {'label_attr': {'class': 'form-label'}}) }}
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                                    {{ form_widget(field, {'attr': {'class': 'form-control'}}) }}
+                                                </div>
+                                                {{ form_errors(field) }}
+                                                <div class="form-text">Adresse email pour la communication</div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Adresse -->
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light py-2">
+                                    <h6 class="mb-0"><i class="fas fa-map-marker-alt me-2 text-danger"></i>Adresse</h6>
+                                </div>
+                                <div class="card-body">
+                                    {% for field in form %}
+                                        {% if field.vars.name matches '/pays|country/i' %}
+                                            <div class="mb-3">
+                                                {{ form_label(field, null, {'label_attr': {'class': 'form-label'}}) }}
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                                    {{ form_widget(field, {'attr': {'class': 'form-control'}}) }}
+                                                </div>
+                                                {{ form_errors(field) }}
+                                                <div class="form-text">Pays de résidence</div>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if field.vars.name matches '/adress|adresse/i' %}
+                                            <div class="mb-3">
+                                                {{ form_label(field, null, {'label_attr': {'class': 'form-label'}}) }}
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-map-marked-alt"></i></span>
+                                                    {{ form_widget(field, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+                                                </div>
+                                                {{ form_errors(field) }}
+                                                <div class="form-text">Adresse postale complète incluant rue, ville, code postal</div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Autres champs n'ayant pas été traités -->
+                        <div class="col-md-12">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light py-2">
+                                    <h6 class="mb-0"><i class="fas fa-cog me-2 text-secondary"></i>Autres informations</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        {% for field in form %}
+                                            {% if 
+                                                not (field.vars.name matches '/nom|entreprise|telephone|phone|email|mail|pays|country|adress|adresse/i') 
+                                                and field.vars.name != '_token' 
+                                            %}
+                                                <div class="col-md-6 mb-3">
+                                                    {{ form_row(field) }}
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-3 border-top d-flex justify-content-between">
+                        <a href="{{ path('app_destinataire_index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+        
+        <!-- Zone de danger -->
+        <div class="card shadow-sm mb-4 border-danger border-top-0 border-end-0 border-bottom-0 border-3">
+            <div class="card-header bg-light py-3">
+                <h5 class="mb-0 fw-bold text-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Zone de danger
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger mb-3">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Attention : La suppression du destinataire est une action irréversible. Tous les colis et données associés à ce destinataire resteront dans le système mais ne seront plus liés à ce destinataire.
+                </div>
+                
+                <!-- Formulaire de suppression -->
+                {{ include('destinataire/_delete_form.html.twig', {'button_label': 'Supprimer ce destinataire', 'button_class': 'btn-danger'}) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validation des formulaires
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        });
+    });
+});
+</script>
+{% endblock %}

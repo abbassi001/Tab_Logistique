@@ -1,0 +1,145 @@
+/* wizard.css */
+
+/* Conteneur de progression */
+.wizard-progress-container {
+    margin-bottom: 3rem;
+  }
+  
+  /* Étapes du Wizard - Version améliorée */
+  .wizard-steps {
+    display: flex;
+    position: relative;
+    margin-bottom: 2rem;
+  }
+  
+  .wizard-steps:before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #e9ecef;
+    z-index: 1;
+  }
+  
+  .wizard-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .wizard-step-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #e9ecef;
+    line-height: 36px;
+    text-align: center;
+    font-weight: 600;
+    color: #6c757d;
+    margin: 0 auto 10px;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s;
+  }
+  
+  .wizard-step.active .wizard-step-icon {
+    border-color: #0d6efd;
+    background: #0d6efd;
+    color: white;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+  }
+  
+  .wizard-step.completed .wizard-step-icon {
+    border-color: #198754;
+    background: #198754;
+    color: white;
+  }
+  
+  .wizard-step.completed:before, 
+  .wizard-step.active:before {
+    background: #198754;
+  }
+  
+  .wizard-step-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6c757d;
+    max-width: 120px;
+    margin: 0 auto;
+  }
+  
+  .wizard-step.active .wizard-step-label {
+    color: #0d6efd;
+  }
+  
+  .wizard-step.completed .wizard-step-label {
+    color: #198754;
+  }
+  
+  /* Cartes des formulaires du wizard */
+  .wizard-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+  
+  .wizard-card-header {
+    background: linear-gradient(45deg, #0d6efd, #0b5ed7);
+    color: white;
+    padding: 15px 20px;
+    border-bottom: 0;
+  }
+  
+  .wizard-card-header h5 {
+    margin: 0;
+    font-weight: 600;
+  }
+  
+  .wizard-card-body {
+    padding: 25px;
+  }
+  
+  /* Boutons de navigation du wizard */
+  .wizard-nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+  }
+  
+  .wizard-btn-next, .wizard-btn-prev {
+    transition: all 0.3s;
+    padding: 10px 20px;
+    font-weight: 500;
+  }
+  
+  .wizard-btn-next:hover, .wizard-btn-prev:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Groupe d'inputs pour dimensions */
+  .dimensions-group {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .dimensions-group .form-control {
+    text-align: center;
+  }
+  
+  .dimensions-display {
+    text-align: center;
+    font-weight: 500;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    margin-top: 10px;
+  }

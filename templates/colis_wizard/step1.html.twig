@@ -1,0 +1,264 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un colis - Étape 1{% endblock %}
+
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/wizard.css') }}">
+{% endblock %}
+
+{% block sidebar_class %}col-md-2{% endblock %}
+
+{% block sidebar %}
+<nav class="col-md-2 d-none d-md-block sidebar">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_colis_index') }}">
+                    <i class="fas fa-list me-2"></i>Liste des Colis
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="#">
+                    <i class="fas fa-magic me-2"></i>Assistant de création
+                </a>
+            </li>
+        </ul>
+        
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span>Étapes</span>
+        </h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active">
+                    <i class="fas fa-box me-2"></i>1. Informations de base
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 2 ? '' : 'disabled' }}" href="{{ max_step >= 2 ? path('app_colis_wizard_step2') : '#' }}">
+                    <i class="fas fa-paper-plane me-2"></i>2. Expéditeur
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 3 ? '' : 'disabled' }}" href="{{ max_step >= 3 ? path('app_colis_wizard_step3') : '#' }}">
+                    <i class="fas fa-map-marker-alt me-2"></i>3. Destinataire
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 4 ? '' : 'disabled' }}" href="{{ max_step >= 4 ? path('app_colis_wizard_step4') : '#' }}">
+                    <i class="fas fa-clipboard-list me-2"></i>4. Statut initial
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 5 ? '' : 'disabled' }}" href="{{ max_step >= 5 ? path('app_colis_wizard_step5') : '#' }}">
+                    <i class="fas fa-truck me-2"></i>5. Transport
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 6 ? '' : 'disabled' }}" href="{{ max_step >= 6 ? path('app_colis_wizard_step6') : '#' }}">
+                    <i class="fas fa-camera me-2"></i>6. Photos
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 7 ? '' : 'disabled' }}" href="{{ max_step >= 7 ? path('app_colis_wizard_step7') : '#' }}">
+                    <i class="fas fa-file-alt me-2"></i>7. Documents
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 8 ? '' : 'disabled' }}" href="{{ max_step >= 8 ? path('app_colis_wizard_review') : '#' }}">
+                    <i class="fas fa-check-circle me-2"></i>8. Vérification
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block main_class %}col-md-10{% endblock %}
+
+{% block body %}
+    <!-- Messages flash -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show mb-4" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="container-fluid mx-auto px-4 py-4">
+        <!-- Entête de la page -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-box me-2 text-primary"></i>Création d'un nouveau colis</h1>
+                <p class="text-muted">Étape 1 sur 8 : Informations de base</p>
+            </div>
+            
+            <!-- Indicateur de progression -->
+            <div class="progress-indicator" style="width: 15rem;">
+                <div class="progress">
+                    <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: 12.5%" aria-valuenow="12.5" aria-valuemin="0" aria-valuemax="100">12.5%</div>
+                </div>
+                <div class="text-end mt-1">
+                    <small class="text-muted">Étape 1/8</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte principale -->
+        <div class="card shadow-sm mb-4 border-primary border-top-0 border-end-0 border-bottom-0 border-3">
+            <div class="card-header bg-light py-3">
+                <h5 class="mb-0 fw-bold text-primary">
+                    <i class="fas fa-info-circle me-2"></i>Informations du colis
+                </h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'id': 'wizard_form', 'class': 'needs-validation'}}) }}
+                
+                <div class="row g-3">
+                    <!-- Première colonne -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="fas fa-ruler-combined me-2 text-primary"></i>Dimensions et poids</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Longueur (cm)</label>
+                                        {{ form_widget(form.longueur, {'attr': {'class': 'form-control', 'step': '0.01', 'data-dimension': 'longueur', 'placeholder': 'Longueur'}}) }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Largeur (cm)</label>
+                                        {{ form_widget(form.largeur, {'attr': {'class': 'form-control', 'step': '0.01', 'data-dimension': 'largeur', 'placeholder': 'Largeur'}}) }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Hauteur (cm)</label>
+                                        {{ form_widget(form.hauteur, {'attr': {'class': 'form-control', 'step': '0.01', 'data-dimension': 'hauteur', 'placeholder': 'Hauteur'}}) }}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Dimensions résultantes</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-cube"></i></span>
+                                        <input type="text" id="dimensions-display" class="form-control" readonly placeholder="L x l x h">
+                                    </div>
+                                    {{ form_widget(form.dimensions, {'attr': {'class': 'form-control hidden-dimensions-field d-none'}}) }}
+                                    {{ form_errors(form.dimensions) }}
+                                </div>
+                                
+                                <div class="mb-0">
+                                    {{ form_label(form.poids, 'Poids (kg)', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-weight"></i></span>
+                                        {{ form_widget(form.poids, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 5.2'}}) }}
+                                        <span class="input-group-text">kg</span>
+                                    </div>
+                                    {{ form_errors(form.poids) }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="fas fa-money-bill-wave me-2 text-primary"></i>Informations générales</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ form_label(form.valeur_declaree, 'Valeur déclarée (€)', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-euro-sign"></i></span>
+                                        {{ form_widget(form.valeur_declaree, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 100.50'}}) }}
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                    {{ form_errors(form.valeur_declaree) }}
+                                </div>
+                                <div class="mb-0">
+    <label class="form-label">Date de création</label>
+    <div class="input-group">
+        <span class="input-group-text bg-light"><i class="fas fa-calendar"></i></span>
+        <input type="text" class="form-control" value="{{ "now"|date('d/m/Y H:i') }}" readonly>
+        <span class="input-group-text"><i class="fas fa-clock"></i></span>
+    </div>
+    <div class="form-text text-muted">Date et heure générées automatiquement</div>
+    {{ form_widget(form.date_creation, {'attr': {'class': 'd-none'}}) }}
+    {{ form_errors(form.date_creation) }}
+</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Deuxième colonne -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="fas fa-box-open me-2 text-primary"></i>Contenu du colis</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ form_label(form.nature_marchandise, 'Nature de la marchandise', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-tags"></i></span>
+                                        {{ form_widget(form.nature_marchandise, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Vêtements, Électronique, etc.'}}) }}
+                                    </div>
+                                    {{ form_errors(form.nature_marchandise) }}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    {{ form_label(form.description_marchandise, 'Description détaillée', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-align-left"></i></span>
+                                        {{ form_widget(form.description_marchandise, {'attr': {'class': 'form-control', 'style': 'min-height: 100px', 'placeholder': 'Description détaillée du contenu...'}}) }}
+                                    </div>
+                                    {{ form_errors(form.description_marchandise) }}
+                                </div>
+                                
+                                <div class="mb-0">
+                                    {{ form_label(form.classification_douaniere, 'Classification douanière', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-passport"></i></span>
+                                        {{ form_widget(form.classification_douaniere, {'attr': {'class': 'form-control', 'placeholder': 'Code douanier...'}}) }}
+                                    </div>
+                                    {{ form_errors(form.classification_douaniere) }}
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>Le code de classification douanière est utilisé pour identifier les produits lors des procédures d'import/export.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {# Capture uniquement le jeton CSRF et autres champs cachés #}
+                {{ form_rest(form) }}
+                
+                <!-- Boutons de navigation intégrés directement dans le formulaire -->
+                <div class="mt-4 pt-4 border-top d-flex justify-content-between">
+                    <div>
+                        <a href="{{ path('app_colis_index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Annuler
+                        </a>
+                        
+                        <a href="{{ path('app_colis_wizard_cancel') }}" class="btn btn-outline-danger ms-2">
+                            <i class="fas fa-trash me-2"></i>Annuler la création
+                        </a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        Suivant<i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+                
+                {{ form_end(form, {'render_rest': false}) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/modules/wizard.js') }}"></script>
+{% endblock %}

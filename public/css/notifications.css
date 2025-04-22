@@ -1,0 +1,113 @@
+/* notifications.css */
+
+.notification-container {
+    z-index: 1060;
+    max-width: 350px;
+  }
+  
+  .notification {
+    display: flex;
+    align-items: flex-start;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.3s, transform 0.3s;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .notification.show {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  .notification-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    flex-shrink: 0;
+    padding: 15px 0;
+  }
+  
+  .notification-icon i {
+    font-size: 1.5rem;
+  }
+  
+  .notification-content {
+    flex-grow: 1;
+    padding: 15px 10px;
+  }
+  
+  .notification-message {
+    margin: 0;
+  }
+  
+  .notification-close {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #495057;
+    transition: color 0.2s;
+  }
+  
+  .notification-close:hover {
+    color: #212529;
+  }
+  
+  /* Types de notifications */
+  .notification-success {
+    border-left: 5px solid #198754;
+  }
+  
+  .notification-success .notification-icon {
+    color: #198754;
+  }
+  
+  .notification-warning {
+    border-left: 5px solid #ffc107;
+  }
+  
+  .notification-warning .notification-icon {
+    color: #ffc107;
+  }
+  
+  .notification-danger {
+    border-left: 5px solid #dc3545;
+  }
+  
+  .notification-danger .notification-icon {
+    color: #dc3545;
+  }
+  
+  .notification-info {
+    border-left: 5px solid #0dcaf0;
+  }
+  
+  .notification-info .notification-icon {
+    color: #0dcaf0;
+  }
+  
+  /* Animation de progression pour auto-fermeture */
+  .notification::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background-color: rgba(0, 0, 0, 0.1);
+    width: 100%;
+    animation: notification-timer 5s linear forwards;
+  }
+  
+  @keyframes notification-timer {
+    from { width: 100%; }
+    to { width: 0%; }
+  }

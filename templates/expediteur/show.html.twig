@@ -1,0 +1,591 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de l'Expéditeur - TAB Logistique{% endblock %}
+
+{% block sidebar %}
+<nav class="col-md-2 d-none d-md-block sidebar print-hidden">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_expediteur_index') }}">
+                    <i class="fas fa-users me-2"></i>Liste des Expéditeurs
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="#">
+                    <i class="fas fa-eye me-2"></i>Détails de l'Expéditeur
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_expediteur_edit', {'id': expediteur.id}) }}">
+                    <i class="fas fa-edit me-2"></i>Modifier l'Expéditeur
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block main_class %}col-md-10{% endblock %}
+
+{% block body %}
+    <!-- Messages flash -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show mb-4 print-hidden" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="container-fluid mx-auto px-4 py-4">
+        <!-- Print Header - Only visible when printing -->
+        <div class="d-none print-only print-header mb-4">
+            <div class="row">
+                <div class="col-6">
+                    <img src="{{ asset('images/logo.png') }}" alt="TAB Logistique" class="img-fluid" style="max-height: 80px;">
+                </div>
+                <div class="col-6 text-end">
+                    <h3 class="mb-0">Fiche Expéditeur</h3>
+                    <p class="text-muted">Imprimé le {{ "now"|date('d/m/Y H:i') }}</p>
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4 print-hidden">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-paper-plane me-2 text-primary"></i>Détails de l'Expéditeur</h1>
+                <p class="text-muted">Informations complètes de l'expéditeur</p>
+            </div>
+            <div class="print-hidden">
+                <a href="{{ path('app_expediteur_index') }}" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-arrow-left me-1"></i>Retour à la liste
+                </a>
+                <a href="{{ path('app_expediteur_edit', {'id': expediteur.id}) }}" class="btn btn-warning">
+                    <i class="fas fa-edit me-1"></i>Modifier
+                </a>
+                <button onclick="window.print()" class="btn btn-primary ms-2">
+                    <i class="fas fa-print me-1"></i>Imprimer
+                </button>
+            </div>
+        </div>
+
+        <!-- Identité mise en évidence -->
+        <div class="card shadow-sm mb-4 text-center border-primary border-top-0 border-end-0 border-bottom-0 border-3">
+            <div class="card-body py-3">
+                <h5 class="text-muted mb-1 print-muted">Identité</h5>
+                <div class="d-flex align-items-center justify-content-center">
+                    <span class="badge bg-primary fs-3 p-2 print-primary-text">{{ expediteur.nomEntrepriseIndividu }}</span>
+                    <button class="btn btn-sm btn-outline-primary ms-2 print-hidden" onclick="copyToClipboard('{{ expediteur.nomEntrepriseIndividu }}')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row print-full-width">
+            <!-- Informations de l'expéditeur -->
+            <div class="col-md-6 print-col-6">
+                <div class="card shadow-sm mb-4 border-primary border-top-0 border-end-0 border-bottom-0 border-3 print-no-shadow print-no-border">
+                    <div class="card-header bg-light py-3">
+                        <h5 class="mb-0 fw-bold text-primary print-primary-text">
+                            <i class="fas fa-info-circle me-2"></i>Informations de l'Expéditeur
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped print-table">
+                            <tbody>
+                                <tr>
+                                    <th class="bg-light print-table-header" style="width: 30%">ID</th>
+                                    <td>{{ expediteur.id }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light print-table-header">Nom / Entreprise</th>
+                                    <td>{{ expediteur.nomEntrepriseIndividu }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light print-table-header">Téléphone</th>
+                                    <td>
+                                        {% if expediteur.telephone %}
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-phone me-2 text-success print-success-text"></i>
+                                                <span>{{ expediteur.telephone }}</span>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted fst-italic print-muted">Non renseigné</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light print-table-header">Email</th>
+                                    <td>
+                                        {% if expediteur.email %}
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-envelope me-2 text-info print-info-text"></i>
+                                                <span>{{ expediteur.email }}</span>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted fst-italic print-muted">Non renseigné</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Adresse -->
+            <div class="col-md-6 print-col-6">
+                <div class="card shadow-sm mb-4 border-danger border-top-0 border-end-0 border-bottom-0 border-3 print-no-shadow print-no-border">
+                    <div class="card-header bg-light py-3">
+                        <h5 class="mb-0 fw-bold text-danger print-danger-text">
+                            <i class="fas fa-map-marker-alt me-2"></i>Adresse
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped print-table">
+                            <tbody>
+                                <tr>
+                                    <th class="bg-light print-table-header" style="width: 30%">Pays</th>
+                                    <td>
+                                        {% if expediteur.pays %}
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-globe-americas me-2 text-danger print-danger-text"></i>
+                                                {{ expediteur.pays }}
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted fst-italic print-muted">Non renseigné</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light print-table-header">Adresse complète</th>
+                                    <td>
+                                        {% if expediteur.adresseComplete %}
+                                            <div class="d-flex align-items-start">
+                                                <i class="fas fa-map-marked-alt me-2 text-danger print-danger-text mt-1"></i>
+                                                <div>{{ expediteur.adresseComplete|nl2br }}</div>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted fst-italic print-muted">Non renseignée</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions rapides Section -->
+        <div class="my-4 print-hidden">
+            <div class="card shadow-sm mb-4 border-warning border-top-0 border-end-0 border-bottom-0 border-3">
+                <div class="card-header bg-light py-3">
+                    <h5 class="mb-0 fw-bold text-warning">
+                        <i class="fas fa-bolt me-2"></i>Actions rapides
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Email Button -->
+                        <div class="col-md-4 col-sm-6 mb-3">
+                            <div class="card shadow-sm h-100 text-center p-3 bg-white hover-shadow" style="cursor: pointer;" onclick="window.location.href='mailto:{{ expediteur.email }}'">
+                                <div class="d-flex justify-content-center mb-2">
+                                    <span class="rounded-circle p-3 bg-light">
+                                        <i class="fas fa-envelope text-primary fa-2x"></i>
+                                    </span>
+                                </div>
+                                <span class="fw-medium">Envoyer un email</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Call Button -->
+                        <div class="col-md-4 col-sm-6 mb-3">
+                            <div class="card shadow-sm h-100 text-center p-3 bg-white hover-shadow" style="cursor: pointer;" onclick="window.location.href='tel:{{ expediteur.telephone }}'">
+                                <div class="d-flex justify-content-center mb-2">
+                                    <span class="rounded-circle p-3 bg-light">
+                                        <i class="fas fa-phone-alt text-success fa-2x"></i>
+                                    </span>
+                                </div>
+                                <span class="fw-medium">Appeler</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Print Button -->
+                        <div class="col-md-4 col-sm-6 mb-3">
+                            <div class="card shadow-sm h-100 text-center p-3 bg-white hover-shadow" style="cursor: pointer;" onclick="window.print()">
+                                <div class="d-flex justify-content-center mb-2">
+                                    <span class="rounded-circle p-3 bg-light">
+                                        <i class="fas fa-print text-warning fa-2x"></i>
+                                    </span>
+                                </div>
+                                <span class="fw-medium">Imprimer la fiche</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Onglets d'information -->
+        <div class="card shadow-sm mb-4 print-page-break-before print-no-shadow print-no-border">
+            <div class="card-header p-0 border-bottom-0 print-hidden">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="colis-tab" data-bs-toggle="tab" data-bs-target="#colis" type="button" role="tab" aria-controls="colis" aria-selected="true">
+                            <i class="fas fa-boxes me-2"></i>Colis associés
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="historique-tab" data-bs-toggle="tab" data-bs-target="#historique" type="button" role="tab" aria-controls="historique" aria-selected="false">
+                            <i class="fas fa-history me-2"></i>Historique
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Print-specific heading for colis -->
+            <div class="d-none print-only mb-3">
+                <h3 class="fw-bold"><i class="fas fa-boxes me-2"></i>Colis associés</h3>
+            </div>
+            
+            <div class="card-body border-top-0">
+                <div class="tab-content" id="myTabContent">
+                    <!-- Onglet Colis associés -->
+                    <div class="tab-pane fade show active" id="colis" role="tabpanel" aria-labelledby="colis-tab">
+                        {% if expediteur.colis is defined and expediteur.colis|length > 0 %}
+                            <div class="table-responsive">
+                                <table class="table table-striped print-table">
+                                    <thead class="bg-light print-table-header">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Code Tracking</th>
+                                            <th>Nature</th>
+                                            <th>Statut</th>
+                                            <th>Date de création</th>
+                                            <th class="print-hidden">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for colis in expediteur.colis %}
+                                            <tr>
+                                                <td>{{ colis.id }}</td>
+                                                <td>
+                                                    <span class="d-flex align-items-center">
+                                                        <i class="fas fa-barcode me-2 text-primary print-primary-text"></i>
+                                                        <span class="fw-medium">{{ colis.codeTracking }}</span>
+                                                    </span>
+                                                </td>
+                                                <td>{{ colis.natureMarchandise }}</td>
+                                                <td>
+                                                    {% set lastStatut = colis.statuts|last %}
+                                                    {% if lastStatut %}
+                                                        <span class="badge bg-info print-info-badge">{{ lastStatut.typeStatut.value|replace({'_': ' '})|title }}</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary print-secondary-badge">Non défini</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ colis.dateCreation|date('d/m/Y') }}</td>
+                                                <td class="print-hidden">
+                                                    <a href="{{ path('app_colis_show', {'id': colis.id}) }}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye me-1"></i>Voir
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info print-info-alert">
+                                <i class="fas fa-info-circle me-2"></i>Aucun colis associé à cet expéditeur
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Onglet Historique - hidden in print -->
+                    <div class="tab-pane fade print-hidden" id="historique" role="tabpanel" aria-labelledby="historique-tab">
+                        <div class="alert alert-info mb-3">
+                            <i class="fas fa-info-circle me-2"></i>Cette section affiche l'historique des modifications de l'expéditeur
+                        </div>
+                        
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-primary"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-1 fw-bold">Création de l'expéditeur</h6>
+                                    <div class="small text-muted mb-2">
+                                        <i class="fas fa-calendar me-1"></i>{{ expediteur.id ? 'Date non disponible' : '' }}
+                                    </div>
+                                    <div class="card bg-light mb-3">
+                                        <div class="card-body py-2 px-3">
+                                            <p class="card-text small mb-0">Expéditeur ajouté au système</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4 d-flex justify-content-between print-hidden">
+            <a href="{{ path('app_expediteur_index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Retour à la liste
+            </a>
+            
+            <div>
+                <a href="{{ path('app_expediteur_edit', {'id': expediteur.id}) }}" class="btn btn-warning me-2">
+                    <i class="fas fa-edit me-1"></i>Modifier
+                </a>
+                
+                {% if is_granted('ROLE_ADMIN') %}
+                    {{ include('expediteur/_delete_form.html.twig') }}
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Print footer - Only visible when printing -->
+        <div class="d-none print-only print-footer mt-5">
+            <hr>
+            <div class="row">
+                <div class="col-6">
+                    <small>TAB Logistique - Fiche Expéditeur #{{ expediteur.id }}</small>
+                </div>
+                <div class="col-6 text-end">
+                    <small>Page <span class="print-page-number"></span></small>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fonction pour copier dans le presse-papier
+    window.copyToClipboard = function(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            alert('Texte copié dans le presse-papier : ' + text);
+        }, function(err) {
+            console.error('Erreur lors de la copie :', err);
+        });
+    };
+    
+    // Animation pour les cartes d'actions rapides
+    const actionCards = document.querySelectorAll('.hover-shadow');
+    actionCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.classList.add('shadow');
+            this.style.transform = 'translateY(-5px)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.classList.remove('shadow');
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Initialisation des onglets
+    const triggerTabList = [].slice.call(document.querySelectorAll('#myTab button'));
+    triggerTabList.forEach(function(triggerEl) {
+        const tabTrigger = new bootstrap.Tab(triggerEl);
+        
+        triggerEl.addEventListener('click', function(event) {
+            event.preventDefault();
+            tabTrigger.show();
+        });
+    });
+});
+</script>
+
+<style>
+/* Timeline style */
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+.timeline:before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background-color: #e9ecef;
+}
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+.timeline-marker {
+    position: absolute;
+    left: -30px;
+    top: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #0d6efd;
+}
+.timeline-content {
+    padding-left: 10px;
+}
+
+/* Print styles */
+@media print {
+    /* Global print settings */
+    body {
+        background: white;
+        color: black;
+        font-size: 12pt;
+        line-height: 1.5;
+    }
+    
+    /* Hide elements not needed in print */
+    .print-hidden,
+    .sidebar,
+    nav,
+    footer,
+    .btn,
+    .nav-tabs,
+    .dropdown-menu,
+    .alert-dismissible {
+        display: none !important;
+    }
+    
+    /* Show print-only elements */
+    .print-only {
+        display: block !important;
+    }
+    
+    /* Layout adjustments */
+    .container-fluid {
+        padding: 0 !important;
+        width: 100% !important;
+    }
+    
+    .print-full-width {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .print-col-6 {
+        width: 50% !important;
+        float: left !important;
+        page-break-inside: avoid;
+    }
+    
+    /* Remove decorative elements */
+    .print-no-shadow {
+        box-shadow: none !important;
+    }
+    
+    .print-no-border {
+        border: none !important;
+        border-radius: 0 !important;
+    }
+    
+    /* Color adjustments for print */
+    .print-primary-text {
+        color: #000 !important;
+        font-weight: bold !important;
+        background: none !important;
+    }
+    
+    .print-danger-text {
+        color: #000 !important;
+        font-weight: bold !important;
+        background: none !important;
+    }
+    
+    .print-success-text, 
+    .print-info-text, 
+    .print-warning-text {
+        color: #000 !important;
+        background: none !important;
+    }
+    
+    .print-muted {
+        color: #666 !important;
+    }
+    
+    /* Table styles for print */
+    .print-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+    
+    .print-table th,
+    .print-table td {
+        border: 1px solid #ddd !important;
+        padding: 8px !important;
+    }
+    
+    .print-table-header {
+        background-color: #f2f2f2 !important;
+        font-weight: bold !important;
+    }
+    
+    /* Badge styling for print */
+    .print-info-badge,
+    .print-secondary-badge {
+        background: none !important;
+        border: 1px solid #000 !important;
+        color: #000 !important;
+        font-weight: normal !important;
+        padding: 2px 5px !important;
+        border-radius: 3px !important;
+    }
+    
+    /* Alert styling for print */
+    .print-info-alert {
+        border: 1px solid #ddd !important;
+        background: none !important;
+        color: #000 !important;
+        padding: 10px !important;
+    }
+    
+    /* Add page breaks where necessary */
+    .print-page-break-before {
+        page-break-before: always !important;
+    }
+    
+    .print-page-break-after {
+        page-break-after: always !important;
+    }
+    
+    /* Footer and header for print */
+    .print-header, .print-footer {
+        position: fixed;
+        width: 100%;
+    }
+    
+    .print-header {
+        top: 0;
+    }
+    
+    .print-footer {
+        bottom: 0;
+    }
+    
+    /* Auto page numbering */
+    .print-page-number:after {
+        content: counter(page);
+    }
+    
+    @page {
+        margin: 1.5cm;
+        size: portrait;
+    }
+}
+</style>
+{% endblock %}

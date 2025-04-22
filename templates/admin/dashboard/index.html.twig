@@ -1,0 +1,438 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de Bord Admin - TAB Logistique{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/dashboard-cards.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/data-tables.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin-user.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin-forms.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/animations.css') }}">
+    <!-- Add our enhanced CSS -->
+    <style>
+        {% include 'admin/dashboard/_dashboard_styles.html.twig' %}
+    </style>
+{% endblock %}
+
+{% block sidebar %}
+<nav class="col-md-2 d-none d-md-block sidebar">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ path('app_admin_dashboard') }}">
+                    <i class="fas fa-tachometer-alt me-2"></i>Tableau de Bord
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_colis_index') }}">
+                    <i class="fas fa-box me-2"></i>Gestion des Colis
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_admin_user_index') }}">
+                    <i class="fas fa-users me-2"></i>Gestion des Utilisateurs
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_employe_index') }}">
+                    <i class="fas fa-user-tie me-2"></i>Gestion des Employés
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_expediteur_index') }}">
+                    <i class="fas fa-paper-plane me-2"></i>Expéditeurs
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_destinataire_index') }}">
+                    <i class="fas fa-map-marker-alt me-2"></i>Destinataires
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_warehouse_index') }}">
+                    <i class="fas fa-warehouse me-2"></i>Entrepôts
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_departement_index') }}">
+                    <i class="fas fa-building me-2"></i>Départements
+                </a>
+            </li>
+        </ul>
+        
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span>Rapports</span>
+        </h6>
+        <ul class="nav flex-column mb-2">
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-file-export me-2"></i>Exportations
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-chart-line me-2"></i>Statistiques avancées
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-file-alt me-2"></i>Rapports personnalisés
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block main_class %}col-md-10{% endblock %}
+
+{% block body %}
+<div class="dashboard-container">
+    <!-- En-tête du tableau de bord -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-tachometer-alt me-2 text-primary"></i>Tableau de Bord Administrateur
+        </h1>
+        <div>
+            <button type="button" class="btn btn-sm btn-outline-primary me-2" id="refreshDashboard">
+                <i class="fas fa-sync-alt me-1"></i>Actualiser
+            </button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-download me-1"></i>Exporter
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-file-pdf me-2 text-danger"></i>PDF</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-file-excel me-2 text-success"></i>Excel</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2 text-primary"></i>Imprimer</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Carte de bienvenue -->
+    <div class="card shadow-sm mb-4 border-left-primary">
+        <div class="card-body p-4">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="text-sm font-weight-bold text-primary text-uppercase mb-1">Bienvenue, {{ app.user.nom }} {{ app.user.prenom }}</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        {% if "now"|date("H") < 12 %}
+                            Bonjour et bonne journée!
+                        {% elseif "now"|date("H") < 18 %}
+                            Bon après-midi!
+                        {% else %}
+                            Bonsoir!
+                        {% endif %}
+                    </div>
+                    <p class="mt-2 mb-0">Dernière connexion : {{ app.user.dernierConnexion ? app.user.dernierConnexion|date('d/m/Y H:i') : 'Première connexion' }}</p>
+                </div>
+                <div class="col-auto">
+                    <i class="fas fa-user-cog fa-2x text-gray-300"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cartes statistiques -->
+    <div class="stats-row">
+        <!-- Colis -->
+        <div class="stat-card stat-card-primary">
+            <div class="stat-card-body">
+                <div class="stat-card-title">Total Colis</div>
+                <div class="stat-card-value">{{ stats.colis.total }}</div>
+                <div class="stat-card-footer">
+                    {% if stats.colis.trend > 0 %}
+                        <div class="stat-trend-up">
+                            <i class="fas fa-arrow-up"></i>
+                            {{ stats.colis.trend }}%
+                        </div>
+                    {% elseif stats.colis.trend < 0 %}
+                        <div class="stat-trend-down">
+                            <i class="fas fa-arrow-down"></i>
+                            {{ stats.colis.trend|abs }}%
+                        </div>
+                    {% else %}
+                        <div class="stat-trend-up">
+                            <i class="fas fa-equals"></i>
+                            0%
+                        </div>
+                    {% endif %}
+                    <div class="stat-period">ce mois</div>
+                </div>
+                <i class="stat-card-icon fas fa-boxes"></i>
+            </div>
+        </div>
+        
+        <!-- Utilisateurs -->
+        <div class="stat-card stat-card-success">
+            <div class="stat-card-body">
+                <div class="stat-card-title">Utilisateurs</div>
+                <div class="stat-card-value">{{ stats.users.total }}</div>
+                <div class="stat-card-footer">
+                    <div class="stat-trend-up">
+                        <i class="fas fa-user-check"></i>
+                        {{ stats.users.active }} actifs
+                    </div>
+                    <div class="stat-period">en ce moment</div>
+                </div>
+                <i class="stat-card-icon fas fa-users"></i>
+            </div>
+        </div>
+        
+        <!-- Expéditeurs -->
+        <div class="stat-card stat-card-warning">
+            <div class="stat-card-body">
+                <div class="stat-card-title">Expéditeurs</div>
+                <div class="stat-card-value">{{ stats.expediteurs.total }}</div>
+                <div class="stat-card-footer">
+                    <div class="stat-trend-up">
+                        <i class="fas fa-plus-circle"></i>
+                        {{ stats.expediteurs.recent }} nouveaux
+                    </div>
+                    <div class="stat-period">derniers 30j</div>
+                </div>
+                <i class="stat-card-icon fas fa-paper-plane"></i>
+            </div>
+        </div>
+        
+        <!-- Destinataires -->
+        <div class="stat-card stat-card-danger">
+            <div class="stat-card-body">
+                <div class="stat-card-title">Destinataires</div>
+                <div class="stat-card-value">{{ stats.destinataires.total }}</div>
+                <div class="stat-card-footer">
+                    <div class="stat-trend-up">
+                        <i class="fas fa-plus-circle"></i>
+                        {{ stats.destinataires.recent }} nouveaux
+                    </div>
+                    <div class="stat-period">derniers 30j</div>
+                </div>
+                <i class="stat-card-icon fas fa-map-marker-alt"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rangée principale - Graphiques et activités -->
+    <div class="row">
+        <!-- Colonne de graphiques -->
+        <div class="col-lg-8">
+            <!-- Graphique: Distribution des statuts -->
+            <div class="chart-card mb-4">
+                <div class="chart-card-header">
+                    <h5 class="chart-card-title">
+                        <i class="fas fa-chart-pie me-2"></i>Distribution des statuts
+                    </h5>
+                    <div class="chart-controls">
+                        <select class="chart-period-selector">
+                            <option>Derniers 30 jours</option>
+                            <option>Derniers 90 jours</option>
+                            <option>Année en cours</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-card-body">
+                    <canvas id="statusChart" 
+                            data-labels="{{ ['En attente', 'En transit', 'Livré', 'Problème', 'Retourné']|json_encode|e('html_attr') }}"
+                            data-values="{{ status_data|json_encode|e('html_attr') }}"
+                            data-colors="{{ ['#ffc107', '#0dcaf0', '#198754', '#dc3545', '#e74a3b']|json_encode|e('html_attr') }}"></canvas>
+                </div>
+            </div>
+            
+            <!-- Graphique: Colis par mois -->
+            <div class="chart-card mb-4">
+                <div class="chart-card-header">
+                    <h5 class="chart-card-title">
+                        <i class="fas fa-chart-line me-2"></i>Colis par mois
+                    </h5>
+                    <div class="chart-controls">
+                        <select class="chart-period-selector">
+                            <option>Derniers 6 mois</option>
+                            <option>Année en cours</option>
+                            <option>Année précédente</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-card-body">
+                    <canvas id="monthlyPackagesChart" 
+                            data-sent="{{ monthly_data.sent|json_encode|e('html_attr') }}"
+                            data-delivered="{{ monthly_data.delivered|json_encode|e('html_attr') }}"></canvas>
+                </div>
+            </div>
+
+            <!-- Tableau: Top 5 Entrepôts -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-warehouse me-2"></i>Top Entrepôts
+                    </h6>
+                    <a href="{{ path('app_warehouse_index') }}" class="btn btn-sm btn-outline-primary">Voir tous</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Nom</th>
+                                    <th>Activité</th>
+                                    <th>Performance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for warehouse in top_warehouses %}
+                                <tr>
+                                    <td>{{ warehouse.code }}</td>
+                                    <td>{{ warehouse.nom }}</td>
+                                    <td>{{ warehouse.activity }} colis</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-{{ warehouse.performance > 80 ? 'success' : warehouse.performance > 50 ? 'warning' : 'danger' }}"
+                                                role="progressbar" style="width: {{ warehouse.performance }}%"
+                                                aria-valuenow="{{ warehouse.performance }}" aria-valuemin="0" aria-valuemax="100">
+                                                {{ warehouse.performance }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne de droite - Activités récentes -->
+        <div class="col-lg-4">
+            <!-- Carte Activité récente -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-history me-2"></i>Activité Récente
+                    </h6>
+                    <button class="btn btn-sm btn-outline-primary btn-circle">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for activity in activities %}
+                        <div class="list-group-item list-group-item-action activity-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">
+                                    {% if activity.type == 'colis' %}
+                                        <i class="fas fa-box text-primary me-2"></i>
+                                    {% elseif activity.type == 'user' %}
+                                        <i class="fas fa-user text-success me-2"></i>
+                                    {% elseif activity.type == 'statut' %}
+                                        <i class="fas fa-tag text-warning me-2"></i>
+                                    {% elseif activity.type == 'warehouse' %}
+                                        <i class="fas fa-warehouse text-info me-2"></i>
+                                    {% else %}
+                                        <i class="fas fa-cog text-secondary me-2"></i>
+                                    {% endif %}
+                                    
+                                    {{ activity.description }}
+                                </h6>
+                            </div>
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>{{ activity.date|ago }}
+                                <span class="ms-2">par {{ activity.user }}</span>
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="#" class="btn btn-sm btn-outline-primary">Voir toutes les activités</a>
+                </div>
+            </div>
+
+            <!-- Carte d'alertes -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center bg-warning text-white">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Alertes
+                    </h6>
+                    <span class="badge bg-light text-warning">{{ alerts|length }}</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for alert in alerts %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-exclamation-circle text-warning me-2"></i>{{ alert.message }}
+                                </h6>
+                            </div>
+                            <small class="text-muted">{{ alert.date|ago }}</small>
+                        </div>
+                        {% else %}
+                        <div class="list-group-item">
+                            <p class="mb-0 text-center text-muted py-2">
+                                <i class="fas fa-check-circle me-2"></i>Aucune alerte active
+                            </p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="#" class="btn btn-sm btn-outline-warning">Gérer les alertes</a>
+                </div>
+            </div>
+
+            <!-- Carte des tâches à faire -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-tasks me-2"></i>Tâches à faire
+                    </h6>
+                    <a href="#" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for task in tasks %}
+                        <div class="list-group-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="task{{ loop.index }}">
+                                <label class="form-check-label" for="task{{ loop.index }}">
+                                    {{ task.description }}
+                                </label>
+                            </div>
+                            <small class="text-muted d-block mt-1">
+                                Échéance: {{ task.deadline|date('d/m/Y') }}
+                                <span class="badge bg-{{ task.priority == 'high' ? 'danger' : (task.priority == 'medium' ? 'warning' : 'info') }} float-end">
+                                    {{ task.priority == 'high' ? 'Haute' : (task.priority == 'medium' ? 'Moyenne' : 'Basse') }}
+                                </span>
+                            </small>
+                        </div>
+                        {% else %}
+                        <div class="list-group-item">
+                            <p class="mb-0 text-center text-muted py-2">
+                                <i class="fas fa-check-circle me-2"></i>Aucune tâche en attente
+                            </p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="#" class="btn btn-sm btn-outline-primary">Gérer les tâches</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+{% include 'admin/dashboard/_dashboard_scripts.html.twig' %}
+</script>
+{% endblock %}

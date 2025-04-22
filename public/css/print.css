@@ -1,0 +1,149 @@
+/* Print styles - Applied only for print media */
+
+@media print {
+    /* Global print settings */
+    body {
+        background: white;
+        color: black;
+        font-size: 12pt;
+        line-height: 1.5;
+    }
+    
+    /* Hide elements not needed in print */
+    .print-hidden,
+    .sidebar,
+    nav,
+    footer,
+    .btn,
+    .nav-tabs,
+    .dropdown-menu,
+    .alert-dismissible {
+        display: none !important;
+    }
+    
+    /* Show print-only elements */
+    .print-only {
+        display: block !important;
+    }
+    
+    /* Layout adjustments */
+    .container-fluid {
+        padding: 0 !important;
+        width: 100% !important;
+    }
+    
+    .print-full-width {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .print-col-6 {
+        width: 50% !important;
+        float: left !important;
+        page-break-inside: avoid;
+    }
+    
+    /* Remove decorative elements */
+    .print-no-shadow {
+        box-shadow: none !important;
+    }
+    
+    .print-no-border {
+        border: none !important;
+        border-radius: 0 !important;
+    }
+    
+    /* Color adjustments for print */
+    .print-primary-text {
+        color: #000 !important;
+        font-weight: bold !important;
+        background: none !important;
+    }
+    
+    .print-danger-text {
+        color: #000 !important;
+        font-weight: bold !important;
+        background: none !important;
+    }
+    
+    .print-success-text, 
+    .print-info-text, 
+    .print-warning-text {
+        color: #000 !important;
+        background: none !important;
+    }
+    
+    .print-muted {
+        color: #666 !important;
+    }
+    
+    /* Table styles for print */
+    .print-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+    
+    .print-table th,
+    .print-table td {
+        border: 1px solid #ddd !important;
+        padding: 8px !important;
+    }
+    
+    .print-table-header {
+        background-color: #f2f2f2 !important;
+        font-weight: bold !important;
+    }
+    
+    /* Badge styling for print */
+    .print-info-badge,
+    .print-secondary-badge {
+        background: none !important;
+        border: 1px solid #000 !important;
+        color: #000 !important;
+        font-weight: normal !important;
+        padding: 2px 5px !important;
+        border-radius: 3px !important;
+    }
+    
+    /* Alert styling for print */
+    .print-info-alert {
+        border: 1px solid #ddd !important;
+        background: none !important;
+        color: #000 !important;
+        padding: 10px !important;
+    }
+    
+    /* Add page breaks where necessary */
+    .print-page-break-before {
+        page-break-before: always !important;
+    }
+    
+    .print-page-break-after {
+        page-break-after: always !important;
+    }
+    
+    /* Footer and header for print */
+    .print-header, .print-footer {
+        position: fixed;
+        width: 100%;
+    }
+    
+    .print-header {
+        top: 0;
+    }
+    
+    .print-footer {
+        bottom: 0;
+    }
+    
+    /* Auto page numbering */
+    .print-page-number:after {
+        content: counter(page);
+    }
+    
+    @page {
+        margin: 1.5cm;
+        size: portrait;
+    }
+}

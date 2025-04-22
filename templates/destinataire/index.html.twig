@@ -1,0 +1,324 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Destinataires - TAB Logistique{% endblock %}
+
+{% block sidebar %}
+<nav class="col-md-2 d-none d-md-block sidebar">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ path('app_destinataire_index') }}">
+                    <i class="fas fa-users me-2"></i>Liste des Destinataires
+                </a>
+            </li>
+            <!-- Removed the "Nouveau Destinataire" navigation item -->
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block main_class %}col-md-10{% endblock %}
+
+{% block body %}
+    <!-- Messages flash -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show mb-4" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="container-fluid mx-auto px-4 py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-user-tag me-2 text-primary"></i>Gestion des Destinataires</h1>
+            <!-- Removed "Nouveau Destinataire" button -->
+        </div>
+
+        <!-- Filtres et recherche -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filtres</h5>
+                <button class="btn btn-sm btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <div class="collapse" id="collapseFilters">
+                <div class="card-body">
+                    <form method="get" action="{{ path('app_destinataire_index') }}" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="nom" class="form-label">Nom / Entreprise</label>
+                            <input type="text" class="form-control" id="nom" name="nom" placeholder="Rechercher par nom">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="pays" class="form-label">Pays</label>
+                            <input type="text" class="form-control" id="pays" name="pays" placeholder="Pays">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Adresse email">
+                        </div>
+                        <div class="col-12 text-end">
+                            <button type="reset" class="btn btn-secondary me-2">
+                                <i class="fas fa-undo me-1"></i>Réinitialiser
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i>Rechercher
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body py-3">
+                <div class="row">
+                    <div class="col-md-4 col-sm-6 mb-2 mb-md-0">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                <i class="fas fa-file-export text-primary"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Exporter</h6>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-link text-decoration-none p-0 me-2">CSV</button>
+                                    <button class="btn btn-link text-decoration-none p-0 me-2">Excel</button>
+                                    <button class="btn btn-link text-decoration-none p-0">PDF</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6 mb-2 mb-md-0">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                                <i class="fas fa-print text-success"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Imprimer</h6>
+                                <button class="btn btn-link text-decoration-none p-0">Liste</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                                <i class="fas fa-envelope text-info"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Communication</h6>
+                                <button class="btn btn-link text-decoration-none p-0">Email groupé</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau des destinataires -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-table me-2"></i>Liste des destinataires
+                        <span class="badge bg-secondary ms-2">{{ destinataires|length }}</span>
+                    </h5>
+                    <div class="d-flex">
+                        <div class="dropdown me-2">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownColumns" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-columns me-1"></i>Colonnes
+                            </button>
+                            <ul class="dropdown-menu shadow-sm" aria-labelledby="dropdownColumns">
+                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> ID</a></li>
+                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Nom/Entreprise</a></li>
+                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Téléphone</a></li>
+                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Email</a></li>
+                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Pays</a></li>
+                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Adresse</a></li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-3 py-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="checkAll">
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3" style="min-width: 60px;">ID</th>
+                                <th class="px-3 py-3" style="min-width: 180px;">Nom/Entreprise</th>
+                                <th class="px-3 py-3" style="min-width: 130px;">Téléphone</th>
+                                <th class="px-3 py-3" style="min-width: 180px;">Email</th>
+                                <th class="px-3 py-3" style="min-width: 120px;">Pays</th>
+                                <th class="px-3 py-3" style="min-width: 250px;">Adresse complète</th>
+                                <th class="px-3 py-3 text-end" style="min-width: 100px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for destinataire in destinataires %}
+                            <tr>
+                                <td class="px-3 py-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="{{ destinataire.id }}">
+                                    </div>
+                                </td>
+                                <td class="px-3 py-2 text-muted">#{{ destinataire.id }}</td>
+                                <td class="px-3 py-2">
+                                    <span class="d-flex align-items-center">
+                                        <i class="fas fa-user me-2 text-primary"></i>
+                                        <span class="fw-medium">{{ destinataire.nomEntrepriseIndividu }}</span>
+                                    </span>
+                                </td>
+                                <td class="px-3 py-2">
+                                    {% if destinataire.telephone %}
+                                        <span class="d-flex align-items-center">
+                                            <i class="fas fa-phone-alt me-2 text-success"></i>
+                                            {{ destinataire.telephone }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted fst-italic">Non défini</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-3 py-2">
+                                    {% if destinataire.email %}
+                                        <span class="d-flex align-items-center">
+                                            <i class="fas fa-envelope me-2 text-info"></i>
+                                            <a href="mailto:{{ destinataire.email }}" class="text-decoration-none">{{ destinataire.email }}</a>
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted fst-italic">Non défini</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-3 py-2">
+                                    {% if destinataire.pays %}
+                                        <span class="d-flex align-items-center">
+                                            <i class="fas fa-globe-americas me-2 text-secondary"></i>
+                                            {{ destinataire.pays }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted fst-italic">Non défini</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-3 py-2">
+                                    {% if destinataire.adresseComplete %}
+                                        <span class="d-flex align-items-center">
+                                            <i class="fas fa-map-marker-alt me-2 text-danger"></i>
+                                            {{ destinataire.adresseComplete }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted fst-italic">Non défini</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-3 py-2 text-end">
+                                    <div class="btn-group">
+                                        <a href="{{ path('app_destinataire_show', {'id': destinataire.id}) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Voir">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ path('app_destinataire_edit', {'id': destinataire.id}) }}" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Modifier">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="visually-hidden">Plus</span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-envelope me-2 text-primary"></i>Envoyer email</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2 text-success"></i>Imprimer fiche</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-clone me-2 text-info"></i>Dupliquer</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center py-5">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <div class="rounded-circle bg-light p-4 mb-3">
+                                            <i class="fas fa-users fa-3x text-muted"></i>
+                                        </div>
+                                        <h5 class="text-muted mb-1">Aucun destinataire trouvé</h5>
+                                        <p class="text-muted">Aucun résultat ne correspond à votre recherche</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted">Affichage de {{ destinataires|length }} destinataires</span>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if pagination is defined and pagination.totalPages > 1 %}
+                        <nav>
+                            <ul class="pagination mb-0">
+                                <li class="page-item {{ pagination.currentPage == 1 ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ path('app_destinataire_index', {'page': 1}) }}" aria-label="First">
+                                        <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
+                                    </a>
+                                </li>
+                                <li class="page-item {{ pagination.currentPage == 1 ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ path('app_destinataire_index', {'page': pagination.currentPage > 1 ? pagination.currentPage - 1 : 1}) }}" aria-label="Previous">
+                                        <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
+                                    </a>
+                                </li>
+                                
+                                {% for i in max(1, pagination.currentPage - 2)..min(pagination.totalPages, pagination.currentPage + 2) %}
+                                    <li class="page-item {{ pagination.currentPage == i ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ path('app_destinataire_index', {'page': i}) }}">{{ i }}</a>
+                                    </li>
+                                {% endfor %}
+                                
+                                <li class="page-item {{ pagination.currentPage == pagination.totalPages ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ path('app_destinataire_index', {'page': pagination.currentPage < pagination.totalPages ? pagination.currentPage + 1 : pagination.totalPages}) }}" aria-label="Next">
+                                        <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
+                                    </a>
+                                </li>
+                                <li class="page-item {{ pagination.currentPage == pagination.totalPages ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ path('app_destinataire_index', {'page': pagination.totalPages}) }}" aria-label="Last">
+                                        <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript pour la page -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser les tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+            
+            // Fonction pour cocher/décocher toutes les cases
+            const checkAllBox = document.getElementById('checkAll');
+            if (checkAllBox) {
+                checkAllBox.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('tbody .form-check-input');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = checkAllBox.checked;
+                    });
+                });
+            }
+        });
+    </script>
+{% endblock %}

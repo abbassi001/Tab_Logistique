@@ -1,0 +1,143 @@
+/* auth.css */
+
+/* Conteneur de login */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+    padding: 1rem;
+  }
+  
+  /* Carte de login */
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  }
+  
+  .login-header {
+    background: linear-gradient(45deg, #0d6efd, #0b5ed7);
+    padding: 25px 20px;
+    text-align: center;
+    color: white;
+  }
+  
+  .login-header h2 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.75rem;
+  }
+  
+  .login-body {
+    padding: 30px;
+  }
+  
+  .login-footer {
+    background: #f8f9fa;
+    padding: 15px;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+  
+  /* Logo et icônes améliorés */
+  .login-logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 15px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  }
+  
+  .login-logo i {
+    font-size: 2.5rem;
+    color: #0d6efd;
+  }
+  
+  /* Champs de formulaire */
+  .login-input-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .login-input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #495057;
+  }
+  
+  .login-input-icon {
+    position: relative;
+  }
+  
+  .login-input-icon i {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    color: #6c757d;
+  }
+  
+  .login-input-icon .form-control {
+    padding-left: 45px;
+    height: 50px;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  
+  /* Bouton de connexion */
+  .login-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #0d6efd, #0b5ed7);
+    border: none;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.25);
+  }
+  
+  .login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(13, 110, 253, 0.35);
+  }
+  
+  .login-btn:active {
+    transform: translateY(0);
+  }
+  
+  /* Lien mot de passe oublié */
+  .forgot-password {
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+  
+  .forgot-password a {
+    color: #0d6efd;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  .forgot-password a:hover {
+    text-decoration: underline;
+  }

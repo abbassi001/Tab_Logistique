@@ -1,0 +1,296 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un colis - Étape 6{% endblock %}
+
+{% block sidebar %}
+<nav class="col-md-2 d-none d-md-block sidebar">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_colis_index') }}">
+                    <i class="fas fa-list me-2"></i>Liste des Colis
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="#">
+                    <i class="fas fa-magic me-2"></i>Assistant de création
+                </a>
+            </li>
+        </ul>
+        
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span>Étapes</span>
+        </h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_colis_wizard_step1') }}">
+                    <i class="fas fa-box me-2"></i>1. Informations de base
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_colis_wizard_step2') }}">
+                    <i class="fas fa-paper-plane me-2"></i>2. Expéditeur
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_colis_wizard_step3') }}">
+                    <i class="fas fa-map-marker-alt me-2"></i>3. Destinataire
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_colis_wizard_step4') }}">
+                    <i class="fas fa-clipboard-list me-2"></i>4. Statut initial
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_colis_wizard_step5') }}">
+                    <i class="fas fa-truck me-2"></i>5. Transport
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active">
+                    <i class="fas fa-camera me-2"></i>6. Photos
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 7 ? '' : 'disabled' }}" href="{{ max_step >= 7 ? path('app_colis_wizard_step7') : '#' }}">
+                    <i class="fas fa-file-alt me-2"></i>7. Documents
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 8 ? '' : 'disabled' }}" href="{{ max_step >= 8 ? path('app_colis_wizard_review') : '#' }}">
+                    <i class="fas fa-check-circle me-2"></i>8. Vérification
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block main_class %}col-md-10{% endblock %}
+
+{% block body %}
+    <!-- Messages flash -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show mb-4" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="container-fluid mx-auto px-4 py-4">
+        <!-- Entête de la page -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-camera me-2 text-primary"></i>Création d'un nouveau colis</h1>
+                <p class="text-muted">Étape 6 sur 8 : Ajouter des photos</p>
+            </div>
+            
+            <!-- Indicateur de progression -->
+            <div class="progress-indicator" style="width: 15rem;">
+                <div class="progress">
+                    <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                </div>
+                <div class="text-end mt-1">
+                    <small class="text-muted">Étape 6/8</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte principale -->
+        <div class="card shadow-sm mb-4 border-primary border-top-0 border-end-0 border-bottom-0 border-3">
+            <div class="card-header bg-light py-3">
+                <h5 class="mb-0 fw-bold text-primary">
+                    <i class="fas fa-images me-2"></i>Photos du colis
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    Ajoutez des photos du colis pour faciliter son identification. Vous pouvez ajouter plusieurs photos avant de passer à l'étape suivante.
+                </p>
+                
+                <!-- Affichage des photos déjà ajoutées -->
+                {% if photos is defined and photos|length > 0 %}
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="fas fa-camera-retro me-2 text-primary"></i>Photos déjà ajoutées ({{ photos|length }})</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for photo in photos %}
+                                    <div class="col-md-3 mb-3">
+                                        <div class="card h-100 shadow-sm">
+                                            {% if photo.urlPhoto %}
+                                                <img src="{{ photo.urlPhoto }}" class="card-img-top" alt="Photo du colis" style="height: 150px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="card-img-top bg-light text-center py-5" style="height: 150px;">
+                                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div class="card-body p-2">
+                                                <p class="card-text small text-muted mb-0">
+                                                    <i class="fas fa-calendar-alt me-1"></i> {{ photo.dateUpload|date('d/m/Y H:i') }}
+                                                </p>
+                                                {% if photo.description %}
+                                                    <p class="card-text small mt-1">{{ photo.description|length > 50 ? photo.description|slice(0, 50) ~ '...' : photo.description }}</p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="card-footer p-2 bg-light">
+                                                <form method="post" action="{{ path('app_colis_wizard_photo_delete', {'index': loop.index0}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette photo?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete-photo') }}">
+                                                    <button type="submit" class="btn btn-sm btn-danger w-100">
+                                                        <i class="fas fa-trash-alt me-1"></i> Supprimer
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <!-- Formulaire pour ajouter une photo -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0"><i class="fas fa-plus-circle me-2 text-primary"></i>Ajouter une nouvelle photo</h6>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form, {'attr': {'id': 'wizard_form', 'class': 'needs-validation', 'enctype': 'multipart/form-data'}}) }}
+    <div class="row g-3">
+        <div class="col-md-6">
+            {% if form.file is defined %}
+            <div class="mb-3">
+                {{ form_label(form.file) }}
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fas fa-file-image"></i></span>
+                    {{ form_widget(form.file, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                {{ form_errors(form.file) }}
+                <div class="form-text">Formats acceptés : JPG, PNG, JPEG, GIF (max 5Mo)</div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-6">
+            {% if form.description is defined %}
+            <div class="mb-3">
+                {{ form_label(form.description) }}
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fas fa-align-left"></i></span>
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 3, 'placeholder': 'Description optionnelle pour cette photo...'}}) }}
+                </div>
+                {{ form_errors(form.description) }}
+                <div class="form-text">Description optionnelle pour identifier cette photo</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    {# Hide the colis field if it's present #}
+    {% if form.colis is defined %}
+        <div style="display: none;">
+            {{ form_widget(form.colis) }}
+        </div>
+    {% endif %}
+    
+    {# Render remaining fields except those already handled #}
+    {% for child in form %}
+        {% if child.vars.name != 'file' and child.vars.name != 'description' and child.vars.name != 'colis' %}
+            {{ form_row(child) }}
+        {% endif %}
+    {% endfor %}
+    
+    <div class="d-flex justify-content-end mt-3">
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-plus-circle me-2"></i>Ajouter cette photo
+        </button>
+    </div>
+{{ form_end(form, {'render_rest': false}) }}
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Vous pouvez ajouter plusieurs photos au colis. Les photos vous aideront à identifier le colis et à documenter son état.
+                </div>
+                
+                <!-- Boutons de navigation -->
+                <div class="mt-4 pt-4 border-top d-flex justify-content-between">
+                    <div>
+                        <a href="{{ path('app_colis_wizard_step5') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Précédent
+                        </a>
+                        
+                        <a href="{{ path('app_colis_wizard_cancel') }}" class="btn btn-outline-danger ms-2">
+                            <i class="fas fa-trash me-2"></i>Annuler la création
+                        </a>
+                    </div>
+                    
+                    <div>
+                        <a href="{{ path('app_colis_wizard_step7') }}" class="btn btn-primary">
+                            Suivant<i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialisation de la validation Bootstrap
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        });
+    });
+    
+    // Prévisualisation de l'image
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Si une prévisualisation existe déjà, la supprimer
+                    const existingPreview = document.querySelector('.file-preview');
+                    if (existingPreview) {
+                        existingPreview.remove();
+                    }
+                    
+                    // Créer un élément pour la prévisualisation
+                    const preview = document.createElement('div');
+                    preview.className = 'file-preview mt-2';
+                    preview.innerHTML = `
+                        <div class="card" style="max-width: 250px;">
+                            <img src="${e.target.result}" class="card-img-top" alt="Prévisualisation" style="max-height: 150px; object-fit: contain;">
+                            <div class="card-body p-2">
+                                <p class="card-text small text-muted mb-0">${file.name}</p>
+                                <p class="card-text small">${Math.round(file.size / 1024)} KB</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Insérer la prévisualisation après l'input
+                    fileInput.parentElement.parentElement.appendChild(preview);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,253 @@
+/* dashboard-cards.css */
+
+/* Conteneur de tableau de bord */
+.dashboard-container {
+    padding: 20px;
+  }
+  
+  /* Rangée de cartes statistiques */
+  .stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px 30px;
+  }
+  
+  /* Carte statistique individuelle */
+  .stat-card {
+    flex: 1;
+    min-width: 250px;
+    margin: 10px;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-card-body {
+    padding: 20px;
+    position: relative;
+  }
+  
+  .stat-card-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 3rem;
+    opacity: 0.1;
+    transition: all 0.3s;
+  }
+  
+  .stat-card:hover .stat-card-icon {
+    transform: scale(1.2);
+    opacity: 0.2;
+  }
+  
+  .stat-card-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6c757d;
+    margin-bottom: 10px;
+  }
+  
+  .stat-card-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+  
+  .stat-card-footer {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+  }
+  
+  .stat-trend-up {
+    color: #198754;
+    display: flex;
+    align-items: center;
+  }
+  
+  .stat-trend-down {
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+  }
+  
+  .stat-trend-up i, .stat-trend-down i {
+    margin-right: 5px;
+  }
+  
+  .stat-period {
+    margin-left: auto;
+    color: #6c757d;
+    font-size: 0.8rem;
+  }
+  
+  /* Variantes de couleurs pour les cartes */
+  .stat-card-primary .stat-card-value {
+    color: #0d6efd;
+  }
+  
+  .stat-card-success .stat-card-value {
+    color: #198754;
+  }
+  
+  .stat-card-warning .stat-card-value {
+    color: #ffc107;
+  }
+  
+  .stat-card-danger .stat-card-value {
+    color: #dc3545;
+  }
+  
+  .stat-card-info .stat-card-value {
+    color: #0dcaf0;
+  }
+  
+  /* Carte de graphique */
+  .chart-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  
+  .chart-card-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .chart-card-title {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .chart-card-title i {
+    margin-right: 10px;
+    color: #0d6efd;
+  }
+  
+  .chart-controls {
+    display: flex;
+    align-items: center;
+  }
+  
+  .chart-period-selector {
+    padding: 6px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background: white;
+    font-size: 0.9rem;
+    margin-left: 10px;
+  }
+  
+  .chart-card-body {
+    padding: 20px;
+    height: 300px;
+    position: relative;
+  }
+  
+  /* Carte d'activité récente */
+  .activity-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  
+  .activity-card-header {
+    padding: 20px;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .activity-card-title {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .activity-card-title i {
+    margin-right: 10px;
+    color: #0d6efd;
+  }
+  
+  .activity-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  
+  .activity-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .activity-item:last-child {
+    border-bottom: none;
+  }
+  
+  .activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: white;
+    flex-shrink: 0;
+  }
+  
+  .activity-content {
+    flex-grow: 1;
+  }
+  
+  .activity-title {
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+  
+  .activity-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+  
+  /* Couleurs des icônes d'activité */
+  .activity-icon-primary {
+    background-color: #0d6efd;
+  }
+  
+  .activity-icon-success {
+    background-color: #198754;
+  }
+  
+  .activity-icon-warning {
+    background-color: #ffc107;
+  }
+  
+  .activity-icon-danger {
+    background-color: #dc3545;
+  }
+  
+  .activity-icon-info {
+    background-color: #0dcaf0;
+  }

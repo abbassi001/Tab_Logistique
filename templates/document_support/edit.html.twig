@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit DocumentSupport{% endblock %}
+
+{% block body %}
+    <h1>Edit DocumentSupport</h1>
+
+    {{ include('document_support/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_document_support_index') }}">back to list</a>
+
+    {{ include('document_support/_delete_form.html.twig') }}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New DocumentSupport{% endblock %}
+
+{% block body %}
+    <h1>Create new DocumentSupport</h1>
+
+    {{ include('document_support/_form.html.twig') }}
+
+    <a href="{{ path('app_document_support_index') }}">back to list</a>
+{% endblock %}

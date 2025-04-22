@@ -1,0 +1,107 @@
+/* print-extended.css */
+
+@media print {
+    /* Page de couverture */
+    .print-cover-page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      page-break-after: always;
+    }
+  
+    .print-cover-logo {
+      max-width: 200px;
+      margin-bottom: 3cm;
+    }
+  
+    .print-cover-title {
+      font-size: 24pt;
+      font-weight: bold;
+      margin-bottom: 1cm;
+    }
+  
+    .print-cover-subtitle {
+      font-size: 16pt;
+      margin-bottom: 2cm;
+    }
+  
+    .print-cover-datetime {
+      font-size: 12pt;
+      font-style: italic;
+    }
+  
+    /* En-tête de document amélioré */
+    .print-doc-header {
+      border-bottom: 1pt solid #000;
+      margin-bottom: 1cm;
+      padding-bottom: 0.5cm;
+      display: flex;
+      justify-content: space-between;
+    }
+  
+    .print-doc-title {
+      font-size: 16pt;
+      font-weight: bold;
+    }
+  
+    /* Tableau amélioré pour impression */
+    .print-enhanced-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1cm;
+    }
+  
+    .print-enhanced-table th {
+      background-color: #f2f2f2 !important;
+      border: 1pt solid #ddd;
+      padding: 0.5cm;
+      font-weight: bold;
+      text-align: left;
+    }
+  
+    .print-enhanced-table td {
+      border: 1pt solid #ddd;
+      padding: 0.3cm 0.5cm;
+    }
+  
+    .print-enhanced-table tr:nth-child(even) {
+      background-color: #f9f9f9 !important;
+    }
+  
+    /* Section spéciale */
+    .print-section {
+      margin-bottom: 1cm;
+      page-break-inside: avoid;
+    }
+  
+    .print-section-title {
+      font-size: 14pt;
+      font-weight: bold;
+      margin-bottom: 0.5cm;
+      padding-bottom: 0.2cm;
+      border-bottom: 1pt solid #000;
+    }
+  
+    /* Notes et signature */
+    .print-notes {
+      margin-top: 2cm;
+      padding-top: 0.5cm;
+      border-top: 1pt dotted #000;
+    }
+  
+    .print-signature-area {
+      margin-top: 2cm;
+      display: flex;
+      justify-content: space-between;
+    }
+  
+    .print-signature-box {
+      border-top: 1pt solid #000;
+      width: 45%;
+      padding-top: 0.2cm;
+      text-align: center;
+    }
+  }

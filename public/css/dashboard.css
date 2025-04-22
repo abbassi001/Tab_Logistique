@@ -1,0 +1,103 @@
+/* dashboard.css */
+
+/* Carte de détails */
+.detail-card {
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    margin-bottom: 1.5rem;
+    border: none;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+  }
+  
+  .detail-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .detail-card-header {
+    background: linear-gradient(45deg, #0d6efd, #0b5ed7);
+    color: white;
+    padding: 15px 20px;
+    font-weight: 600;
+  }
+  
+  .detail-card-body {
+    padding: 20px;
+  }
+  
+  /* Tableau de détails */
+  .detail-table {
+    width: 100%;
+  }
+  
+  .detail-table th {
+    width: 30%;
+    background-color: #f8f9fa;
+    padding: 12px 15px;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .detail-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  /* Groupe de boutons d'action */
+  .action-button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 1.5rem;
+  }
+  
+  /* Style de badge avec icône */
+  .icon-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  .icon-badge i {
+    margin-right: 5px;
+  }
+  
+  /* Carte de statistiques */
+  .stat-card {
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+    margin-bottom: 1.5rem;
+    background: white;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0d6efd;
+    margin-bottom: 0.5rem;
+  }
+  
+  .stat-card-title {
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .stat-card-icon {
+    float: right;
+    font-size: 3rem;
+    opacity: 0.2;
+    margin-top: -1rem;
+  }

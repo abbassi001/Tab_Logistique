@@ -1,0 +1,90 @@
+/* admin-user.css */
+
+/* Titre de la page avec bordure inférieure */
+.admin-title {
+    position: relative;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .admin-title:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 2px;
+  }
+  
+  /* Tableau amélioré */
+  .admin-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .admin-table thead th {
+    background-color: #f8f9fa;
+    padding: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: #495057;
+    border-bottom: 2px solid #e9ecef;
+  }
+  
+  .admin-table tbody tr {
+    transition: background-color 0.2s;
+  }
+  
+  .admin-table tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.04);
+  }
+  
+  .admin-table tbody td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  /* Badge pour statut de liaison */
+  .badge-linked {
+    background-color: #198754;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .badge-unlinked {
+    background-color: #6c757d;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .badge-linked i, .badge-unlinked i {
+    margin-right: 5px;
+  }
+  
+  /* Bouton de liaison */
+  .btn-link-employe {
+    transition: all 0.3s;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(13, 110, 253, 0.1);
+  }
+  
+  .btn-link-employe:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2);
+  }

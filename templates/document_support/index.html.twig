@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DocumentSupport index{% endblock %}
+
+{% block body %}
+    <h1>DocumentSupport index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom_fichier</th>
+                <th>Type_document</th>
+                <th>Date_upload</th>
+                <th>Chemin_stockage</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for document_support in document_supports %}
+            <tr>
+                <td>{{ document_support.id }}</td>
+                <td>{{ document_support.nomFichier }}</td>
+                <td>{{ document_support.typeDocument }}</td>
+                <td>{{ document_support.dateUpload ? document_support.dateUpload|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ document_support.cheminStockage }}</td>
+                <td>
+                    <a href="{{ path('app_document_support_show', {'id': document_support.id}) }}">show</a>
+                    <a href="{{ path('app_document_support_edit', {'id': document_support.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_document_support_new') }}">Create new</a>
+{% endblock %}

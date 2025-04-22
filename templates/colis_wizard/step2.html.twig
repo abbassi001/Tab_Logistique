@@ -1,0 +1,294 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un colis - Étape 2{% endblock %}
+
+{% block sidebar %}
+<nav class="col-md-2 d-none d-md-block sidebar">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_colis_index') }}">
+                    <i class="fas fa-list me-2"></i>Liste des Colis
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="#">
+                    <i class="fas fa-magic me-2"></i>Assistant de création
+                </a>
+            </li>
+        </ul>
+        
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span>Étapes</span>
+        </h6>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_colis_wizard_step1') }}">
+                    <i class="fas fa-box me-2"></i>1. Informations de base
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active">
+                    <i class="fas fa-paper-plane me-2"></i>2. Expéditeur
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 3 ? '' : 'disabled' }}" href="{{ max_step >= 3 ? path('app_colis_wizard_step3') : '#' }}">
+                    <i class="fas fa-map-marker-alt me-2"></i>3. Destinataire
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 4 ? '' : 'disabled' }}" href="{{ max_step >= 4 ? path('app_colis_wizard_step4') : '#' }}">
+                    <i class="fas fa-clipboard-list me-2"></i>4. Statut initial
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 5 ? '' : 'disabled' }}" href="{{ max_step >= 5 ? path('app_colis_wizard_step5') : '#' }}">
+                    <i class="fas fa-truck me-2"></i>5. Transport
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 6 ? '' : 'disabled' }}" href="{{ max_step >= 6 ? path('app_colis_wizard_step6') : '#' }}">
+                    <i class="fas fa-camera me-2"></i>6. Photos
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 7 ? '' : 'disabled' }}" href="{{ max_step >= 7 ? path('app_colis_wizard_step7') : '#' }}">
+                    <i class="fas fa-file-alt me-2"></i>7. Documents
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ max_step >= 8 ? '' : 'disabled' }}" href="{{ max_step >= 8 ? path('app_colis_wizard_review') : '#' }}">
+                    <i class="fas fa-check-circle me-2"></i>8. Vérification
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block main_class %}col-md-10{% endblock %}
+
+{% block body %}
+    <!-- Messages flash -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show mb-4" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="container-fluid mx-auto px-4 py-4">
+        <!-- Entête de la page -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-paper-plane me-2 text-primary"></i>Création d'un nouveau colis</h1>
+                <p class="text-muted">Étape 2 sur 8 : Informations de l'expéditeur</p>
+            </div>
+            
+            <!-- Indicateur de progression -->
+            <div class="progress-indicator" style="width: 15rem;">
+                <div class="progress">
+                    <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                </div>
+                <div class="text-end mt-1">
+                    <small class="text-muted">Étape 2/8</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte principale -->
+        <div class="card shadow-sm mb-4 border-primary border-top-0 border-end-0 border-bottom-0 border-3">
+            <div class="card-header bg-light py-3">
+                <h5 class="mb-0 fw-bold text-primary">
+                    <i class="fas fa-user-edit me-2"></i>Informations de l'expéditeur
+                </h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'id': 'wizard_form', 'class': 'needs-validation'}}) }}
+                
+                <div class="row g-3">
+                    <!-- Première colonne -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="fas fa-id-card me-2 text-primary"></i>Identité</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ form_label(form.nom_entreprise_individu) }}                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                                        {{ form_widget(form.nom_entreprise_individu, {'attr': {'class': 'form-control', 'placeholder': 'Nom'}}) }}
+                                    </div>
+                                    {{ form_errors(form.nom_entreprise_individu) }}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    {{ form_label(form.email) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-envelope"></i></span>
+                                        {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Email'}}) }}
+                                    </div>
+                                    {{ form_errors(form.email) }}
+                                </div>
+                                
+                                <div class="mb-0">
+                                    {{ form_label(form.telephone) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-phone"></i></span>
+                                        {{ form_widget(form.telephone, {'attr': {'class': 'form-control', 'placeholder': 'Téléphone'}}) }}
+                                    </div>
+                                    {{ form_errors(form.telephone) }}
+                                    <div class="form-text">Numéro de téléphone joignable en cas de besoin.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Deuxième colonne -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Adresse</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ form_label(form.pays) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-globe"></i></span>
+                                        {{ form_widget(form.pays, {'attr': {'class': 'form-select', 'id': 'country'}}) }}
+                                    </div>
+                                    {{ form_errors(form.pays) }}
+                                </div>
+                                
+                                <div class="mb-0">
+                                    {{ form_label(form.adresse_complete) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-home"></i></span>
+                                        {{ form_widget(form.adresse_complete, {'attr': {'class': 'form-control', 'rows': 3, 'placeholder': 'Adresse complète'}}) }}
+                                    </div>
+                                    {{ form_errors(form.adresse_complete) }}
+                                    <div class="form-text">Adresse complète incluant la rue, la ville, le code postal et le pays.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {# Capture uniquement le jeton CSRF et autres champs cachés #}
+                {{ form_rest(form) }}
+                
+                <!-- Boutons de navigation intégrés directement dans le formulaire -->
+                <div class="mt-4 pt-4 border-top d-flex justify-content-between">
+                    <div>
+                        <a href="{{ path('app_colis_wizard_step1') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Précédent
+                        </a>
+                        
+                        <a href="{{ path('app_colis_wizard_cancel') }}" class="btn btn-outline-danger ms-2">
+                            <i class="fas fa-trash me-2"></i>Annuler la création
+                        </a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        Suivant<i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+                
+                {{ form_end(form, {'render_rest': false}) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fonction pour peupler la liste des pays
+    const countrySelect = document.getElementById('country');
+    
+    if (countrySelect) {
+        // Array of countries
+        const countries = [
+            "Afghanistan", "Afrique du Sud", "Albanie", "Algérie", "Allemagne", "Andorre", "Angola", "Antigua-et-Barbuda", "Arabie Saoudite", 
+            "Argentine", "Arménie", "Australie", "Autriche", "Azerbaïdjan", "Bahamas", "Bahreïn", "Bangladesh", "Barbade", "Belgique", 
+            "Belize", "Bénin", "Bhoutan", "Biélorussie", "Birmanie", "Bolivie", "Bosnie-Herzégovine", "Botswana", "Brésil", "Brunei", 
+            "Bulgarie", "Burkina Faso", "Burundi", "Cambodge", "Cameroun", "Canada", "Cap-Vert", "Chili", "Chine", "Chypre", "Colombie", 
+            "Comores", "Congo", "Corée du Nord", "Corée du Sud", "Costa Rica", "Côte d'Ivoire", "Croatie", "Cuba", "Danemark", "Djibouti", 
+            "Dominique", "Égypte", "Émirats arabes unis", "Équateur", "Érythrée", "Espagne", "Estonie", "Eswatini", "États-Unis", "Éthiopie", 
+            "Fidji", "Finlande", "France", "Gabon", "Gambie", "Géorgie", "Ghana", "Grèce", "Grenade", "Guatemala", "Guinée", "Guinée-Bissau", 
+            "Guinée équatoriale", "Guyana", "Haïti", "Honduras", "Hongrie", "Îles Marshall", "Îles Salomon", "Inde", "Indonésie", "Irak", 
+            "Iran", "Irlande", "Islande", "Israël", "Italie", "Jamaïque", "Japon", "Jordanie", "Kazakhstan", "Kenya", "Kirghizistan", 
+            "Kiribati", "Koweït", "Laos", "Lesotho", "Lettonie", "Liban", "Liberia", "Libye", "Liechtenstein", "Lituanie", "Luxembourg", 
+            "Macédoine du Nord", "Madagascar", "Malaisie", "Malawi", "Maldives", "Mali", "Malte", "Maroc", "Maurice", "Mauritanie", "Mexique", 
+            "Micronésie", "Moldavie", "Monaco", "Mongolie", "Monténégro", "Mozambique", "Namibie", "Nauru", "Népal", "Nicaragua", "Niger", 
+            "Nigeria", "Norvège", "Nouvelle-Zélande", "Oman", "Ouganda", "Ouzbékistan", "Pakistan", "Palaos", "Palestine", "Panama", 
+            "Papouasie-Nouvelle-Guinée", "Paraguay", "Pays-Bas", "Pérou", "Philippines", "Pologne", "Portugal", "Qatar", 
+            "République centrafricaine", "République démocratique du Congo", "République dominicaine", "République tchèque", "Roumanie", 
+            "Royaume-Uni", "Russie", "Rwanda", "Saint-Kitts-et-Nevis", "Saint-Marin", "Saint-Vincent-et-les-Grenadines", "Sainte-Lucie", 
+            "Salvador", "Samoa", "São Tomé-et-Principe", "Sénégal", "Serbie", "Seychelles", "Sierra Leone", "Singapour", "Slovaquie", 
+            "Slovénie", "Somalie", "Soudan", "Soudan du Sud", "Sri Lanka", "Suède", "Suisse", "Suriname", "Syrie", "Tadjikistan", "Tanzanie", 
+            "Tchad", "Thaïlande", "Timor oriental", "Togo", "Tonga", "Trinité-et-Tobago", "Tunisie", "Turkménistan", "Turquie", "Tuvalu", 
+            "Ukraine", "Uruguay", "Vanuatu", "Vatican", "Venezuela", "Vietnam", "Yémen", "Zambie", "Zimbabwe"
+        ];
+        
+        // Vérifier si le select est déjà peuplé (peut-être déjà géré par Symfony)
+        if (countrySelect.options.length <= 1) {
+            // Trier alphabétiquement
+            countries.sort();
+            
+            // Si vide, ajouter l'option par défaut
+            if (countrySelect.options.length === 0) {
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Sélectionnez un pays';
+                defaultOption.selected = true;
+                countrySelect.appendChild(defaultOption);
+            }
+            
+            // Ajouter les pays
+            countries.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+        }
+    }
+    
+    // Validation du formulaire au moment de la soumission
+    const form = document.getElementById('wizard_form');
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            if (!this.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            this.classList.add('was-validated');
+        });
+    }
+});
+</script>
+{% endblock %}
+
+{% block page_scripts %}
+    <script>
+        // Code JavaScript spécifique à cette page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialisation de la validation Bootstrap
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                });
+            });
+        });
+    </script>
+{% endblock %}
