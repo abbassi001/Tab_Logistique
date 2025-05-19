@@ -9,7 +9,7 @@ use App\Entity\DocumentSupport;
 use App\Entity\Expediteur;
 use App\Entity\Photo;
 use App\Entity\Statut;
-use App\Entity\Employe;
+use App\Entity\User;
 use App\Entity\Transport;
 use App\Enum\StatusType;
 use App\Form\ColisBasicType;
@@ -28,7 +28,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use App\Repository\EmployeRepository;
+use App\Repository\UserRepository;
 use App\Entity\Warehouse; // Add this line to import the Warehouse class
 
 #[Route('/colis-wizard')]
@@ -276,138 +276,134 @@ final class ColisWizardController extends AbstractController
         ]);
     }
 
-/**
- * Step 4: Configurer le statut initial du colis
- */
-#[Route('/step4', name: 'app_colis_wizard_step4')]
-public function step4(Request $request, SessionInterface $session, EmployeRepository $employeRepository): Response
-{
-    // Récupérer les données du wizard en session
-    $wizardData = $session->get(self::SESSION_KEY, [
-        'current_step' => 1,
-        'max_step' => 1,
-        'colis' => [],
-        'expediteur' => [],
-        'destinataire' => [],
-        'statut' => [],
-        'transport' => [],
-        'photos' => [],
-        'documents' => []
-    ]);
 
-    // Vérifier que les étapes précédentes ont été complétées
-    if (!isset($wizardData['colis']) || !isset($wizardData['expediteur']) || !isset($wizardData['destinataire'])) {
-        $this->addFlash('error', 'Veuillez compléter les étapes précédentes.');
-        return $this->redirectToRoute('app_colis_wizard_step1');
-    }
+    // Dans la méthode step4 du ColisWizardController
 
-    // Créer un objet Statut à partir des données en session ou en créer un nouveau
-    $statut = new Statut();
-    $statut->setDateStatut(new \DateTime());
-    $statut->setTypeStatut(StatusType::EN_ATTENTE); // Statut par défaut
-    
-    if (isset($wizardData['statut']['type_statut'])) {
-        $statut->setTypeStatut(StatusType::from($wizardData['statut']['type_statut']));
-    }
-    
-    if (isset($wizardData['statut']['date_statut'])) {
-        $statut->setDateStatut(new \DateTime($wizardData['statut']['date_statut']));
-    }
-    
-    if (isset($wizardData['statut']['localisation'])) {
-        $statut->setLocalisation($wizardData['statut']['localisation']);
-    }
-    
-    // Récupérer l'employé associé à l'utilisateur
-    $employe = null;
-    $formOptions = ['wizard_mode' => true, 'use_warehouse_selector' => true];
-    
-    if ($this->getUser()) {
-        $user = $this->getUser();
-        if ($user instanceof \App\Entity\User && method_exists($user, 'getEmail')) {
-            $email = $user->getEmail();
-        } else {
-            throw new \LogicException('The current user does not have an email address.');
+    /**
+     * Step 4: Configurer le statut initial du colis
+     */
+    #[Route('/step4', name: 'app_colis_wizard_step4')]
+    public function step4(Request $request, SessionInterface $session, UserRepository $userRepository): Response
+    {
+        // Récupérer les données du wizard en session
+        $wizardData = $session->get(self::SESSION_KEY, [
+            'current_step' => 1,
+            'max_step' => 1,
+            'colis' => [],
+            'expediteur' => [],
+            'destinataire' => [],
+            'statut' => [],
+            'transport' => [],
+            'photos' => [],
+            'documents' => []
+        ]);
+
+        // Vérifier que les étapes précédentes ont été complétées
+        if (!isset($wizardData['colis']) || !isset($wizardData['expediteur']) || !isset($wizardData['destinataire'])) {
+            $this->addFlash('error', 'Veuillez compléter les étapes précédentes.');
+            return $this->redirectToRoute('app_colis_wizard_step1');
         }
-        $employe = $employeRepository->findOneBy(['email' => $email]);
-        
-        if ($employe) {
-            // Si l'employé a été trouvé, l'associer au statut et désactiver le champ dans le formulaire
-            $statut->setEmploye($employe);
-            $formOptions['employe_disabled'] = true;
-            
-            // Si un employé était déjà sélectionné en session
-            if (isset($wizardData['statut']['employe_id'])) {
-                $employeId = $wizardData['statut']['employe_id'];
-                $savedEmploye = $employeRepository->find($employeId);
-                if ($savedEmploye) {
-                    $statut->setEmploye($savedEmploye);
-                }
-            }
-        } else {
-            $formOptions['wizard_mode'] = true;
-            $this->addFlash('warning', 'Votre compte utilisateur n\'est pas associé à un employé. Veuillez contacter un administrateur.');
-        }
-    }
 
-    $form = $this->createForm(StatutType::class, $statut, $formOptions);
-    $form->handleRequest($request);
+        // Créer un objet Statut à partir des données en session ou en créer un nouveau
+        $statut = new Statut();
+        $statut->setDateStatut(new \DateTime());
+        $statut->setTypeStatut(StatusType::EN_ATTENTE); // Statut par défaut
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        // S'assurer que l'employé est toujours associé (au cas où)
-        if ($employe && !$statut->getEmploye()) {
-            $statut->setEmploye($employe);
+        if (isset($wizardData['statut']['type_statut'])) {
+            $statut->setTypeStatut(StatusType::from($wizardData['statut']['type_statut']));
         }
-        
-        // Gestion de la localisation spéciale avec le sélecteur d'entrepôt
-        if ($request->request->has('statut') && isset($request->request->all('statut')['warehouse'])) {
-            $warehouseId = $request->request->all('statut')['warehouse'];
-            if (!empty($warehouseId)) {
-                $warehouse = $this->entityManager->getRepository(Warehouse::class)->find($warehouseId);
-                
-                if ($warehouse) {
-                    // Formater la localisation avec les données de l'entrepôt
-                    // Attention aux méthodes d'accès - assurez-vous qu'elles correspondent à votre entité
-                    $localisation = sprintf(
-                        "Entrepôt: %s - %s", 
-                        $warehouse->getCodeUt(), 
-                        $warehouse->getAdresseWarehouse()
-                    );
-                    
-                    if ($warehouse->getNomEntreprise()) {
-                        $localisation .= sprintf(" (%s)", $warehouse->getNomEntreprise());
+
+        if (isset($wizardData['statut']['date_statut'])) {
+            $statut->setDateStatut(new \DateTime($wizardData['statut']['date_statut']));
+        }
+
+        if (isset($wizardData['statut']['localisation'])) {
+            $statut->setLocalisation($wizardData['statut']['localisation']);
+        }
+
+        // Récupérer l'utilisateur associé à la session
+        $user = null;
+        $formOptions = ['wizard_mode' => true, 'use_warehouse_selector' => true];
+
+        if ($this->getUser()) {
+            $user = $this->getUser();
+
+            if ($user) {
+                // Associer l'utilisateur au statut
+                $statut->setUser($user);
+                $formOptions['user_disabled'] = true;
+
+                // Si un utilisateur était déjà sélectionné en session
+                if (isset($wizardData['statut']['user_id'])) {
+                    $userId = $wizardData['statut']['user_id'];
+                    $savedUser = $userRepository->find($userId);
+                    if ($savedUser) {
+                        $statut->setUser($savedUser);
                     }
-                    
-                    $statut->setLocalisation($localisation);
                 }
+            } else {
+                $formOptions['wizard_mode'] = true;
+                $this->addFlash('warning', 'Votre compte utilisateur n\'est pas disponible. Veuillez contacter un administrateur.');
             }
         }
-        
-        // Stocker les données du statut en session
-        $wizardData['statut'] = [
-            'type_statut' => $statut->getTypeStatut()->value,
-            'date_statut' => $statut->getDateStatut()->format('Y-m-d H:i:s'),
-            'localisation' => $statut->getLocalisation(),
-            'employe_id' => $statut->getEmploye() ? $statut->getEmploye()->getId() : null
-        ];
 
-        $wizardData['current_step'] = 5;
-        if ($wizardData['max_step'] < 5) {
-            $wizardData['max_step'] = 5;
+        $form = $this->createForm(StatutType::class, $statut, $formOptions);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // S'assurer que l'utilisateur est toujours associé (au cas où)
+            if ($user && !$statut->getUser()) {
+                $statut->setUser($user);
+            }
+
+            // Gestion de la localisation spéciale avec le sélecteur d'entrepôt
+            if ($request->request->has('statut') && isset($request->request->all('statut')['warehouse'])) {
+                $warehouseId = $request->request->all('statut')['warehouse'];
+                if (!empty($warehouseId)) {
+                    $warehouse = $this->entityManager->getRepository(Warehouse::class)->find($warehouseId);
+
+                    if ($warehouse) {
+                        // Formater la localisation avec les données de l'entrepôt
+                        $localisation = sprintf(
+                            "Entrepôt: %s - %s",
+                            $warehouse->getCodeUt(),
+                            $warehouse->getAdresseWarehouse()
+                        );
+
+                        if ($warehouse->getNomEntreprise()) {
+                            $localisation .= sprintf(" (%s)", $warehouse->getNomEntreprise());
+                        }
+
+                        $statut->setLocalisation($localisation);
+                    }
+                }
+            }
+
+            // Stocker les données du statut en session
+            $wizardData['statut'] = [
+                'type_statut' => $statut->getTypeStatut()->value,
+                'date_statut' => $statut->getDateStatut()->format('Y-m-d H:i:s'),
+                'localisation' => $statut->getLocalisation(),
+                'user_id' => $statut->getUser() ? $statut->getUser()->getId() : null
+            ];
+
+            $wizardData['current_step'] = 5;
+            if ($wizardData['max_step'] < 5) {
+                $wizardData['max_step'] = 5;
+            }
+
+            $session->set(self::SESSION_KEY, $wizardData);
+
+            return $this->redirectToRoute('app_colis_wizard_step5');
         }
 
-        $session->set(self::SESSION_KEY, $wizardData);
-
-        return $this->redirectToRoute('app_colis_wizard_step5');
+        return $this->render('colis_wizard/step4.html.twig', [
+            'form' => $form,
+            'user' => $user, // Passer l'utilisateur au template
+            'current_step' => 4,
+            'max_step' => $wizardData['max_step']
+        ]);
     }
-
-    return $this->render('colis_wizard/step4.html.twig', [
-        'form' => $form,
-        'employe' => $employe, // Passer l'employé au template
-        'current_step' => 4,
-        'max_step' => $wizardData['max_step']
-    ]);
-}
 
 
 
@@ -705,7 +701,7 @@ public function step4(Request $request, SessionInterface $session, EmployeReposi
                 'type_statut' => $colis->getStatuts()[0]->getTypeStatut()->value,
                 'date_statut' => $colis->getStatuts()[0]->getDateStatut()->format('Y-m-d H:i:s'),
                 'localisation' => $colis->getStatuts()[0]->getLocalisation(),
-                'employe_id' => $colis->getStatuts()[0]->getEmploye() ? $colis->getStatuts()[0]->getEmploye()->getId() : null
+                'User_id' => $colis->getStatuts()[0]->getUser() ? $colis->getStatuts()[0]->getUser()->getId() : null
             ] : [],
             'transport' => $colis->getColisTransports() && count($colis->getColisTransports()) > 0 ? [
                 'type_transport' => $colis->getColisTransports()[0]->getTransport()->getTypeTransport(),
@@ -754,7 +750,7 @@ public function step4(Request $request, SessionInterface $session, EmployeReposi
 
     // Modifier la méthode save pour prendre en compte l'édition
     #[Route('/save', name: 'app_colis_wizard_save', methods: ['GET'])]
-    public function save(EntityManagerInterface $entityManager, SessionInterface $session, EmployeRepository $employeRepository): Response
+    public function save(EntityManagerInterface $entityManager, SessionInterface $session, UserRepository $userRepository): Response
     {
         $wizardData = $this->getWizardData($session);
 
@@ -865,28 +861,6 @@ public function step4(Request $request, SessionInterface $session, EmployeReposi
             } else {
                 // Code existant pour la création
 
-
-                // 4. Créer le statut initial
-                // if (!empty($wizardData['statut'])) {
-                //     $statut = new Statut();
-                //     $statut->setTypeStatut(StatusType::from($wizardData['statut']['type_statut']));
-                //     $statut->setDateStatut(new \DateTime($wizardData['statut']['date_statut']));
-                //     $statut->setLocalisation($wizardData['statut']['localisation']);
-                //     $statut->setColis($colis); // Associer le statut au nouveau colis
-
-                //     // Gérer l'employé si nécessaire
-                //     if (isset($wizardData['statut']['employe_id']) && $wizardData['statut']['employe_id']) {
-                //         $employe = $entityManager->getRepository(Employe::class)->find($wizardData['statut']['employe_id']);
-                //         if ($employe) {
-                //             $statut->setEmploye($employe);
-                //         }
-                //     }
-
-                //     $entityManager->persist($statut);
-                // }
-
-                // Dans la méthode save, modifiez la section de création du statut:
-
                 // 4. Créer le statut initial
                 if (!empty($wizardData['statut'])) {
                     $statut = new Statut();
@@ -895,22 +869,17 @@ public function step4(Request $request, SessionInterface $session, EmployeReposi
                     $statut->setLocalisation($wizardData['statut']['localisation']);
                     $statut->setColis($colis); // Associer le statut au nouveau colis
 
-                    // Récupérer l'employé depuis les données du wizard
-                    if (isset($wizardData['statut']['employe_id']) && $wizardData['statut']['employe_id']) {
-                        $employe = $entityManager->getRepository(Employe::class)->find($wizardData['statut']['employe_id']);
-                        if ($employe) {
-                            $statut->setEmploye($employe);
+                    // Récupérer l'utilisateur depuis les données du wizard
+                    if (isset($wizardData['statut']['user_id']) && $wizardData['statut']['user_id']) {
+                        $user = $userRepository->find($wizardData['statut']['user_id']);
+                        if ($user) {
+                            $statut->setUser($user);
                         }
                     } else {
-                        // Si pas d'employé dans le wizard, utiliser l'utilisateur connecté
+                        // Si pas d'utilisateur dans le wizard, utiliser l'utilisateur connecté
                         $user = $this->getUser();
-                        if ($user instanceof \App\Entity\User && method_exists($user, 'getEmploye') && $user->getEmploye()) {
-                            $statut->setEmploye($user->getEmploye());
-                        } else if ($user instanceof \App\Entity\User) {
-                            $employe = $employeRepository->findOneByEmail($user->getEmail());
-                            if ($employe) {
-                                $statut->setEmploye($employe);
-                            }
+                        if ($user instanceof User) {
+                            $statut->setUser($user);
                         }
                     }
 
@@ -989,6 +958,7 @@ public function step4(Request $request, SessionInterface $session, EmployeReposi
             return $this->redirectToRoute('app_colis_wizard_review');
         }
     }
+
 
     #[Route('/cancel', name: 'app_colis_wizard_cancel', methods: ['GET'])]
     public function cancel(SessionInterface $session): Response

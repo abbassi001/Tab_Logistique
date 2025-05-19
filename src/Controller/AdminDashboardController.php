@@ -9,7 +9,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ColisRepository;
 use App\Repository\UserRepository;
-use App\Repository\EmployeRepository;
 use App\Repository\ExpediteurRepository;
 use App\Repository\DestinataireRepository;
 use App\Repository\StatutRepository;
@@ -33,7 +32,7 @@ class AdminDashboardController extends AbstractController
     public function index(
         ColisRepository $colisRepository,
         UserRepository $userRepository,
-        EmployeRepository $employeRepository,
+        UserRepository $UserRepository,
         ExpediteurRepository $expediteurRepository,
         DestinataireRepository $destinataireRepository,
         StatutRepository $statutRepository,
@@ -53,8 +52,8 @@ class AdminDashboardController extends AbstractController
                 'total' => $userRepository->count([]),
                 'active' => $userRepository->count(['isActive' => true]),
             ],
-            'employes' => [
-                'total' => $employeRepository->count([]),
+            'Users' => [
+                'total' => $UserRepository->count([]),
             ],
             'expediteurs' => [
                 'total' => $expediteurRepository->count([]),

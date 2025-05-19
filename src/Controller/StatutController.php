@@ -30,14 +30,14 @@ class StatutController extends AbstractController
     {
         $statut = new Statut();
         
-        // Get the current user's employee if available
+        // Get the current user's Usere if available
         $user = $this->getUser();
-        if ($user instanceof \App\Entity\User && method_exists($user, 'getEmploye') && $user->getEmploye()) {
-            $statut->setEmploye($user->getEmploye());
+        if ($user instanceof \App\Entity\User) {
+            $statut->setUser($user); // Assuming $user is the correct entity to set
         }
         
         $form = $this->createForm(StatutType::class, $statut, [
-            'employe_disabled' => $user instanceof \App\Entity\User && $user->getEmploye() !== null,
+            'User_disabled' => $user instanceof \App\Entity\User ,
         ]);
         $form->handleRequest($request);
 
@@ -68,17 +68,17 @@ class StatutController extends AbstractController
     {
         // Check if the current user is allowed to edit
         $user = $this->getUser();
-        $canEditEmploye = true;
+        $canEditUser = true;
         
-        if ($user instanceof \App\Entity\User && method_exists($user, 'getEmploye')) {
-            // If user has an employee linked and it's already set on the status
-            if ($user->getEmploye() && $statut->getEmploye() && $statut->getEmploye()->getId() === $user->getEmploye()->getId()) {
-                $canEditEmploye = false; 
+        if ($user instanceof \App\Entity\User && method_exists($user, 'getUser')) {
+            // If user has an Usere linked and it's already set on the status
+            if ($statut->getUser() && $statut->getUser()->getId() === $user->getId()) {
+                $canEditUser = false; 
             }
         }
         
         $form = $this->createForm(StatutType::class, $statut, [
-            'employe_disabled' => !$canEditEmploye
+            'User_disabled' => !$canEditUser
         ]);
         $form->handleRequest($request);
 

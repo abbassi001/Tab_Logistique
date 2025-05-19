@@ -116,7 +116,7 @@
                                         <li><a class="dropdown-item" href="#"><i class="fas fa-id-card me-2"></i>Mon profil</a></li>
                                         {% if is_granted('ROLE_ADMIN') %}
                                             <li><a class="dropdown-item" href="{{ path('app_register') }}"><i class="fas fa-user-plus me-2"></i>Créer un utilisateur</a></li>
-                                            <li><a class="dropdown-item" href="{{ path('app_employe_index') }}"><i class="fas fa-users me-2"></i>Gestion des employés</a></li>
+                                            <li><a class="dropdown-item" href="{{ path('app_user_index') }}"><i class="fas fa-users me-2"></i>Gestion des employés</a></li>
                                             <li><a class="dropdown-item" href="{{ path('app_departement_index') }}"><i class="fas fa-building me-2"></i>Départements</a></li>
                                         {% endif %}
                                         <li><hr class="dropdown-divider"></li>

@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Colis;
-use App\Entity\Employe;
+use App\Entity\User;
 use App\Entity\Statut;
 use App\Entity\Warehouse;
 use App\Enum\StatusType;
@@ -40,7 +40,7 @@ class StatutType extends AbstractType
                 'placeholder' => 'Sélectionnez un statut'
             ])
             ->add('dateStatut', DateTimeType::class, [
-                'widget' => 'single_text', // Cette option est valide pour DateTimeType
+                'widget' => 'single_text',
                 'label' => 'Date du statut'
             ]);
         
@@ -57,7 +57,7 @@ class StatutType extends AbstractType
                 },
                 'placeholder' => 'Sélectionnez un entrepôt...',
                 'required' => false,
-                'mapped' => false, // Ce champ n'est pas directement mappé à l'entité
+                'mapped' => false,
                 'label' => 'Entrepôt',
                 'attr' => [
                     'class' => 'form-select warehouse-selector'
@@ -80,16 +80,16 @@ class StatutType extends AbstractType
             ]);
         }
         
-        // Ajouter le champ employe sauf si spécifiquement désactivé
-        if (!isset($options['hide_employe']) || $options['hide_employe'] !== true) {
-            $builder->add('employe', EntityType::class, [
-                'class' => Employe::class,
-                'choice_label' => function(Employe $employe) {
-                    return $employe->getNom() . ' ' . $employe->getPrenom();
+        // Ajouter le champ user sauf si spécifiquement désactivé
+        if (!isset($options['hide_user']) || $options['hide_user'] !== true) {
+            $builder->add('user', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => function(User $user) {
+                    return $user->getNom() . ' ' . $user->getPrenom();
                 },
                 'required' => false,
-                'disabled' => isset($options['employe_disabled']) && $options['employe_disabled'],
-                'placeholder' => 'Sélectionnez un employé'
+                'disabled' => isset($options['user_disabled']) && $options['user_disabled'],
+                'placeholder' => 'Sélectionnez un utilisateur'
             ]);
         }
         
@@ -110,8 +110,8 @@ class StatutType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Statut::class,
             'wizard_mode' => false,
-            'hide_employe' => false,
-            'employe_disabled' => false,
+            'hide_user' => false,
+            'user_disabled' => false,
             'use_warehouse_selector' => false,
         ]);
     }

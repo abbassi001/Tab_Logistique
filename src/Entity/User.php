@@ -49,10 +49,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(nullable: true)]
     private ?bool $isActive = null;
-
-    #[ORM\OneToOne(targetEntity: Employe::class)]
+    
+    // Attributs ajoutés depuis l'entité User
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $telephone = null;
+    
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
-    private ?Employe $employe = null;
+    private ?Departement $departement = null;
+    
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $niveau_acces = null;
+    
+    // Nouveaux attributs demandés
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateContrat = null;
+    
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $poste = null;
+    
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
     public function getId(): ?int
     {
@@ -68,18 +85,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->email = $email;
 
-        return $this;
-    }
-
-    // Ajoutez les getters et setters:
-    public function getEmploye(): ?Employe
-    {
-        return $this->employe;
-    }
-
-    public function setEmploye(?Employe $employe): static
-    {
-        $this->employe = $employe;
         return $this;
     }
 
@@ -198,5 +203,91 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->isActive = $isActive;
 
         return $this;
+    }
+    
+    // Méthodes ajoutées depuis l'entité User
+    
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(?string $telephone): static
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getDepartement(): ?Departement
+    {
+        return $this->departement;
+    }
+
+    public function setDepartement(?Departement $departement): static
+    {
+        $this->departement = $departement;
+
+        return $this;
+    }
+
+    public function getNiveauAcces(): ?string
+    {
+        return $this->niveau_acces;
+    }
+
+    public function setNiveauAcces(?string $niveau_acces): static
+    {
+        $this->niveau_acces = $niveau_acces;
+
+        return $this;
+    }
+    
+    // Getters et setters pour les nouveaux attributs
+    
+    public function getDateContrat(): ?\DateTimeInterface
+    {
+        return $this->dateContrat;
+    }
+
+    public function setDateContrat(?\DateTimeInterface $dateContrat): static
+    {
+        $this->dateContrat = $dateContrat;
+
+        return $this;
+    }
+    
+    public function getPoste(): ?string
+    {
+        return $this->poste;
+    }
+
+    public function setPoste(?string $poste): static
+    {
+        $this->poste = $poste;
+
+        return $this;
+    }
+    
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+    
+    /**
+     * Méthode pour avoir le nom complet de l'utilisateur
+     * 
+     * @return string
+     */
+    public function getNomComplet(): string
+    {
+        return $this->prenom . ' ' . $this->nom;
     }
 }

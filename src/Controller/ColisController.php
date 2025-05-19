@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Enum\StatusType; // Ensure the correct namespace for StatusType
-use App\Entity\Employe; // Import the Employe entity
+use App\Entity\User; // Import the User entity
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -300,7 +300,6 @@ public function generateLabels(Request $request): Response
         return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
     }
 
-    
     #[Route('/{id}/update-statut', name: 'app_colis_update_statut', methods: ['POST'])]
 public function updateStatut(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
 {
@@ -312,7 +311,7 @@ public function updateStatut(Request $request, Colis $coli, EntityManagerInterfa
     // Récupérer les données du formulaire
     $statutType = $request->request->get('statut_type');
     $localisation = $request->request->get('localisation');
-    $employeId = $request->request->get('employe_id');
+    $userId = $request->request->get('user_id');
 
     try {
         // Vérifier et convertir manuellement le type de statut
@@ -330,18 +329,18 @@ public function updateStatut(Request $request, Colis $coli, EntityManagerInterfa
         $statut->setTypeStatut($enumStatutType);
         $statut->setLocalisation($localisation);
 
-        // Si un employé est sélectionné, l'associer au statut
-        if ($employeId) {
-            $employe = $entityManager->getRepository(Employe::class)->find($employeId);
-            if ($employe) {
-                $statut->setEmploye($employe);
+        // Si un utilisateur est sélectionné, l'associer au statut
+        if ($userId) {
+            $user = $entityManager->getRepository(User::class)->find($userId);
+            if ($user) {
+                $statut->setUser($user);
             }
         }
 
         // Récupérer l'utilisateur connecté si possible
         $user = $this->getUser();
-        if ($user instanceof \App\Entity\User && method_exists($user, 'getEmploye') && $user->getEmploye()) {
-            $statut->setEmploye($user->getEmploye());
+        if ($user instanceof User && !$statut->getUser()) {
+            $statut->setUser($user);
         }
 
         // Sauvegarder dans la base de données
@@ -356,6 +355,8 @@ public function updateStatut(Request $request, Colis $coli, EntityManagerInterfa
     // Rediriger vers la page de détail du colis
     return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
 }
+
+
     #[Route('/{id}/add-transport', name: 'app_colis_add_transport', methods: ['POST'])]
     public function addTransport(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
     {

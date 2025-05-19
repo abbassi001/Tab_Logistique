@@ -1,0 +1,141 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de l'utilisateur{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Détails de l'utilisateur</h1>
+        
+        <div class="mb-4">
+            <a href="{{ path('app_user_index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-user me-1"></i>
+                        Informations personnelles
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>ID</th>
+                                    <td>{{ user.id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Nom</th>
+                                    <td>{{ user.nom }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Prénom</th>
+                                    <td>{{ user.prenom }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td>{{ user.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Téléphone</th>
+                                    <td>{{ user.telephone }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Statut</th>
+                                    <td>
+                                        {% if user.isActive %}
+                                            <span class="badge bg-success">Actif</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactif</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Date de création</th>
+                                    <td>{{ user.dateCreation ? user.dateCreation|date('d/m/Y H:i') : '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Dernière connexion</th>
+                                    <td>{{ user.dernierConnexion ? user.dernierConnexion|date('d/m/Y H:i') : 'Jamais connecté' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-id-badge me-1"></i>
+                        Informations professionnelles
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>Département</th>
+                                    <td>{{ user.departement ? user.departement.nomDepartemnt : '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Poste</th>
+                                    <td>{{ user.poste ?: '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Niveau d'accès</th>
+                                    <td>{{ user.niveauAcces ?: '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Date de contrat</th>
+                                    <td>{{ user.dateContrat ? user.dateContrat|date('d/m/Y') : '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Description</th>
+                                    <td>{{ user.description ?: '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Rôles</th>
+                                    <td>
+                                        {% for role in user.roles %}
+                                            {% if role == 'ROLE_ADMIN' %}
+                                                <span class="badge bg-danger">Administrateur</span>
+                                            {% elseif role == 'ROLE_USER' %}
+                                                <span class="badge bg-primary">Utilisateur</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ role }}</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-history me-1"></i>
+                        Activité récente
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">
+                            <i>Fonctionnalité à implémenter : historique des actions de l'utilisateur</i>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+            <button class="btn btn-danger">
+                <i class="fas fa-trash-alt"></i> Supprimer
+            </button>
+        </form>
+    </div>
+{% endblock %}

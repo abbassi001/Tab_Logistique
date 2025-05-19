@@ -324,8 +324,8 @@
                                                 </td>
                                                 <td>{{ statut.localisation }}</td>
                                                 <td>
-                                                    {% if statut.employe %}
-                                                        <i class="fas fa-user me-1 text-primary"></i> {{ statut.employe.prenom }} {{ statut.employe.nom }}
+                                                    {% if statut.User %}
+                                                        <i class="fas fa-user me-1 text-primary"></i> {{ statut.User.prenom }} {{ statut.User.nom }}
                                                     {% else %}
                                                         <span class="text-muted">Non assigné</span>
                                                     {% endif %}

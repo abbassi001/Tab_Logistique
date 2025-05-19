@@ -27,9 +27,22 @@ class Statut
 
     #[ORM\Column(length: 255)]
     private ?string $localisation = null;
-    
+
     #[ORM\ManyToOne]
-    private ?Employe $employe = null;
+    private ?User $user = null;
+
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
 
     public function getId(): ?int
     {
@@ -80,18 +93,6 @@ class Statut
     public function setLocalisation(string $localisation): static
     {
         $this->localisation = $localisation;
-
-        return $this;
-    }
-    
-    public function getEmploye(): ?Employe
-    {
-        return $this->employe;
-    }
-
-    public function setEmploye(?Employe $employe): static
-    {
-        $this->employe = $employe;
 
         return $this;
     }

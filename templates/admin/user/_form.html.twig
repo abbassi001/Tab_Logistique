@@ -1,0 +1,83 @@
+{# admin/user/_form.html.twig #}
+{{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-user-edit me-1"></i>
+            Informations de l'utilisateur
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form_row(form.email, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                {% if form.plainPassword is defined %}
+                    <div class="col-md-6">
+                        {{ form_row(form.plainPassword.first, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_row(form.plainPassword.second, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form_row(form.nom, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(form.prenom, {'attr': {'class': 'form-control'}}) }}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form_row(form.telephone, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(form.isActive, {'attr': {'class': 'form-check-input'}}) }}
+                </div>
+            </div>
+            
+            {% if form.roles is defined %}
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        {{ form_row(form.roles, {'attr': {'class': 'form-check-input'}}) }}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-id-badge me-1"></i>
+            Informations professionnelles
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form_row(form.departement, {'attr': {'class': 'form-select'}}) }}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form_row(form.poste, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(form.dateContrat, {'attr': {'class': 'form-control'}}) }}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    {{ form_row(form.description, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="btn btn-primary">
+        <i class="fas fa-save"></i> {{ button_label|default('Enregistrer') }}
+    </button>
+{{ form_end(form) }}
