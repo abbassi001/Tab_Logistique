@@ -10,9 +10,171 @@
     <link rel="stylesheet" href="{{ asset('css/admin-user.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin-forms.css') }}">
     <link rel="stylesheet" href="{{ asset('css/animations.css') }}">
-    <!-- Add our enhanced CSS -->
+    
     <style>
-        {% include 'admin/dashboard/_dashboard_styles.html.twig' %}
+        .kpi-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+        }
+        
+        .kpi-card:hover::before {
+            transform: rotate(45deg) translate(20px, 20px);
+        }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .kpi-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .kpi-trend {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .performance-gauge {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #28a745 0deg, #28a745 var(--percentage), #e9ecef var(--percentage));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .performance-gauge::before {
+            content: '';
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: white;
+            position: absolute;
+        }
+        
+        .performance-gauge .gauge-value {
+            position: relative;
+            z-index: 1;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .alert-item {
+            border-left: 4px solid;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .alert-danger { border-left-color: #dc3545; }
+        .alert-warning { border-left-color: #ffc107; }
+        .alert-info { border-left-color: #0dcaf0; }
+        
+        .activity-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .activity-timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e9ecef;
+        }
+        
+        .activity-item {
+            position: relative;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .activity-item::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #0d6efd;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #0d6efd;
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .task-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .task-priority-high { border-left: 4px solid #dc3545; }
+        .task-priority-medium { border-left: 4px solid #ffc107; }
+        .task-priority-low { border-left: 4px solid #28a745; }
+        
+        .dashboard-widget {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+        
+        .dashboard-widget:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        
+        .widget-header {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            background: linear-gradient(45deg, #f8f9fa, #ffffff);
+        }
+        
+        .widget-body {
+            padding: 20px;
+        }
     </style>
 {% endblock %}
 
@@ -50,32 +212,6 @@
                     <i class="fas fa-warehouse me-2"></i>Entrepôts
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_departement_index') }}">
-                    <i class="fas fa-building me-2"></i>Départements
-                </a>
-            </li>
-        </ul>
-        
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-            <span>Rapports</span>
-        </h6>
-        <ul class="nav flex-column mb-2">
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-file-export me-2"></i>Exportations
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-chart-line me-2"></i>Statistiques avancées
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-file-alt me-2"></i>Rapports personnalisés
-                </a>
-            </li>
         </ul>
     </div>
 </nav>
@@ -87,337 +223,302 @@
 <div class="dashboard-container">
     <!-- En-tête du tableau de bord -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">
-            <i class="fas fa-tachometer-alt me-2 text-primary"></i>Tableau de Bord Administrateur
-        </h1>
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-tachometer-alt me-2 text-primary"></i>Dashboard Administrateur
+            </h1>
+            <p class="text-muted mb-0">Vue d'ensemble en temps réel de votre système logistique</p>
+        </div>
         <div>
             <button type="button" class="btn btn-sm btn-outline-primary me-2" id="refreshDashboard">
                 <i class="fas fa-sync-alt me-1"></i>Actualiser
             </button>
             <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown">
                     <i class="fas fa-download me-1"></i>Exporter
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="#"><i class="fas fa-file-pdf me-2 text-danger"></i>PDF</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-file-excel me-2 text-success"></i>Excel</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2 text-primary"></i>Imprimer</a></li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <!-- Carte de bienvenue -->
-    <div class="card shadow-sm mb-4 border-left-primary">
-        <div class="card-body p-4">
-            <div class="row no-gutters align-items-center">
-                <div class="col mr-2">
-                    <div class="text-sm font-weight-bold text-primary text-uppercase mb-1">Bienvenue, {{ app.user.nom }} {{ app.user.prenom }}</div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        {% if "now"|date("H") < 12 %}
-                            Bonjour et bonne journée!
-                        {% elseif "now"|date("H") < 18 %}
-                            Bon après-midi!
-                        {% else %}
-                            Bonsoir!
-                        {% endif %}
-                    </div>
-                    <p class="mt-2 mb-0">Dernière connexion : {{ app.user.dernierConnexion ? app.user.dernierConnexion|date('d/m/Y H:i') : 'Première connexion' }}</p>
-                </div>
-                <div class="col-auto">
-                    <i class="fas fa-user-cog fa-2x text-gray-300"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cartes statistiques -->
-    <div class="stats-row">
-        <!-- Colis -->
-        <div class="stat-card stat-card-primary">
-            <div class="stat-card-body">
-                <div class="stat-card-title">Total Colis</div>
-                <div class="stat-card-value">{{ stats.colis.total }}</div>
-                <div class="stat-card-footer">
+    <!-- KPIs principaux -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="kpi-card">
+                <div class="kpi-trend">
                     {% if stats.colis.trend > 0 %}
-                        <div class="stat-trend-up">
-                            <i class="fas fa-arrow-up"></i>
-                            {{ stats.colis.trend }}%
-                        </div>
+                        <i class="fas fa-arrow-up text-success"></i>
                     {% elseif stats.colis.trend < 0 %}
-                        <div class="stat-trend-down">
-                            <i class="fas fa-arrow-down"></i>
-                            {{ stats.colis.trend|abs }}%
-                        </div>
+                        <i class="fas fa-arrow-down text-danger"></i>
                     {% else %}
-                        <div class="stat-trend-up">
-                            <i class="fas fa-equals"></i>
-                            0%
-                        </div>
+                        <i class="fas fa-minus text-warning"></i>
                     {% endif %}
-                    <div class="stat-period">ce mois</div>
                 </div>
-                <i class="stat-card-icon fas fa-boxes"></i>
+                <div class="kpi-value">{{ stats.colis.total|number_format }}</div>
+                <div class="kpi-label">Total Colis</div>
+                <small>{{ stats.colis.trend|abs }}% vs mois dernier</small>
             </div>
         </div>
         
-        <!-- Utilisateurs -->
-        <div class="stat-card stat-card-success">
-            <div class="stat-card-body">
-                <div class="stat-card-title">Utilisateurs</div>
-                <div class="stat-card-value">{{ stats.users.total }}</div>
-                <div class="stat-card-footer">
-                    <div class="stat-trend-up">
-                        <i class="fas fa-user-check"></i>
-                        {{ stats.users.active }} actifs
-                    </div>
-                    <div class="stat-period">en ce moment</div>
-                </div>
-                <i class="stat-card-icon fas fa-users"></i>
+        <div class="col-xl-3 col-md-6">
+            <div class="kpi-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="kpi-value">{{ performance_metrics.delivery_rate|number_format(1) }}%</div>
+                <div class="kpi-label">Taux de Livraison</div>
+                <small>{{ stats.colis.recent }} livrés ce mois</small>
             </div>
         </div>
         
-        <!-- Expéditeurs -->
-        <div class="stat-card stat-card-warning">
-            <div class="stat-card-body">
-                <div class="stat-card-title">Expéditeurs</div>
-                <div class="stat-card-value">{{ stats.expediteurs.total }}</div>
-                <div class="stat-card-footer">
-                    <div class="stat-trend-up">
-                        <i class="fas fa-plus-circle"></i>
-                        {{ stats.expediteurs.recent }} nouveaux
-                    </div>
-                    <div class="stat-period">derniers 30j</div>
-                </div>
-                <i class="stat-card-icon fas fa-paper-plane"></i>
+        <div class="col-xl-3 col-md-6">
+            <div class="kpi-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="kpi-value">{{ performance_metrics.average_delivery_time|number_format(1) }}</div>
+                <div class="kpi-label">Jours Moy. Livraison</div>
+                <small>Temps moyen de traitement</small>
             </div>
         </div>
         
-        <!-- Destinataires -->
-        <div class="stat-card stat-card-danger">
-            <div class="stat-card-body">
-                <div class="stat-card-title">Destinataires</div>
-                <div class="stat-card-value">{{ stats.destinataires.total }}</div>
-                <div class="stat-card-footer">
-                    <div class="stat-trend-up">
-                        <i class="fas fa-plus-circle"></i>
-                        {{ stats.destinataires.recent }} nouveaux
-                    </div>
-                    <div class="stat-period">derniers 30j</div>
-                </div>
-                <i class="stat-card-icon fas fa-map-marker-alt"></i>
+        <div class="col-xl-3 col-md-6">
+            <div class="kpi-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="kpi-value">{{ stats.users.active }}/{{ stats.users.total }}</div>
+                <div class="kpi-label">Utilisateurs Actifs</div>
+                <small>{{ stats.users.connectedToday }} connectés aujourd'hui</small>
             </div>
         </div>
     </div>
 
-    <!-- Rangée principale - Graphiques et activités -->
+    <!-- Widgets principaux -->
     <div class="row">
-        <!-- Colonne de graphiques -->
-        <div class="col-lg-8">
-            <!-- Graphique: Distribution des statuts -->
-            <div class="chart-card mb-4">
-                <div class="chart-card-header">
-                    <h5 class="chart-card-title">
-                        <i class="fas fa-chart-pie me-2"></i>Distribution des statuts
+        <!-- Colonne gauche -->
+        <div class="col-xl-8">
+            <!-- Performance Metrics -->
+            <div class="dashboard-widget mb-4">
+                <div class="widget-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2 text-primary"></i>Métriques de Performance
                     </h5>
-                    <div class="chart-controls">
-                        <select class="chart-period-selector">
-                            <option>Derniers 30 jours</option>
-                            <option>Derniers 90 jours</option>
-                            <option>Année en cours</option>
-                        </select>
-                    </div>
                 </div>
-                <div class="chart-card-body">
-                    <canvas id="statusChart" 
-                            data-labels="{{ ['En attente', 'En transit', 'Livré', 'Problème', 'Retourné']|json_encode|e('html_attr') }}"
-                            data-values="{{ status_data|json_encode|e('html_attr') }}"
-                            data-colors="{{ ['#ffc107', '#0dcaf0', '#198754', '#dc3545', '#e74a3b']|json_encode|e('html_attr') }}"></canvas>
+                <div class="widget-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="performance-gauge" style="--percentage: {{ performance_metrics.delivery_rate * 3.6 }}deg;">
+                                <div class="gauge-value">{{ performance_metrics.delivery_rate }}%</div>
+                            </div>
+                            <h6 class="mt-2">Taux de Livraison</h6>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="performance-gauge" style="--percentage: {{ performance_metrics.customer_satisfaction * 3.6 }}deg;">
+                                <div class="gauge-value">{{ performance_metrics.customer_satisfaction }}%</div>
+                            </div>
+                            <h6 class="mt-2">Satisfaction Client</h6>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="performance-gauge" style="--percentage: {{ performance_metrics.processing_efficiency * 3.6 }}deg;">
+                                <div class="gauge-value">{{ performance_metrics.processing_efficiency }}%</div>
+                            </div>
+                            <h6 class="mt-2">Efficacité Traitement</h6>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-primary">{{ stats.warehouses.total }}</h4>
+                                <h6>Entrepôts Actifs</h6>
+                                <small class="text-muted">
+                                    {% if stats.warehouses.mostActive %}
+                                        Plus actif: {{ stats.warehouses.mostActive.nom }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Graphique: Colis par mois -->
-            <div class="chart-card mb-4">
-                <div class="chart-card-header">
-                    <h5 class="chart-card-title">
-                        <i class="fas fa-chart-line me-2"></i>Colis par mois
+            <!-- Graphique des statuts -->
+            <div class="dashboard-widget mb-4">
+                <div class="widget-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2 text-primary"></i>Distribution des Statuts
                     </h5>
-                    <div class="chart-controls">
-                        <select class="chart-period-selector">
-                            <option>Derniers 6 mois</option>
-                            <option>Année en cours</option>
-                            <option>Année précédente</option>
-                        </select>
-                    </div>
+                    <select class="form-select form-select-sm" style="width: auto;">
+                        <option>Derniers 30 jours</option>
+                        <option>Derniers 90 jours</option>
+                        <option>Année en cours</option>
+                    </select>
                 </div>
-                <div class="chart-card-body">
-                    <canvas id="monthlyPackagesChart" 
-                            data-sent="{{ monthly_data.sent|json_encode|e('html_attr') }}"
+                <div class="widget-body">
+                    <canvas id="statusChart" 
+                            data-labels="{{ status_data.labels|json_encode|e('html_attr') }}"
+                            data-values="{{ status_data.data|json_encode|e('html_attr') }}"
+                            data-colors="{{ status_data.colors|json_encode|e('html_attr') }}"></canvas>
+                </div>
+            </div>
+            
+            <!-- Graphique mensuel -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2 text-primary"></i>Évolution Mensuelle
+                    </h5>
+                </div>
+                <div class="widget-body">
+                    <canvas id="monthlyChart" 
+                            data-labels="{{ monthly_data.labels|json_encode|e('html_attr') }}"
+                            data-created="{{ monthly_data.created|json_encode|e('html_attr') }}"
                             data-delivered="{{ monthly_data.delivered|json_encode|e('html_attr') }}"></canvas>
                 </div>
             </div>
-
-            <!-- Tableau: Top 5 Entrepôts -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-warehouse me-2"></i>Top Entrepôts
-                    </h6>
-                    <a href="{{ path('app_warehouse_index') }}" class="btn btn-sm btn-outline-primary">Voir tous</a>
+        </div>
+        
+        <!-- Colonne droite -->
+        <div class="col-xl-4">
+            <!-- Alertes prioritaires -->
+            <div class="dashboard-widget mb-4">
+                <div class="widget-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2 text-warning"></i>Alertes Prioritaires
+                    </h5>
+                    <span class="badge bg-danger">{{ alerts|length }}</span>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Code</th>
-                                    <th>Nom</th>
-                                    <th>Activité</th>
-                                    <th>Performance</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for warehouse in top_warehouses %}
-                                <tr>
-                                    <td>{{ warehouse.code }}</td>
-                                    <td>{{ warehouse.nom }}</td>
-                                    <td>{{ warehouse.activity }} colis</td>
-                                    <td>
-                                        <div class="progress">
-                                            <div class="progress-bar bg-{{ warehouse.performance > 80 ? 'success' : warehouse.performance > 50 ? 'warning' : 'danger' }}"
-                                                role="progressbar" style="width: {{ warehouse.performance }}%"
-                                                aria-valuenow="{{ warehouse.performance }}" aria-valuemin="0" aria-valuemax="100">
-                                                {{ warehouse.performance }}%
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <div class="widget-body p-0">
+                    {% for alert in alerts|slice(0, 5) %}
+                        <div class="alert-item alert-{{ alert.type }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>{{ alert.message }}</strong>
+                                    <br><small class="text-muted">{{ alert.date|ago }}</small>
+                                </div>
+                                <span class="badge bg-{{ alert.priority == 'high' ? 'danger' : 'warning' }}">
+                                    {{ alert.priority == 'high' ? 'Urgent' : 'Important' }}
+                                </span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <p class="text-muted">Aucune alerte active</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Tâches à faire -->
+            <div class="dashboard-widget mb-4">
+                <div class="widget-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tasks me-2 text-primary"></i>Tâches à Réaliser
+                    </h5>
+                    <span class="badge bg-primary">{{ tasks|length }}</span>
+                </div>
+                <div class="widget-body p-0">
+                    {% for task in tasks %}
+                        <div class="task-item task-priority-{{ task.priority }}">
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="checkbox" id="task{{ loop.index }}">
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">{{ task.description }}</div>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>{{ task.deadline|date('d/m/Y H:i') }}
+                                    {% if task.count is defined %}
+                                        | {{ task.count }} éléments
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <p class="text-muted">Toutes les tâches sont terminées !</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Activité récente -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2 text-primary"></i>Activité Récente
+                    </h5>
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="widget-body">
+                    <div class="activity-timeline">
+                        {% for activity in activities|slice(0, 8) %}
+                            <div class="activity-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>{{ activity.description }}</strong>
+                                        <br><small class="text-muted">par {{ activity.user }}</small>
+                                    </div>
+                                    <small class="text-muted">{{ activity.date|ago }}</small>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">Aucune activité récente</p>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Colonne de droite - Activités récentes -->
-        <div class="col-lg-4">
-            <!-- Carte Activité récente -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-history me-2"></i>Activité Récente
-                    </h6>
-                    <button class="btn btn-sm btn-outline-primary btn-circle">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </div>
-                <div class="card-body p-0">
-                    <div class="list-group list-group-flush">
-                        {% for activity in activities %}
-                        <div class="list-group-item list-group-item-action activity-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">
-                                    {% if activity.type == 'colis' %}
-                                        <i class="fas fa-box text-primary me-2"></i>
-                                    {% elseif activity.type == 'user' %}
-                                        <i class="fas fa-user text-success me-2"></i>
-                                    {% elseif activity.type == 'statut' %}
-                                        <i class="fas fa-tag text-warning me-2"></i>
-                                    {% elseif activity.type == 'warehouse' %}
-                                        <i class="fas fa-warehouse text-info me-2"></i>
+    <!-- Tableau des colis récents -->
+    <div class="dashboard-widget">
+        <div class="widget-header">
+            <h5 class="mb-0">
+                <i class="fas fa-box me-2 text-primary"></i>Colis Récents
+            </h5>
+            <a href="{{ path('app_colis_index') }}" class="btn btn-sm btn-outline-primary">Voir tous</a>
+        </div>
+        <div class="widget-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Code Tracking</th>
+                            <th>Expéditeur</th>
+                            <th>Destinataire</th>
+                            <th>Statut</th>
+                            <th>Date Création</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for colis in recentColis %}
+                            <tr>
+                                <td>
+                                    <code>{{ colis.codeTracking }}</code>
+                                </td>
+                                <td>{{ colis.expediteur ? colis.expediteur.nomEntrepriseIndividu : '-' }}</td>
+                                <td>{{ colis.destinataire ? colis.destinataire.nomEntrepriseIndividu : '-' }}</td>
+                                <td>
+                                    {% set lastStatus = colis.statuts|last %}
+                                    {% if lastStatus %}
+                                        <span class="badge bg-{{ lastStatus.typeStatut.name == 'LIVRE' ? 'success' : (lastStatus.typeStatut.name == 'EN_ATTENTE' ? 'warning' : 'primary') }}">
+                                            {{ lastStatus.typeStatut.label }}
+                                        </span>
                                     {% else %}
-                                        <i class="fas fa-cog text-secondary me-2"></i>
+                                        <span class="badge bg-secondary">Non défini</span>
                                     {% endif %}
-                                    
-                                    {{ activity.description }}
-                                </h6>
-                            </div>
-                            <small class="text-muted">
-                                <i class="fas fa-clock me-1"></i>{{ activity.date|ago }}
-                                <span class="ms-2">par {{ activity.user }}</span>
-                            </small>
-                        </div>
+                                </td>
+                                <td>{{ colis.dateCreation|date('d/m/Y H:i') }}</td>
+                                <td>
+                                    <a href="{{ path('app_colis_show', {id: colis.id}) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
                         {% endfor %}
-                    </div>
-                </div>
-                <div class="card-footer text-center">
-                    <a href="#" class="btn btn-sm btn-outline-primary">Voir toutes les activités</a>
-                </div>
-            </div>
-
-            <!-- Carte d'alertes -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center bg-warning text-white">
-                    <h6 class="m-0 font-weight-bold">
-                        <i class="fas fa-exclamation-triangle me-2"></i>Alertes
-                    </h6>
-                    <span class="badge bg-light text-warning">{{ alerts|length }}</span>
-                </div>
-                <div class="card-body p-0">
-                    <div class="list-group list-group-flush">
-                        {% for alert in alerts %}
-                        <div class="list-group-item list-group-item-action">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">
-                                    <i class="fas fa-exclamation-circle text-warning me-2"></i>{{ alert.message }}
-                                </h6>
-                            </div>
-                            <small class="text-muted">{{ alert.date|ago }}</small>
-                        </div>
-                        {% else %}
-                        <div class="list-group-item">
-                            <p class="mb-0 text-center text-muted py-2">
-                                <i class="fas fa-check-circle me-2"></i>Aucune alerte active
-                            </p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="card-footer text-center">
-                    <a href="#" class="btn btn-sm btn-outline-warning">Gérer les alertes</a>
-                </div>
-            </div>
-
-            <!-- Carte des tâches à faire -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-tasks me-2"></i>Tâches à faire
-                    </h6>
-                    <a href="#" class="btn btn-sm btn-primary">
-                        <i class="fas fa-plus"></i>
-                    </a>
-                </div>
-                <div class="card-body p-0">
-                    <div class="list-group list-group-flush">
-                        {% for task in tasks %}
-                        <div class="list-group-item">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="task{{ loop.index }}">
-                                <label class="form-check-label" for="task{{ loop.index }}">
-                                    {{ task.description }}
-                                </label>
-                            </div>
-                            <small class="text-muted d-block mt-1">
-                                Échéance: {{ task.deadline|date('d/m/Y') }}
-                                <span class="badge bg-{{ task.priority == 'high' ? 'danger' : (task.priority == 'medium' ? 'warning' : 'info') }} float-end">
-                                    {{ task.priority == 'high' ? 'Haute' : (task.priority == 'medium' ? 'Moyenne' : 'Basse') }}
-                                </span>
-                            </small>
-                        </div>
-                        {% else %}
-                        <div class="list-group-item">
-                            <p class="mb-0 text-center text-muted py-2">
-                                <i class="fas fa-check-circle me-2"></i>Aucune tâche en attente
-                            </p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="card-footer text-center">
-                    <a href="#" class="btn btn-sm btn-outline-primary">Gérer les tâches</a>
-                </div>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -426,8 +527,210 @@
 
 {% block javascripts %}
 {{ parent() }}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script>
-{% include 'admin/dashboard/_dashboard_scripts.html.twig' %}
+document.addEventListener('DOMContentLoaded', function() {
+    // Graphique des statuts
+    const statusCtx = document.getElementById('statusChart');
+    if (statusCtx) {
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: JSON.parse(statusCtx.dataset.labels),
+                datasets: [{
+                    data: JSON.parse(statusCtx.dataset.values),
+                    backgroundColor: JSON.parse(statusCtx.dataset.colors),
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+    
+    // Graphique mensuel
+    const monthlyCtx = document.getElementById('monthlyChart');
+    if (monthlyCtx) {
+        new Chart(monthlyCtx, {
+            type: 'line',
+            data: {
+                labels: JSON.parse(monthlyCtx.dataset.labels),
+                datasets: [{
+                    label: 'Colis Créés',
+                    data: JSON.parse(monthlyCtx.dataset.created),
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Colis Livrés',
+                    data: JSON.parse(monthlyCtx.dataset.delivered),
+                    borderColor: '#198754',
+                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    
+    // Gestion des tâches
+    document.querySelectorAll('input[id^="task"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const taskItem = this.closest('.task-item');
+            if (this.checked) {
+                taskItem.style.opacity = '0.6';
+                taskItem.style.textDecoration = 'line-through';
+                
+                // Simuler la mise à jour via AJAX
+                setTimeout(() => {
+                    taskItem.style.display = 'none';
+                    showNotification('Tâche marquée comme terminée', 'success');
+                }, 500);
+            }
+        });
+    });
+    
+    // Actualisation du dashboard
+    document.getElementById('refreshDashboard')?.addEventListener('click', function() {
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Actualisation...';
+        
+        // Simulation d'actualisation
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+    });
+    
+    // Animation des cartes KPI
+    const kpiCards = document.querySelectorAll('.kpi-card');
+    kpiCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+    
+    // Animation des widgets
+    const widgets = document.querySelectorAll('.dashboard-widget');
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    widgets.forEach(widget => {
+        widget.style.opacity = '0';
+        widget.style.transform = 'translateY(30px)';
+        widget.style.transition = 'all 0.6s ease';
+        observer.observe(widget);
+    });
+});
+
+// Fonction pour afficher les notifications
+function showNotification(message, type = 'info') {
+    let container = document.getElementById('notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        container.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 350px;
+        `;
+        document.body.appendChild(container);
+    }
+    
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show`;
+    notification.style.cssText = `
+        margin-bottom: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: none;
+        border-left: 4px solid;
+    `;
+    
+    // Couleurs selon le type
+    const colors = {
+        success: '#198754',
+        danger: '#dc3545',
+        warning: '#ffc107',
+        info: '#0dcaf0'
+    };
+    
+    notification.style.borderLeftColor = colors[type] || colors.info;
+    
+    notification.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+            <span>${message}</span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    container.appendChild(notification);
+    
+    // Auto-suppression après 5 secondes
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 150);
+        }
+    }, 5000);
+}
+
+// Mise à jour en temps réel (simulation)
+setInterval(() => {
+    // Mise à jour du compteur d'utilisateurs connectés
+    const connectedElement = document.querySelector('.kpi-card:nth-child(4) .kpi-value');
+    if (connectedElement) {
+        const currentValue = connectedElement.textContent.split('/');
+        if (currentValue.length === 2) {
+            const connected = parseInt(currentValue[0]);
+            const total = parseInt(currentValue[1]);
+            
+            // Simulation de changement
+            if (Math.random() > 0.7) {
+                const newConnected = Math.max(0, connected + (Math.random() > 0.5 ? 1 : -1));
+                connectedElement.textContent = `${newConnected}/${total}`;
+            }
+        }
+    }
+}, 30000); // Mise à jour toutes les 30 secondes
 </script>
 {% endblock %}

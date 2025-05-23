@@ -189,9 +189,7 @@
             </th>
             <th>ID</th>
             <th>Code Tracking</th>
-            <th>Référence</th>
             <th>Date Création</th>
-            <th>Statut</th>
             <th>Destinataire</th>
             <th>Expéditeur</th>
             <th>Poids</th>
@@ -214,7 +212,6 @@
                         {{ coli.codeTracking }}
                     </a>
                 </td>
-                <td class="px-3 py-2">{{ coli.reference ?? 'N/A' }}</td>
                 <td class="px-3 py-2">{{ coli.dateCreation ? coli.dateCreation|date('d/m/Y') : 'N/A' }}</td>
               
                 <td class="px-3 py-2">

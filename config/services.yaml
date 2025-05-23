@@ -28,3 +28,21 @@ services:
     App\EventListener\AuthenticationSuccessListener:
         tags:
             - { name: kernel.event_subscriber }
+
+      # Extension Twig personnalisée
+    App\Twig\AppExtension:
+        tags: ['twig.extension']
+
+    # Service Dashboard
+    App\Service\DashboardService:
+        arguments:
+            $colisRepository: '@App\Repository\ColisRepository'
+            $statutRepository: '@App\Repository\StatutRepository'
+            $userRepository: '@App\Repository\UserRepository'
+
+    # Service de cache pour le dashboard (optionnel)
+    app.dashboard.cache_service:
+        class: App\Service\DashboardCacheService
+        arguments:
+            $cache: '@cache.app'
+            $dashboardService: '@App\Service\DashboardService'

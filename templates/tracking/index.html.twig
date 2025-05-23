@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi de Colis - TAB Logistique</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .tracking-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        
+        .search-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .status-badge {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+        
+        .status-en_attente { background-color: #ffc107; color: #212529; }
+        .status-recu { background-color: #17a2b8; color: white; }
+        .status-en_transit { background-color: #007bff; color: white; }
+        .status-en_livraison { background-color: #6610f2; color: white; }
+        .status-livre { background-color: #28a745; color: white; }
+        .status-retourne { background-color: #dc3545; color: white; }
+        .status-bloque_douane { background-color: #dc3545; color: white; }
+        
+        .info-row {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .search-input {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .search-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        
+        .btn-search {
+            border-radius: 10px;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+        }
+        
+        .back-link {
+            color: #007bff;
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .back-link:hover {
+            color: #0056b3;
+        }
+        
+        .tracking-title {
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="tracking-container">
+        <!-- Lien de retour -->
+        <a href="/" class="back-link">
+            <i class="fas fa-arrow-left me-2"></i>Retour à l'accueil
+        </a>
+        
+        <!-- Formulaire de recherche -->
+        <div class="search-card">
+            <h1 class="tracking-title text-center">
+                <i class="fas fa-search text-primary me-2"></i>
+                Suivi de Colis
+            </h1>
+            
+            <form method="GET" action="/suivi">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input type="text" 
+                               class="form-control search-input" 
+                               name="search" 
+                               placeholder="Entrez votre numéro de suivi (ex: TAB-000123-2025)"
+                               value="{{ search ?? '' }}"
+                               required>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary btn-search w-100">
+                            <i class="fas fa-search me-2"></i>Rechercher
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Résultats -->
+        {% if search %}
+            <div class="result-card">
+                {% if error %}
+                    <!-- Erreur : Colis non trouvé -->
+                    <div class="error-message text-center">
+                        <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                        <h4>Colis non trouvé</h4>
+                        <p>{{ error }}</p>
+                        <small>Vérifiez le numéro de suivi et réessayez.</small>
+                    </div>
+                {% else %}
+                    <!-- Succès : Colis trouvé -->
+                    <div class="success-message text-center mb-4">
+                        <i class="fas fa-check-circle fa-2x mb-3"></i>
+                        <h4>Colis trouvé !</h4>
+                    </div>
+                    
+                    <!-- Informations du colis -->
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong><i class="fas fa-barcode me-2 text-primary"></i>Numéro de suivi</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span class="fw-bold">{{ colis.codeTracking }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong><i class="fas fa-info-circle me-2 text-primary"></i>Statut actuel</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {% set lastStatut = colis.statuts|last %}
+                                {% if lastStatut %}
+                                    <span class="badge status-{{ lastStatut.typeStatut.value }} status-badge">
+                                        <i class="fas 
+                                            {% if lastStatut.typeStatut.value == 'en_attente' %}fa-clock
+                                            {% elseif lastStatut.typeStatut.value == 'recu' %}fa-check-circle
+                                            {% elseif lastStatut.typeStatut.value == 'en_transit' %}fa-truck-moving
+                                            {% elseif lastStatut.typeStatut.value == 'en_livraison' %}fa-shipping-fast
+                                            {% elseif lastStatut.typeStatut.value == 'livre' %}fa-check-double
+                                            {% elseif lastStatut.typeStatut.value == 'retourne' %}fa-undo
+                                            {% elseif lastStatut.typeStatut.value == 'bloque_douane' %}fa-ban
+                                            {% else %}fa-info-circle{% endif %} 
+                                            me-2"></i>
+                                        {{ lastStatut.typeStatut.value|replace({'_': ' '})|title }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary status-badge">Non défini</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if lastStatut and lastStatut.localisation %}
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong><i class="fas fa-map-marker-alt me-2 text-primary"></i>Localisation</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {{ lastStatut.localisation }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong><i class="fas fa-calendar me-2 text-primary"></i>Date de création</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {{ colis.dateCreation ? colis.dateCreation|date('d/m/Y à H:i') : 'Non définie' }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if lastStatut and lastStatut.dateStatut %}
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong><i class="fas fa-clock me-2 text-primary"></i>Dernière mise à jour</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {{ lastStatut.dateStatut|date('d/m/Y à H:i') }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if colis.destinataire %}
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong><i class="fas fa-user me-2 text-primary"></i>Destinataire</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {{ colis.destinataire.nomEntrepriseIndividu }}<br>
+                                <small class="text-muted">{{ colis.destinataire.pays ?? '' }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if colis.poids %}
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong><i class="fas fa-weight me-2 text-primary"></i>Poids</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {{ colis.poids }} kg
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Actions -->
+                    <div class="text-center mt-4 pt-3" style="border-top: 1px solid #eee;">
+                        <a href="/suivi" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-search me-2"></i>Nouvelle recherche
+                        </a>
+                        <a href="/" class="btn btn-secondary">
+                            <i class="fas fa-home me-2"></i>Retour à l'accueil
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

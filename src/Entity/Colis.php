@@ -82,6 +82,8 @@ class Colis
     #[ORM\OneToMany(mappedBy: 'colis', targetEntity: ColisTransport::class, orphanRemoval: true)]
     private Collection $colisTransports;
 
+    
+
     public function __construct()
     {
         $this->statuts = new ArrayCollection();

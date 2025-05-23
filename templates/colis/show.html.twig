@@ -50,18 +50,24 @@
     {% endfor %}
 
     <div class="container-fluid mx-auto px-4 py-4">
+        <!-- En-tête avec actions principales (une seule fois) -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-box me-2 text-primary"></i>Détails du Colis</h1>
                 <p class="text-muted">Informations complètes et suivi du colis</p>
             </div>
-            <div>
-                <a href="{{ path('app_colis_index') }}" class="btn btn-outline-secondary me-2">
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_colis_index') }}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i>Retour à la liste
                 </a>
                 <a href="{{ path('app_colis_edit', {'id': coli.id}) }}" class="btn btn-warning">
                     <i class="fas fa-edit me-1"></i>Modifier
                 </a>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="fas fa-trash-alt me-1"></i>Supprimer
+                    </button>
+                {% endif %}
             </div>
         </div>
 
@@ -130,7 +136,7 @@
                                     <th class="bg-light">Entrepôt</th>
                                     <td>
                                         {% if coli.warehouse %}
-                                            {{ coli.warehouse.codeUt }} - {{ coli.warehouse.localisationWarehouse }}
+                                            {{ coli.warehouse.codeUt }} - {{ coli.warehouse.adresseWarehouse }}
                                         {% else %}
                                             <span class="text-muted">Non assigné</span>
                                         {% endif %}
@@ -324,8 +330,8 @@
                                                 </td>
                                                 <td>{{ statut.localisation }}</td>
                                                 <td>
-                                                    {% if statut.User %}
-                                                        <i class="fas fa-user me-1 text-primary"></i> {{ statut.User.prenom }} {{ statut.User.nom }}
+                                                    {% if statut.user %}
+                                                        <i class="fas fa-user me-1 text-primary"></i> {{ statut.user.prenom }} {{ statut.user.nom }}
                                                     {% else %}
                                                         <span class="text-muted">Non assigné</span>
                                                     {% endif %}
@@ -494,27 +500,6 @@
                 </div>
             </div>
         </div>
-        
-        <div class="mt-4 d-flex justify-content-between">
-            <a href="{{ path('app_colis_index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i>Retour à la liste
-            </a>
-            
-            <div>
-                <a href="{{ path('app_colis_edit', {'id': coli.id}) }}" class="btn btn-warning me-2">
-                    <i class="fas fa-edit me-1"></i>Modifier
-                </a>
-                
-             {% if is_granted('ROLE_ADMIN') %}
-    <form method="post" action="{{ path('app_colis_delete', {'id': coli.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet élément?');">
-        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ coli.id) }}">
-        <button class="btn btn-danger">
-            <i class="fas fa-trash-alt me-1"></i>Supprimer
-        </button>
-    </form>
-{% endif %}
-            </div>
-        </div>
     </div>
 
     <!-- Modales pour les actions rapides -->
@@ -561,9 +546,12 @@
                         
                         {{ form_rest(photo_form) }}
                         
-                        <div class="d-grid gap-2">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i>Annuler
+                            </button>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>Enregistrer la photo
+                                <i class="fas fa-save me-1"></i>Enregistrer la photo
                             </button>
                         </div>
                     {{ form_end(photo_form) }}
@@ -622,9 +610,12 @@
                         
                         {{ form_rest(document_form) }}
                         
-                        <div class="d-grid gap-2">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i>Annuler
+                            </button>
                             <button type="submit" class="btn btn-success">
-                                <i class="fas fa-save me-2"></i>Enregistrer le document
+                                <i class="fas fa-save me-1"></i>Enregistrer le document
                             </button>
                         </div>
                     {{ form_end(document_form) }}
@@ -632,7 +623,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Modal Statut -->
     <div class="modal fade" id="statutModal" tabindex="-1" aria-labelledby="statutModalLabel" aria-hidden="true">
@@ -682,9 +672,12 @@
                             <div class="invalid-feedback">Veuillez indiquer la date du statut.</div>
                         </div>
                         
-                        <div class="d-grid gap-2">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i>Annuler
+                            </button>
                             <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-save me-2"></i>Enregistrer le statut
+                                <i class="fas fa-save me-1"></i>Enregistrer le statut
                             </button>
                         </div>
                     </form>
@@ -723,9 +716,12 @@
                         
                         {{ form_rest(transport_form) }}
                         
-                        <div class="d-grid gap-2">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i>Annuler
+                            </button>
                             <button type="submit" class="btn btn-warning">
-                                <i class="fas fa-save me-2"></i>Associer le transport
+                                <i class="fas fa-save me-1"></i>Associer le transport
                             </button>
                         </div>
                     {{ form_end(transport_form) }}
@@ -733,8 +729,72 @@
             </div>
         </div>
     </div>
-{% endblock %}
 
+    <!-- Modal de Confirmation de Suppression -->
+    {% if is_granted('ROLE_ADMIN') %}
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirmer la suppression
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Attention !</strong> Cette action est irréversible.
+                    </div>
+                    <p>Êtes-vous sûr de vouloir supprimer définitivement ce colis ?</p>
+                    <ul class="list-unstyled">
+                        <li><strong>Code de suivi :</strong> {{ coli.codeTracking }}</li>
+                        <li><strong>Nature :</strong> {{ coli.natureMarchandise }}</li>
+                        <li><strong>Date de création :</strong> {{ coli.dateCreation|date('d/m/Y H:i') }}</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Annuler
+                    </button>
+                    <form method="post" action="{{ path('app_colis_delete', {'id': coli.id}) }}" class="d-inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ coli.id) }}">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash-alt me-1"></i>Supprimer définitivement
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- JavaScript pour la copie du code de suivi -->
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                // Afficher une notification de succès
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+                alert.style.top = '20px';
+                alert.style.right = '20px';
+                alert.style.zIndex = '9999';
+                alert.innerHTML = `
+                    <i class="fas fa-check-circle me-2"></i>Code de suivi copié !
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(alert);
+                
+                // Supprimer automatiquement après 3 secondes
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.parentNode.removeChild(alert);
+                    }
+                }, 3000);
+            });
+        }
+    </script>
+{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}

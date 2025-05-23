@@ -43,7 +43,7 @@ class ColisRepository extends ServiceEntityRepository
         
         // Appliquer les filtres
         if (!empty($filters['search'])) {
-            $query->andWhere('c.codeTracking LIKE :search OR d.nomEntrepriseIndividu LIKE :search OR e.nomEntrepriseIndividu LIKE :search')
+            $query->andWhere('c.codeTracking LIKE :search OR d.nom_entreprise_individu LIKE :search OR e.nom_entreprise_individu LIKE :search')
                 ->setParameter('search', '%' . $filters['search'] . '%');
         }
         
@@ -253,7 +253,7 @@ class ColisRepository extends ServiceEntityRepository
                 StatusType::BLOQUE_DOUANE->value,
                 StatusType::RETOURNE->value
             ])
-            ->orderBy('s.dateStatut', 'ASC')
+            ->orderBy('s.date_statut', 'ASC')
             ->getQuery()
             ->getResult();
     }
@@ -284,170 +284,337 @@ class ColisRepository extends ServiceEntityRepository
             ->join('c.statuts', 's', 'WITH', 's.id = (
                 SELECT MAX(s2.id) FROM App\Entity\Statut s2 WHERE s2.colis = c
             )')
-            ->andWhere('s.dateStatut <= :threshold')
+            ->andWhere('s.date_statut <= :threshold')
             ->andWhere('s.type_statut NOT IN (:finalStatuses)')
             ->setParameter('threshold', $date)
             ->setParameter('finalStatuses', [
                 StatusType::LIVRE->value,
                 StatusType::RETOURNE->value
             ])
-            ->orderBy('s.dateStatut', 'ASC')
+            ->orderBy('s.date_statut', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
-
-
     public function findForExport(array $criteria = []): array
-{
-    $qb = $this->createQueryBuilder('c')
-        ->leftJoin('c.expediteur', 'e')
-        ->leftJoin('c.destinataire', 'd')
-        ->leftJoin('c.statuts', 's')
-        ->addSelect('e', 'd', 's')
-        ->orderBy('c.id', 'DESC');
-    
-    // Apply criteria filters if provided
-    if (!empty($criteria['dateMin'])) {
-        $qb->andWhere('c.dateCreation >= :dateMin')
-           ->setParameter('dateMin', new \DateTime($criteria['dateMin']));
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.expediteur', 'e')
+            ->leftJoin('c.destinataire', 'd')
+            ->leftJoin('c.statuts', 's')
+            ->addSelect('e', 'd', 's')
+            ->orderBy('c.id', 'DESC');
+        
+        // Apply criteria filters if provided
+        if (!empty($criteria['dateMin'])) {
+            $qb->andWhere('c.date_creation >= :dateMin')
+               ->setParameter('dateMin', new \DateTime($criteria['dateMin']));
+        }
+        
+        if (!empty($criteria['dateMax'])) {
+            $qb->andWhere('c.date_creation <= :dateMax')
+               ->setParameter('dateMax', new \DateTime($criteria['dateMax']));
+        }
+        
+        if (!empty($criteria['status'])) {
+            $qb->andWhere('s.type_statut = :status')
+               ->setParameter('status', $criteria['status']);
+        }
+        
+        return $qb->getQuery()->getResult();
     }
-    
-    if (!empty($criteria['dateMax'])) {
-        $qb->andWhere('c.dateCreation <= :dateMax')
-           ->setParameter('dateMax', new \DateTime($criteria['dateMax']));
-    }
-    
-    if (!empty($criteria['status'])) {
-        $qb->andWhere('s.typeStatut = :status')
-           ->setParameter('status', $criteria['status']);
-    }
-    
-    return $qb->getQuery()->getResult();
-}
 
+    /**
+     * Get dashboard statistics for colis
+     * 
+     * @return array Statistics about colis (total, trends, etc.)
+     */
+    public function getDashboardStats(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        
+        // Get total count
+        $totalCount = $this->count([]);
+        
+        // Get count for current month
+        $currentMonthStart = new \DateTime('first day of this month');
+        $currentMonthFormatted = $currentMonthStart->format('Y-m-d');
+        
+        $currentMonthSQL = "SELECT COUNT(id) as count FROM colis 
+                          WHERE date_creation >= :date";
+        $currentMonthResult = $conn->executeQuery($currentMonthSQL, [
+            'date' => $currentMonthFormatted
+        ])->fetchAssociative();
+        $currentMonthCount = (int)$currentMonthResult['count'];
+        
+        // Get count for previous month for trend calculation
+        $prevMonthStart = (clone $currentMonthStart)->modify('-1 month');
+        $prevMonthFormatted = $prevMonthStart->format('Y-m-d');
+        
+        $prevMonthSQL = "SELECT COUNT(id) as count FROM colis 
+                       WHERE date_creation >= :prevDate AND date_creation < :currentDate";
+        $prevMonthResult = $conn->executeQuery($prevMonthSQL, [
+            'prevDate' => $prevMonthFormatted,
+            'currentDate' => $currentMonthFormatted
+        ])->fetchAssociative();
+        $prevMonthCount = (int)$prevMonthResult['count'];
+        
+        // Calculate trend percentage
+        $trend = 0;
+        if ($prevMonthCount > 0) {
+            $trend = round((($currentMonthCount - $prevMonthCount) / $prevMonthCount) * 100);
+        }
+        
+        return [
+            'total' => $totalCount,
+            'current_month' => $currentMonthCount,
+            'prev_month' => $prevMonthCount,
+            'trend' => $trend
+        ];
+    }
 
-/**
- * Get dashboard statistics for colis
- * 
- * @return array Statistics about colis (total, trends, etc.)
- */
-public function getDashboardStats(): array
-{
-    $conn = $this->getEntityManager()->getConnection();
-    
-    // Get total count
-    $totalCount = $this->count([]);
-    
-    // Get count for current month
-    $currentMonthStart = new \DateTime('first day of this month');
-    $currentMonthFormatted = $currentMonthStart->format('Y-m-d');
-    
-    $currentMonthSQL = "SELECT COUNT(id) as count FROM colis 
-                      WHERE date_creation >= :date";
-    $currentMonthResult = $conn->executeQuery($currentMonthSQL, [
-        'date' => $currentMonthFormatted
-    ])->fetchAssociative();
-    $currentMonthCount = (int)$currentMonthResult['count'];
-    
-    // Get count for previous month for trend calculation
-    $prevMonthStart = (clone $currentMonthStart)->modify('-1 month');
-    $prevMonthFormatted = $prevMonthStart->format('Y-m-d');
-    
-    $prevMonthSQL = "SELECT COUNT(id) as count FROM colis 
-                   WHERE date_creation >= :prevDate AND date_creation < :currentDate";
-    $prevMonthResult = $conn->executeQuery($prevMonthSQL, [
-        'prevDate' => $prevMonthFormatted,
-        'currentDate' => $currentMonthFormatted
-    ])->fetchAssociative();
-    $prevMonthCount = (int)$prevMonthResult['count'];
-    
-    // Calculate trend percentage
-    $trend = 0;
-    if ($prevMonthCount > 0) {
-        $trend = round((($currentMonthCount - $prevMonthCount) / $prevMonthCount) * 100);
+    /**
+     * Get monthly colis data for chart display
+     * 
+     * @return array Monthly data for sent and delivered packages
+     */
+    public function getMonthlyData(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        
+        $currentYear = (new \DateTime())->format('Y');
+        
+        // Get data for packages created each month
+        $sentSQL = "SELECT MONTH(date_creation) as month, COUNT(id) as count 
+                  FROM colis 
+                  WHERE YEAR(date_creation) = :year 
+                  GROUP BY MONTH(date_creation)";
+        
+        $sentData = $conn->executeQuery($sentSQL, ['year' => $currentYear])->fetchAllAssociative();
+        
+        // Get data for packages delivered each month  
+        $deliveredSQL = "SELECT MONTH(s.date_statut) as month, COUNT(DISTINCT c.id) as count 
+                       FROM colis c
+                       JOIN statut s ON s.colis_id = c.id
+                       WHERE s.type_statut = 'livre' AND YEAR(s.date_statut) = :year
+                       GROUP BY MONTH(s.date_statut)";
+        
+        $deliveredData = $conn->executeQuery($deliveredSQL, ['year' => $currentYear])->fetchAllAssociative();
+        
+        // Format the data for all 12 months
+        $sent = array_fill(0, 12, 0);
+        $delivered = array_fill(0, 12, 0);
+        
+        foreach ($sentData as $row) {
+            $sent[$row['month'] - 1] = (int)$row['count'];
+        }
+        
+        foreach ($deliveredData as $row) {
+            $delivered[$row['month'] - 1] = (int)$row['count'];
+        }
+        
+        return [
+            'sent' => $sent,
+            'delivered' => $delivered
+        ];
     }
-    
-    return [
-        'total' => $totalCount,
-        'current_month' => $currentMonthCount,
-        'prev_month' => $prevMonthCount,
-        'trend' => $trend
-    ];
-}
 
-/**
- * Get monthly colis data for chart display
- * 
- * @return array Monthly data for sent and delivered packages
- */
-public function getMonthlyData(): array
-{
-    $conn = $this->getEntityManager()->getConnection();
-    
-    $currentYear = (new \DateTime())->format('Y');
-    
-    // Get data for packages created each month
-    $sentSQL = "SELECT MONTH(date_creation) as month, COUNT(id) as count 
-              FROM colis 
-              WHERE YEAR(date_creation) = :year 
-              GROUP BY MONTH(date_creation)";
-    
-    $sentData = $conn->executeQuery($sentSQL, ['year' => $currentYear])->fetchAllAssociative();
-    
-    // Get data for packages delivered each month
-    $deliveredSQL = "SELECT MONTH(s.date_statut) as month, COUNT(DISTINCT c.id) as count 
-                   FROM colis c
-                   JOIN statut s ON s.colis_id = c.id
-                   WHERE s.type_statut = 'LIVRE' AND YEAR(s.date_statut) = :year
-                   GROUP BY MONTH(s.date_statut)";
-    
-    $deliveredData = $conn->executeQuery($deliveredSQL, ['year' => $currentYear])->fetchAllAssociative();
-    
-    // Format the data for all 12 months
-    $sent = array_fill(0, 12, 0);
-    $delivered = array_fill(0, 12, 0);
-    
-    foreach ($sentData as $row) {
-        $sent[$row['month'] - 1] = (int)$row['count'];
+    /**
+     * Get status distribution data for charts
+     * 
+     * @return array Count of colis by status
+     */
+    public function getStatusDistribution(): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->select('s.type_statut as status, COUNT(c.id) as count')
+            ->leftJoin('c.statuts', 's')
+            ->where('s.id IN (
+                SELECT MAX(s2.id) FROM App\Entity\Statut s2 WHERE s2.colis = c.id
+            )')
+            ->groupBy('s.type_statut');
+        
+        $results = $qb->getQuery()->getResult();
+        
+        // Format the results
+        $statuses = ['en_attente', 'recu', 'en_transit', 'en_livraison', 'livre', 'retourne', 'bloque_douane'];
+        $data = array_fill_keys($statuses, 0);
+        
+        foreach ($results as $row) {
+            $status = $row['status'] ?? 'en_attente';
+            $data[$status] = (int)$row['count'];
+        }
+        
+        return array_values($data); // Return just the values in order
     }
-    
-    foreach ($deliveredData as $row) {
-        $delivered[$row['month'] - 1] = (int)$row['count'];
-    }
-    
-    return [
-        'sent' => $sent,
-        'delivered' => $delivered
-    ];
-}
 
-/**
- * Get status distribution data for charts
- * 
- * @return array Count of colis by status
- */
-public function getStatusDistribution(): array
-{
-    $qb = $this->createQueryBuilder('c')
-        ->select('s.typeStatut as status, COUNT(c.id) as count')
-        ->leftJoin('c.statuts', 's')
-        ->where('s.id IN (
-            SELECT MAX(s2.id) FROM App\Entity\Statut s2 WHERE s2.colis = c.id
-        )')
-        ->groupBy('s.typeStatut');
-    
-    $results = $qb->getQuery()->getResult();
-    
-    // Format the results
-    $statuses = ['EN_ATTENTE', 'RECU', 'EN_TRANSIT', 'EN_LIVRAISON', 'LIVRE', 'RETOURNE', 'BLOQUE_DOUANE'];
-    $data = array_fill_keys($statuses, 0);
-    
-    foreach ($results as $row) {
-        $status = $row['status'] ?? 'EN_ATTENTE';
-        $data[$status] = (int)$row['count'];
+    /**
+     * Compte les colis créés ce mois-ci
+     */
+    public function countThisMonth(): int
+    {
+        $startOfMonth = new \DateTime('first day of this month 00:00:00');
+        $endOfMonth = new \DateTime('last day of this month 23:59:59');
+        
+        return $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.date_creation BETWEEN :start AND :end')
+            ->setParameter('start', $startOfMonth)
+            ->setParameter('end', $endOfMonth)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
-    
-    return array_values($data); // Return just the values in order
-}
+
+    /**
+     * Compte les colis créés le mois dernier
+     */
+    public function countLastMonth(): int
+    {
+        $startOfLastMonth = new \DateTime('first day of last month 00:00:00');
+        $endOfLastMonth = new \DateTime('last day of last month 23:59:59');
+        
+        return $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.date_creation BETWEEN :start AND :end')
+            ->setParameter('start', $startOfLastMonth)
+            ->setParameter('end', $endOfLastMonth)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Récupère les colis créés par mois pour l'année en cours
+     */
+    public function getMonthlyCreatedColis(): array
+    {
+        $result = $this->createQueryBuilder('c')
+            ->select('MONTH(c.date_creation) as month, COUNT(c.id) as count')
+            ->where('YEAR(c.date_creation) = :year')
+            ->setParameter('year', date('Y'))
+            ->groupBy('month')
+            ->orderBy('month', 'ASC')
+            ->getQuery()
+            ->getResult();
+        
+        $monthlyData = [];
+        foreach ($result as $row) {
+            $monthlyData[(int)$row['month']] = (int)$row['count'];
+        }
+        
+        return $monthlyData;
+    }
+
+    /**
+     * Récupère les colis livrés par mois
+     */
+    public function getMonthlyDeliveredColis(): array
+    {
+        $result = $this->createQueryBuilder('c')
+            ->select('MONTH(s.date_statut) as month, COUNT(DISTINCT c.id) as count')
+            ->join('c.statuts', 's')
+            ->where('s.type_statut = :status')
+            ->andWhere('YEAR(s.date_statut) = :year')
+            ->setParameter('status', 'livre')
+            ->setParameter('year', date('Y'))
+            ->groupBy('month')
+            ->orderBy('month', 'ASC')
+            ->getQuery()
+            ->getResult();
+        
+        $monthlyData = [];
+        foreach ($result as $row) {
+            $monthlyData[(int)$row['month']] = (int)$row['count'];
+        }
+        
+        return $monthlyData;
+    }
+
+    /**
+     * Récupère les colis récents avec détails
+     */
+    public function getRecentColisWithDetails(int $limit = 10): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.expediteur', 'e')
+            ->leftJoin('c.destinataire', 'd')
+            ->leftJoin('c.statuts', 's')
+            ->addSelect('e', 'd', 's')
+            ->orderBy('c.date_creation', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Récupère les colis prévus pour livraison aujourd'hui
+     */
+    public function getColisForDeliveryToday(): array
+    {
+        $today = new \DateTime('today');
+        $tomorrow = new \DateTime('tomorrow');
+        
+        return $this->createQueryBuilder('c')
+            ->join('c.statuts', 's')
+            ->where('s.type_statut = :status')
+            ->andWhere('s.date_statut BETWEEN :today AND :tomorrow')
+            ->setParameter('status', 'en_livraison')
+            ->setParameter('today', $today)
+            ->setParameter('tomorrow', $tomorrow)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Récupère les colis nécessitant une vérification
+     */
+    public function getColisNeedingVerification(): array
+    {
+        $threeDaysAgo = new \DateTime('-3 days');
+        
+        return $this->createQueryBuilder('c')
+            ->join('c.statuts', 's')
+            ->where('s.type_statut = :status')
+            ->andWhere('s.date_statut < :date')
+            ->setParameter('status', 'en_transit')
+            ->setParameter('date', $threeDaysAgo)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Compte les livraisons à temps
+     */
+    public function getOnTimeDeliveryCount(): int
+    {
+        // Définir "à temps" comme livré dans les 7 jours suivant la création
+        // Using PostgreSQL-compatible date calculation
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+            SELECT COUNT(c.id) as count
+            FROM colis c
+            INNER JOIN statut s ON s.colis_id = c.id
+            WHERE s.type_statut = :status
+            AND EXTRACT(DAY FROM (s.date_statut - c.date_creation)) <= 7
+        ';
+        
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery(['status' => 'livre']);
+        $row = $result->fetchAssociative();
+        
+        return $row ? (int)$row['count'] : 0;
+    }
+
+    /**
+     * Compte le total des livraisons
+     */
+    public function getTotalDeliveryCount(): int
+    {
+        return $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->join('c.statuts', 's')
+            ->where('s.type_statut = :status')
+            ->setParameter('status', 'livre')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
