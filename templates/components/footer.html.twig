@@ -1,0 +1,661 @@
+{# templates/components/footer.html.twig #}
+<footer class="footer mt-5">
+    <div class="container-fluid">
+        <!-- Section principale du footer -->
+        <div class="row py-4">
+            <!-- Colonne 1: Informations sur l'entreprise -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h5 class="footer-title">
+                    <i class="fas fa-shipping-fast me-2"></i>TAB Logistique
+                </h5>
+                <p class="footer-description">
+                    Votre partenaire de confiance pour la gestion logistique professionnelle. 
+                    Solutions complètes de suivi et gestion de colis.
+                </p>
+                <div class="footer-stats">
+                    <small class="text-muted">
+                        <i class="fas fa-box me-1"></i>
+                        {% if app.user and is_granted('ROLE_USER') %}
+                            {{ app.user.colisCount }}
+                        {% elseif app.user and is_granted('ROLE_ADMIN') %}
+                            {{ app.user.colisCountAdmin }}
+                        {% else %}
+                            0
+                        {% endif %}
+                        {% if app.user and app.user.colisCount > 1000 %}
+                            1000+
+                        {% elseif app.user and app.user.colisCountAdmin > 1000 %}
+                            1000+
+                        {% else %}
+                            1000+
+                        {% endif %}
+                        colis traités
+                    </small>
+                </div>
+            </div>
+
+            <!-- Colonne 2: Liens rapides -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h6 class="footer-subtitle">
+                    <i class="fas fa-link me-2"></i>Liens Rapides
+                </h6>
+                <ul class="footer-links">
+                    <li><a href="{{ path('app_home') }}">
+                        <i class="fas fa-home me-1"></i>Accueil
+                    </a></li>
+                    <li><a href="{{ path('app_tracking') }}">
+                        <i class="fas fa-search me-1"></i>Suivi de colis
+                    </a></li>
+                    {% if app.user %}
+                        <li><a href="{{ path('app_colis_index') }}">
+                            <i class="fas fa-list me-1"></i>Mes colis
+                        </a></li>
+                        <li><a href="{{ path('app_colis_wizard_start') }}">
+                            <i class="fas fa-plus me-1"></i>Nouveau colis
+                        </a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Colonne 3: Fonctionnalités -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h6 class="footer-subtitle">
+                    <i class="fas fa-cogs me-2"></i>Fonctionnalités
+                </h6>
+                <ul class="footer-links">
+                    {% if app.user %}
+                        <li><a href="{{ path('app_expediteur_index') }}">
+                            <i class="fas fa-paper-plane me-1"></i>Expéditeurs
+                        </a></li>
+                        <li><a href="{{ path('app_destinataire_index') }}">
+                            <i class="fas fa-map-marker-alt me-1"></i>Destinataires
+                        </a></li>
+                        <li><a href="{{ path('app_transport_index') }}">
+                            <i class="fas fa-truck me-1"></i>Transports
+                        </a></li>
+                        <li><a href="{{ path('app_warehouse_index') }}">
+                            <i class="fas fa-warehouse me-1"></i>Entrepôts
+                        </a></li>
+                    {% else %}
+                        <li><span class="text-muted">Gestion des expéditeurs</span></li>
+                        <li><span class="text-muted">Gestion des destinataires</span></li>
+                        <li><span class="text-muted">Suivi des transports</span></li>
+                        <li><span class="text-muted">Gestion d'entrepôts</span></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Colonne 4: Exports et Outils -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h6 class="footer-subtitle">
+                    <i class="fas fa-tools me-2"></i>Outils
+                </h6>
+                <ul class="footer-links">
+                    {% if app.user %}
+                        <li><a href="{{ path('app_colis_export', {format: 'pdf'}) }}" target="_blank">
+                            <i class="fas fa-file-pdf me-1 text-danger"></i>Export PDF
+                        </a></li>
+                        <li><a href="{{ path('app_colis_export', {format: 'excel'}) }}" target="_blank">
+                            <i class="fas fa-file-excel me-1 text-success"></i>Export Excel
+                        </a></li>
+                        <li><a href="{{ path('app_colis_export', {format: 'csv'}) }}" target="_blank">
+                            <i class="fas fa-file-csv me-1 text-info"></i>Export CSV
+                        </a></li>
+                        {% if is_granted('ROLE_ADMIN') %}
+                        <li><a href="{{ path('app_admin_dashboard') }}">
+                            <i class="fas fa-chart-line me-1 text-warning"></i>Dashboard
+                        </a></li>
+                        {% endif %}
+                    {% else %}
+                        <li><span class="text-muted">Exports de données</span></li>
+                        <li><span class="text-muted">Rapports détaillés</span></li>
+                        <li><span class="text-muted">Statistiques</span></li>
+                        <li><a href="{{ path('app_login') }}" class="text-primary">
+                            <i class="fas fa-sign-in-alt me-1"></i>Se connecter
+                        </a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Colonne 5: Support et Contact -->
+            <div class="col-lg-3 col-md-12 mb-4">
+                <h6 class="footer-subtitle">
+                    <i class="fas fa-headset me-2"></i>Support & Contact
+                </h6>
+                
+                <!-- Informations de contact -->
+                <div class="contact-info mb-3">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope me-2 text-primary"></i>
+                        <a href="mailto:support@tablogistique.fr" class="footer-link">
+                            support@tablogistique.fr
+                        </a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone me-2 text-success"></i>
+                        <a href="tel:+33123456789" class="footer-link">
+                            +33 1 23 45 67 89
+                        </a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock me-2 text-warning"></i>
+                        <span class="footer-text">Lun-Ven 8h-18h</span>
+                    </div>
+                </div>
+
+                <!-- Liens support -->
+                <div class="support-links">
+                    <a href="#" class="btn btn-outline-light btn-sm me-2 mb-2" 
+                       onclick="TabLogistique.showHelp()" title="Centre d'aide">
+                        <i class="fas fa-question-circle me-1"></i>Aide
+                    </a>
+                    <a href="#" class="btn btn-outline-light btn-sm me-2 mb-2" 
+                       onclick="TabLogistique.showSystemInfo()" title="Informations système">
+                        <i class="fas fa-info-circle me-1"></i>Info
+                    </a>
+                    {% if app.user %}
+                    <a href="#" class="btn btn-outline-light btn-sm mb-2" 
+                       onclick="TabLogistique.reportBug()" title="Signaler un problème">
+                        <i class="fas fa-bug me-1"></i>Bug
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section bottom du footer -->
+        <hr class="footer-divider">
+        
+        <div class="row py-3 align-items-center">
+            <!-- Copyright et version -->
+            <div class="col-md-6">
+                <div class="footer-bottom-left">
+                    <p class="mb-1">
+                        &copy; {{ "now"|date("Y") }} <strong>TAB Logistique</strong>. Tous droits réservés.
+                    </p>
+                    <small class="version-info">
+                        <i class="fas fa-code me-1"></i>Version 3.2
+                        {% if app.debug %}
+                            <span class="badge bg-warning text-dark ms-2">DEBUG</span>
+                        {% endif %}
+                        {% if app.environment == 'dev' %}
+                            <span class="badge bg-info ms-1">DEV</span>
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+
+            <!-- Informations techniques et liens légaux -->
+            <div class="col-md-6 text-md-end">
+                <div class="footer-bottom-right">
+                    <!-- Statut système -->
+                    <div class="system-status mb-2">
+                        <small class="text-muted">
+                            <i class="fas fa-server me-1"></i>
+                            Statut: 
+                            <span class="status-indicator text-success">
+                                <i class="fas fa-circle"></i> Opérationnel
+                            </span>
+                        </small>
+                    </div>
+                    
+                    <!-- Liens légaux -->
+                    <div class="legal-links">
+                        <small>
+                            <a href="#" class="footer-link me-3" onclick="TabLogistique.showPrivacyPolicy()">
+                                <i class="fas fa-shield-alt me-1"></i>Confidentialité
+                            </a>
+                            <a href="#" class="footer-link me-3" onclick="TabLogistique.showTerms()">
+                                <i class="fas fa-file-contract me-1"></i>CGU
+                            </a>
+                            {% if app.user %}
+                            <a href="{{ path('app_logout') }}" class="footer-link text-warning"
+                               data-confirm="Êtes-vous sûr de vouloir vous déconnecter ?">
+                                <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
+                            </a>
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations utilisateur connecté -->
+        {% if app.user %}
+        <div class="row py-2">
+            <div class="col-12">
+                <div class="user-session-info">
+                    <small class="text-muted">
+                        <i class="fas fa-user me-1"></i>
+                        Connecté en tant que <strong>{{ app.user.prenom ?? app.user.nom ?? 'Utilisateur' }}</strong>
+                        ({{ app.user.email }})
+                        
+                        {% if app.user.dernierConnexion %}
+                            <span class="ms-3">
+                                <i class="fas fa-clock me-1"></i>
+                                Dernière connexion: {{ app.user.dernierConnexion|date('d/m/Y H:i') }}
+                            </span>
+                        {% endif %}
+                        
+                        <span class="ms-3">
+                            <i class="fas fa-key me-1"></i>
+                            Rôle: 
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <span class="text-danger">Administrateur</span>
+                            {% else %}
+                                <span class="text-success">Utilisateur</span>
+                            {% endif %}
+                        </span>
+
+                        <span class="ms-3">
+                            <i class="fas fa-stopwatch me-1"></i>
+                            Session: <span id="sessionTimer">00:00</span>
+                        </span>
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</footer>
+
+{# Styles CSS pour le footer #}
+<style>
+    /* Footer principal */
+    .footer {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: #ecf0f1;
+        margin-top: auto;
+        border-top: 5px solid var(--primary-color);
+    }
+
+    .footer-title {
+        color: #3498db;
+        font-weight: bold;
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+
+    .footer-subtitle {
+        color: #e74c3c;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.3rem;
+        border-bottom: 2px solid rgba(231, 76, 60, 0.3);
+    }
+
+    .footer-description {
+        color: #bdc3c7;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+
+    .footer-stats {
+        background: rgba(52, 152, 219, 0.1);
+        padding: 8px 12px;
+        border-radius: 6px;
+        border-left: 3px solid #3498db;
+    }
+
+    /* Liens du footer */
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .footer-links li {
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-links a,
+    .footer-link {
+        color: #bdc3c7;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .footer-links a:hover,
+    .footer-link:hover {
+        color: #3498db;
+        transform: translateX(5px);
+        text-decoration: none;
+    }
+
+    .footer-text {
+        color: #95a5a6;
+        font-size: 0.9rem;
+    }
+
+    /* Section contact */
+    .contact-info .contact-item {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .contact-info i {
+        width: 20px;
+        text-align: center;
+    }
+
+    /* Boutons support */
+    .support-links .btn {
+        border-color: rgba(255,255,255,0.3);
+        transition: all 0.3s ease;
+    }
+
+    .support-links .btn:hover {
+        background: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.6);
+        transform: translateY(-2px);
+    }
+
+    /* Divider */
+    .footer-divider {
+        border-color: rgba(255,255,255,0.2);
+        margin: 0;
+    }
+
+    /* Bottom section */
+    .footer-bottom-left,
+    .footer-bottom-right {
+        color: #95a5a6;
+    }
+
+    .version-info {
+        color: #7f8c8d;
+    }
+
+    .system-status .status-indicator {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    /* Session info */
+    .user-session-info {
+        background: rgba(52, 73, 94, 0.5);
+        padding: 10px 15px;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .footer {
+            text-align: center;
+        }
+
+        .footer-subtitle {
+            margin-top: 2rem;
+        }
+
+        .footer-subtitle:first-child {
+            margin-top: 0;
+        }
+
+        .contact-info .contact-item {
+            justify-content: center;
+        }
+
+        .support-links {
+            margin-top: 1rem;
+        }
+
+        .user-session-info {
+            font-size: 0.8rem;
+        }
+
+        .user-session-info span {
+            display: block;
+            margin: 0.2rem 0;
+        }
+    }
+
+    /* Mode sombre */
+    .dark-theme .footer {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border-top-color: var(--warning-color);
+    }
+
+    .dark-theme .footer-title {
+        color: var(--warning-color);
+    }
+
+    .dark-theme .footer-subtitle {
+        color: var(--primary-color);
+        border-bottom-color: rgba(13, 110, 253, 0.3);
+    }
+
+    /* Animation d'apparition */
+    .footer {
+        animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+{# JavaScript pour le footer #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Étendre l'objet TabLogistique pour le footer
+    window.TabLogistique = window.TabLogistique || {};
+    
+    // Session timer
+    let sessionStartTime = Date.now();
+    
+    function updateSessionTimer() {
+        const sessionElement = document.getElementById('sessionTimer');
+        if (sessionElement) {
+            const elapsed = Date.now() - sessionStartTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            sessionElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+    }
+    
+    // Mettre à jour le timer toutes les secondes
+    {% if app.user %}
+    setInterval(updateSessionTimer, 1000);
+    {% endif %}
+    
+    // Fonctions du footer
+    TabLogistique.showHelp = function() {
+        const helpContent = `
+# 🚀 Centre d'Aide TAB Logistique
+
+## 📦 Gestion des Colis
+- **Nouveau colis** : Utilisez l'assistant de création (Ctrl+N)
+- **Liste des colis** : Accédez via le menu Colis > Liste (Ctrl+L)
+- **Suivi** : Recherchez par numéro de tracking (Ctrl+K)
+
+## 👥 Contacts
+- **Expéditeurs** : Gérez vos expéditeurs dans Contacts > Expéditeurs
+- **Destinataires** : Gérez vos destinataires dans Contacts > Destinataires
+
+## 📊 Exports
+- **PDF** : Export formaté pour impression
+- **Excel** : Pour analyse de données
+- **CSV** : Format universel
+
+## ⌨️ Raccourcis Clavier
+- **Ctrl+K** : Ouvrir la recherche de suivi
+- **Ctrl+N** : Nouveau colis
+- **Ctrl+L** : Liste des colis
+
+## 🔧 Support
+- Email: support@tablogistique.fr
+- Téléphone: +33 1 23 45 67 89
+- Horaires: Lun-Ven 8h-18h
+
+---
+Version 3.2 - TAB Logistique
+        `;
+        
+        // Créer une modal pour l'aide
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.innerHTML = `
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-question-circle me-2"></i>Centre d'Aide
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <pre style="white-space: pre-wrap; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">${helpContent}</pre>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                            <i class="fas fa-check me-2"></i>Compris
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+        
+        // Supprimer la modal après fermeture
+        modal.addEventListener('hidden.bs.modal', function() {
+            document.body.removeChild(modal);
+        });
+    };
+    
+    TabLogistique.showPrivacyPolicy = function() {
+        alert(`
+🔒 Politique de Confidentialité - TAB Logistique
+
+Nous respectons votre vie privée et protégeons vos données personnelles.
+
+📋 Données collectées :
+- Informations de compte (nom, email)
+- Données de colis (expéditeurs, destinataires)
+- Logs de connexion
+
+🛡️ Protection :
+- Chiffrement des données sensibles
+- Accès sécurisé par authentification
+- Sauvegarde automatique
+
+📞 Contact :
+Pour toute question concernant vos données :
+support@tablogistique.fr
+
+Dernière mise à jour : {{ "now"|date("d/m/Y") }}
+        `);
+    };
+    
+    TabLogistique.showTerms = function() {
+        alert(`
+📄 Conditions Générales d'Utilisation - TAB Logistique
+
+1. 🎯 OBJET
+   Le présent système est destiné à la gestion logistique professionnelle.
+
+2. 👤 UTILISATION
+   - Accès réservé aux utilisateurs autorisés
+   - Respect des procédures de sécurité
+   - Utilisation conforme aux objectifs métier
+
+3. 🔒 SÉCURITÉ
+   - Mots de passe sécurisés obligatoires
+   - Déconnexion automatique après inactivité
+   - Signalement des incidents requis
+
+4. 📊 DONNÉES
+   - Sauvegarde automatique
+   - Traçabilité des opérations
+   - Export possible selon autorisations
+
+5. 📞 SUPPORT
+   Support technique : support@tablogistique.fr
+
+Version 3.2 - Effective au {{ "now"|date("d/m/Y") }}
+        `);
+    };
+    
+    TabLogistique.reportBug = function() {
+        const bugReport = prompt(`
+🐛 Signaler un Bug
+
+Décrivez brièvement le problème rencontré :
+(Cette information sera envoyée au support technique)
+
+Exemples :
+- "Erreur lors de l'export PDF"
+- "Page qui ne charge pas"
+- "Données manquantes"
+        `);
+        
+        if (bugReport && bugReport.trim()) {
+            // Dans un vrai projet, envoyer le rapport au serveur
+            TabLogistique.showNotification(
+                'Rapport de bug envoyé avec succès. Merci !', 
+                'success'
+            );
+            
+            // Log pour le développement
+            console.log('Bug Report:', {
+                message: bugReport,
+                url: window.location.href,
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString(),
+                user: '{{ app.user ? app.user.email : "anonymous" }}'
+            });
+        }
+    };
+    
+    // Vérification périodique du statut système
+    function updateSystemStatus() {
+        const statusIndicator = document.querySelector('.status-indicator');
+        if (statusIndicator) {
+            // Simulation de vérification système
+            const isOnline = navigator.onLine;
+            const statusText = statusIndicator.parentElement;
+            
+            if (isOnline) {
+                statusIndicator.innerHTML = '<i class="fas fa-circle text-success"></i> Opérationnel';
+            } else {
+                statusIndicator.innerHTML = '<i class="fas fa-circle text-danger"></i> Hors ligne';
+            }
+        }
+    }
+    
+    // Vérifier le statut toutes les 30 secondes
+    setInterval(updateSystemStatus, 30000);
+    updateSystemStatus();
+    
+    // Gestion des événements offline/online
+    window.addEventListener('online', function() {
+        TabLogistique.showNotification('Connexion rétablie', 'success');
+        updateSystemStatus();
+    });
+    
+    window.addEventListener('offline', function() {
+        TabLogistique.showNotification('Connexion perdue', 'warning');
+        updateSystemStatus();
+    });
+});
+</script>

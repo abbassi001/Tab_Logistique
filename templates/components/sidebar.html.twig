@@ -1,0 +1,868 @@
+{# templates/components/sidebar.html.twig #}
+{# 
+   Sidebar contextuelle pour TAB Logistique
+   Affiche différents contenus selon la page et les droits utilisateur
+#}
+
+{% set currentRoute = app.request.attributes.get('_route') %}
+{% set isAdminRoute = currentRoute starts with 'app_admin_' %}
+{% set isColisRoute = currentRoute starts with 'app_colis' %}
+{% set isContactRoute = currentRoute starts with 'app_expediteur' or currentRoute starts with 'app_destinataire' %}
+{% set isLogisticRoute = currentRoute starts with 'app_transport' or currentRoute starts with 'app_warehouse' or currentRoute starts with 'app_statut' %}
+
+<aside class="sidebar" id="mainSidebar">
+    <!-- Header de la sidebar -->
+    <div class="sidebar-header">
+        <h5 class="sidebar-title">
+            <i class="fas fa-bolt me-2"></i>
+            {% if isAdminRoute %}
+                Administration
+            {% elseif isColisRoute %}
+                Gestion Colis
+            {% elseif isContactRoute %}
+                Contacts
+            {% elseif isLogisticRoute %}
+                Logistique
+            {% else %}
+                Accès Rapide
+            {% endif %}
+        </h5>
+        <button class="btn btn-sm btn-outline-light sidebar-toggle" onclick="TabLogistique.toggleSidebar()">
+            <i class="fas fa-angle-left"></i>
+        </button>
+    </div>
+
+    <!-- Contenu dynamique selon le contexte -->
+    <div class="sidebar-content">
+        
+        {# ================================ #}
+        {# SIDEBAR ADMINISTRATION #}
+        {# ================================ #}
+        {% if is_granted('ROLE_ADMIN') and isAdminRoute %}
+            <!-- Section Dashboard Admin -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">
+                    <i class="fas fa-chart-line me-2"></i>Tableau de Bord
+                </h6>
+                <div class="sidebar-links">
+                    <a href="{{ path('app_admin_dashboard') }}" class="sidebar-link {{ currentRoute == 'app_admin_dashboard' ? 'active' : '' }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        Vue d'ensemble
+                    </a>
+                </div>
+            </div>
+
+            <!-- Section Gestion Utilisateurs -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">
+                    <i class="fas fa-users-cog me-2"></i>Utilisateurs
+                </h6>
+                <div class="sidebar-links">
+                    <a href="{{ path('app_user_index') }}" class="sidebar-link {{ currentRoute == 'app_user_index' ? 'active' : '' }}">
+                        <i class="fas fa-list me-2"></i>
+                        Liste utilisateurs
+                        {% set totalUsers = render(controller('App\\Controller\\StatsController::getTotalUsers')) %}
+                        {% if totalUsers %}
+                            <span class="sidebar-badge">{{ totalUsers }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{{ path('app_user_new') }}" class="sidebar-link {{ currentRoute == 'app_user_new' ? 'active' : '' }}">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Nouvel utilisateur
+                    </a>
+                    <a href="{{ path('app_register') }}" class="sidebar-link {{ currentRoute == 'app_register' ? 'active' : '' }}">
+                        <i class="fas fa-id-card me-2"></i>
+                        Inscription
+                    </a>
+                </div>
+            </div>
+
+            <!-- Section Configuration -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">
+                    <i class="fas fa-cogs me-2"></i>Configuration
+                </h6>
+                <div class="sidebar-links">
+                    <a href="{{ path('app_departement_index') }}" class="sidebar-link {{ currentRoute starts with 'app_departement' ? 'active' : '' }}">
+                        <i class="fas fa-building me-2"></i>
+                        Départements
+                    </a>
+                    <a href="#" onclick="TabLogistique.showSystemInfo()" class="sidebar-link">
+                        <i class="fas fa-server me-2"></i>
+                        Infos système
+                    </a>
+                </div>
+            </div>
+
+        {# ================================ #}
+        {# SIDEBAR GESTION COLIS #}
+        {# ================================ #}
+        {% elseif isColisRoute %}
+            <!-- Actions Colis -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">
+                    <i class="fas fa-plus-circle me-2"></i>Actions Rapides
+                </h6>
+                <div class="sidebar-links">
+                    <a href="{{ path('app_colis_wizard_start') }}" class="sidebar-link btn-action-primary">
+                        <i class="fas fa-magic me-2"></i>
+                        Nouveau Colis
+                    </a>
+                    <a href="{{ path('app_colis_index') }}" class="sidebar-link {{ currentRoute == 'app_colis_index' ? 'active' : '' }}">
+                        <i class="fas fa-list me-2"></i>
+                        Liste des Colis
+                    </a>
+                </div>
+            </div>
+
+            <!-- Exports -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">
+                    <i class="fas fa-download me-2"></i>Exports
+                </h6>
+                <div class="sidebar-links">
+                    <a href="{{ path('app_colis_export', {format: 'pdf'}) }}" class="sidebar-link" target="_blank">
+                        <i class="fas fa-file-pdf me-2 text-danger"></i>
+                        Export PDF
+                    </a>
+                    <a href="{{ path('app_colis_export', {format: 'excel'}) }}" class="sidebar-link" target="_blank">
+                        <i class="fas fa-file-excel me-2 text-success"></i>
+                        Export Excel
+                    </a>
+                    <a href="{{ path('app_colis_export', {format: 'csv'}) }}" class="sidebar-link" target="_blank">
+                        <i class="fas fa-file-csv me-2 text-info"></i>
+                        Export CSV
+                    </a>
+                </div>
+            </div>
+
+            <!-- Outils -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">
+                    <i class="fas fa-tools me-2"></i>Outils
+                </h6>
+                <div class="sidebar-links">
+                    <a href="#" onclick="TabLogistique.bulkActions()" class="sidebar-link">
+                        <i class="fas fa-tasks me-2"></i>
+                        Actions groupées
+                    </a>
+                    <a href="#" onclick="TabLogistique.printLabels()" class="sidebar-link">
+                        <i class="fas fa-tags me-2"></i>
+                        Étiquettes
+                    </a>
+                </div>
+            </div>
+
+        {# ================================ #}
+        {# SIDEBAR CONTACTS #}
+        {# ================================ #}
+        {% elseif isContactRoute %}
+            <!-- Expéditeurs -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">
+                    <i class="fas fa-paper-plane me-2"></i>Expéditeurs
+                </h6>
+                <div class="sidebar-links">
+                    <a href="{{ path('app_expediteur_index') }}" class="sidebar-link {{ currentRoute starts with 'app_expediteur' ? 'active' : '' }}">
+                        <i class="fas fa-list me-2"></i>
+                        Liste expéditeurs
+                    </a>
+                    <a href="{{ path('app_expediteur_new') }}" class="sidebar-link">
+                        <i class="fas fa-plus me-2"></i>
+                        Nouvel expéditeur
+                    </a>
+                </div>
+            </div>
+
+            <!-- Destinataires -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">
+                    <i class="fas fa-map-marker-alt me-2"></i>Destinataires
+                </h6>
+                <div class="sidebar-links">
+                    <a href="{{ path('app_destinataire_index') }}" class="sidebar-link {{ currentRoute starts with 'app_destinataire' ? 'active' : '' }}">
+                        <i class="fas fa-list me-2"></i>
+                        Liste destinataires
+                    </a>
+                    <a href="{{ path('app_destinataire_new') }}" class="sidebar-link">
+                        <i class="fas fa-plus me-2"></i>
+                        Nouveau destinataire
+                    </a>
+                </div>
+            </div>
+
+        {# ================================ #}
+        {# SIDEBAR LOGISTIQUE #}
+        {# ================================ #}
+        {% elseif isLogisticRoute %}
+            <!-- Transports -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">
+                    <i class="fas fa-truck me-2"></i>Transports
+                </h6>
+                <div class="sidebar-links">
+                    <a href="{{ path('app_transport_index') }}" class="sidebar-link {{ currentRoute starts with 'app_transport' ? 'active' : '' }}">
+                        <i class="fas fa-list me-2"></i>
+                        Liste transports
+                    </a>
+                    <a href="{{ path('app_transport_new') }}" class="sidebar-link">
+                        <i class="fas fa-plus me-2"></i>
+                        Nouveau transport
+                    </a>
+                </div>
+            </div>
+
+            <!-- Entrepôts -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">
+                    <i class="fas fa-warehouse me-2"></i>Entrepôts
+                </h6>
+                <div class="sidebar-links">
+                    <a href="{{ path('app_warehouse_index') }}" class="sidebar-link {{ currentRoute starts with 'app_warehouse' ? 'active' : '' }}">
+                        <i class="fas fa-list me-2"></i>
+                        Liste entrepôts
+                    </a>
+                    <a href="{{ path('app_warehouse_new') }}" class="sidebar-link">
+                        <i class="fas fa-plus me-2"></i>
+                        Nouvel entrepôt
+                    </a>
+                </div>
+            </div>
+
+            <!-- Statuts -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">
+                    <i class="fas fa-tasks me-2"></i>Statuts
+                </h6>
+                <div class="sidebar-links">
+                    <a href="{{ path('app_statut_index') }}" class="sidebar-link {{ currentRoute starts with 'app_statut' ? 'active' : '' }}">
+                        <i class="fas fa-list me-2"></i>
+                        Liste statuts
+                    </a>
+                    <a href="{{ path('app_statut_new') }}" class="sidebar-link">
+                        <i class="fas fa-plus me-2"></i>
+                        Nouveau statut
+                    </a>
+                </div>
+            </div>
+
+        {# ================================ #}
+        {# SIDEBAR GÉNÉRALE (par défaut) #}
+        {# ================================ #}
+        {% else %}
+            <!-- Actions rapides universelles -->
+            <div class="sidebar-section">
+                <h6 class="sidebar-section-title">
+                    <i class="fas fa-rocket me-2"></i>Actions Rapides
+                </h6>
+                <div class="sidebar-links">
+                    {% if app.user %}
+                        <a href="{{ path('app_colis_wizard_start') }}" class="sidebar-link btn-action-primary">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            Nouveau Colis
+                        </a>
+                        <a href="{{ path('app_colis_index') }}" class="sidebar-link">
+                            <i class="fas fa-list me-2"></i>
+                            Mes Colis
+                        </a>
+                        <a href="{{ path('app_expediteur_new') }}" class="sidebar-link">
+                            <i class="fas fa-user-plus me-2"></i>
+                            Nouvel Expéditeur
+                        </a>
+                        <a href="{{ path('app_destinataire_new') }}" class="sidebar-link">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            Nouveau Destinataire
+                        </a>
+                        <a href="{{ path('app_transport_new') }}" class="sidebar-link">
+                            <i class="fas fa-truck me-2"></i>
+                            Nouveau Transport
+                        </a>
+                        <a href="{{ path('app_warehouse_new') }}" class="sidebar-link">
+                            <i class="fas fa-warehouse me-2"></i>
+                            Nouvel Entrepôt
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_tracking') }}" class="sidebar-link btn-action-primary">
+                            <i class="fas fa-search me-2"></i>
+                            Suivi de Colis
+                        </a>
+                        <a href="{{ path('app_login') }}" class="sidebar-link">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Se Connecter
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        {# ================================ #}
+        {# SECTION STATISTIQUES (toujours visible) #}
+        {# ================================ #}
+        {% if app.user %}
+        <div class="sidebar-section">
+            <h6 class="sidebar-section-title">
+                <i class="fas fa-chart-bar me-2"></i>Statistiques
+            </h6>
+            <div class="sidebar-stats">
+                <div class="stat-item">
+                    {% set totalColis = render(controller('App\\Controller\\StatsController::getTotalColis')) %}
+                    <div class="stat-value text-primary">{{ totalColis ?: '24' }}</div>
+                    <div class="stat-label">Colis en cours</div>
+                </div>
+                <div class="stat-item">
+                    {% set deliveredToday = render(controller('App\\Controller\\StatsController::getDeliveredToday')) %}
+                    <div class="stat-value text-success">{{ deliveredToday ?: '8' }}</div>
+                    <div class="stat-label">Livrés aujourd'hui</div>
+                </div>
+                <div class="stat-item">
+                    {% set pendingColis = render(controller('App\\Controller\\StatsController::getPendingColis')) %}
+                    <div class="stat-value text-warning">{{ pendingColis ?: '12' }}</div>
+                    <div class="stat-label">En attente</div>
+                </div>
+                <div class="stat-item">
+                    {% set blockedColis = render(controller('App\\Controller\\StatsController::getBlockedColis')) %}
+                    <div class="stat-value text-danger">{{ blockedColis ?: '2' }}</div>
+                    <div class="stat-label">Problèmes</div>
+                </div>
+            </div>
+        </div>
+
+        {# Section documents conditionnelle #}
+        {% if isColisRoute or currentRoute == 'app_home' %}
+        <div class="sidebar-section">
+            <h6 class="sidebar-section-title">
+                <i class="fas fa-folder me-2"></i>Documents
+            </h6>
+            <div class="sidebar-links">
+                <a href="{{ path('app_photo_index') }}" class="sidebar-link">
+                    <i class="fas fa-camera me-2"></i>
+                    Photos
+                    {% set totalPhotos = render(controller('App\\Controller\\StatsController::getTotalPhotos')) %}
+                    {% if totalPhotos %}
+                        <span class="sidebar-badge">{{ totalPhotos }}</span>
+                    {% endif %}
+                </a>
+                <a href="{{ path('app_document_support_index') }}" class="sidebar-link">
+                    <i class="fas fa-file-alt me-2"></i>
+                    Documents
+                    {% set totalDocuments = render(controller('App\\Controller\\StatsController::getTotalDocuments')) %}
+                    {% if totalDocuments %}
+                        <span class="sidebar-badge">{{ totalDocuments }}</span>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        {# ================================ #}
+        {# SECTION ALERTES ET NOTIFICATIONS #}
+        {# ================================ #}
+        {% if app.user %}
+        <div class="sidebar-section">
+            <h6 class="sidebar-section-title">
+                <i class="fas fa-bell me-2"></i>Alertes
+            </h6>
+            <div class="sidebar-alerts">
+                <!-- Alertes dynamiques (exemple) -->
+                <div class="alert-item alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div class="alert-content">
+                        <div class="alert-title">Colis bloqués</div>
+                        <div class="alert-text">2 colis en douane</div>
+                    </div>
+                </div>
+                <div class="alert-item alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <div class="alert-content">
+                        <div class="alert-title">Nouveau transport</div>
+                        <div class="alert-text">Transport disponible</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {# ================================ #}
+        {# SECTION RACCOURCIS CLAVIER #}
+        {# ================================ #}
+        <div class="sidebar-section">
+            <h6 class="sidebar-section-title">
+                <i class="fas fa-keyboard me-2"></i>Raccourcis
+            </h6>
+            <div class="keyboard-shortcuts">
+                <div class="shortcut-item">
+                    <kbd>Ctrl</kbd> + <kbd>K</kbd>
+                    <span>Suivi</span>
+                </div>
+                <div class="shortcut-item">
+                    <kbd>Ctrl</kbd> + <kbd>N</kbd>
+                    <span>Nouveau</span>
+                </div>
+                <div class="shortcut-item">
+                    <kbd>Ctrl</kbd> + <kbd>L</kbd>
+                    <span>Liste</span>
+                </div>
+            </div>
+        </div>
+
+        {# ================================ #}
+        {# SECTION AIDE RAPIDE #}
+        {# ================================ #}
+        <div class="sidebar-section">
+            <h6 class="sidebar-section-title">
+                <i class="fas fa-question-circle me-2"></i>Aide
+            </h6>
+            <div class="sidebar-links">
+                <a href="#" onclick="TabLogistique.showHelp()" class="sidebar-link">
+                    <i class="fas fa-book me-2"></i>
+                    Documentation
+                </a>
+                <a href="#" onclick="TabLogistique.showContactInfo()" class="sidebar-link">
+                    <i class="fas fa-headset me-2"></i>
+                    Support
+                </a>
+                {% if app.user %}
+                <a href="#" onclick="TabLogistique.reportBug()" class="sidebar-link">
+                    <i class="fas fa-bug me-2"></i>
+                    Signaler un bug
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer de la sidebar -->
+    <div class="sidebar-footer">
+        <div class="sidebar-user-info">
+            {% if app.user %}
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-details">
+                    <div class="user-name">{{ app.user.prenom ?? app.user.nom ?? 'Utilisateur' }}</div>
+                    <div class="user-role">
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <span class="badge bg-danger">Admin</span>
+                        {% else %}
+                            <span class="badge bg-success">User</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="guest-info">
+                    <i class="fas fa-user-slash me-2"></i>
+                    <span>Visiteur</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</aside>
+
+{# Overlay pour mobile #}
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="TabLogistique.closeSidebar()"></div>
+
+{# Styles CSS pour la sidebar #}
+<style>
+    /* Sidebar principale */
+    .sidebar {
+        position: fixed;
+        top: 76px; /* Hauteur de la navbar */
+        left: 0;
+        width: 280px;
+        height: calc(100vh - 76px);
+        background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+        color: #ecf0f1;
+        overflow-y: auto;
+        z-index: 1040;
+        transition: transform 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+
+    .sidebar.collapsed {
+        transform: translateX(-100%);
+    }
+
+    /* Header */
+    .sidebar-header {
+        padding: 20px;
+        background: rgba(0,0,0,0.2);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sidebar-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #3498db;
+    }
+
+    .sidebar-toggle {
+        border: 1px solid rgba(255,255,255,0.3);
+        color: #ecf0f1;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-toggle:hover {
+        background: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.5);
+        color: #3498db;
+    }
+
+    /* Contenu */
+    .sidebar-content {
+        padding: 10px 0;
+    }
+
+    /* Sections */
+    .sidebar-section {
+        margin-bottom: 20px;
+        padding: 0 20px;
+    }
+
+    .sidebar-section-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #e74c3c;
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+        border-bottom: 2px solid rgba(231, 76, 60, 0.3);
+    }
+
+    /* Liens */
+    .sidebar-links {
+        margin: 0;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #bdc3c7;
+        text-decoration: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+        font-size: 0.9rem;
+    }
+
+    .sidebar-link:hover {
+        background: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+        transform: translateX(5px);
+        border-left-color: #3498db;
+        text-decoration: none;
+    }
+
+    .sidebar-link.active {
+        background: rgba(52, 152, 219, 0.2);
+        color: #3498db;
+        border-left-color: #3498db;
+        font-weight: 600;
+    }
+
+    .sidebar-link.btn-action-primary {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .sidebar-link.btn-action-primary:hover {
+        background: linear-gradient(135deg, #2980b9 0%, #21618c 100%);
+        transform: translateX(0) scale(1.02);
+        border-left-color: transparent;
+    }
+
+    /* Badges */
+    .sidebar-badge {
+        background: #e74c3c;
+        color: white;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    /* Statistiques */
+    .sidebar-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .stat-item {
+        background: rgba(255,255,255,0.1);
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .stat-value {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        color: #95a5a6;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Alertes */
+    .sidebar-alerts {
+        margin: 0;
+    }
+
+    .alert-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        font-size: 0.8rem;
+    }
+
+    .alert-item.alert-warning {
+        background: rgba(241, 196, 15, 0.1);
+        border-left: 3px solid #f1c40f;
+    }
+
+    .alert-item.alert-info {
+        background: rgba(52, 152, 219, 0.1);
+        border-left: 3px solid #3498db;
+    }
+
+    .alert-content {
+        flex: 1;
+    }
+
+    .alert-title {
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .alert-text {
+        color: #95a5a6;
+        font-size: 0.75rem;
+    }
+
+    /* Raccourcis clavier */
+    .keyboard-shortcuts {
+        margin: 0;
+    }
+
+    .shortcut-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        font-size: 0.8rem;
+    }
+
+    .shortcut-item:last-child {
+        border-bottom: none;
+    }
+
+    kbd {
+        background: #34495e;
+        color: #ecf0f1;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 0.7rem;
+        font-family: monospace;
+        border: 1px solid #5a6c7d;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    /* Footer */
+    .sidebar-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 15px 20px;
+        background: rgba(0,0,0,0.3);
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-user-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .user-avatar {
+        font-size: 2rem;
+        color: #3498db;
+        margin-right: 10px;
+    }
+
+    .user-details {
+        flex: 1;
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 2px;
+    }
+
+    .user-role .badge {
+        font-size: 0.7rem;
+    }
+
+    .guest-info {
+        color: #95a5a6;
+        font-size: 0.9rem;
+    }
+
+    /* Overlay pour mobile */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 76px;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 76px);
+        background: rgba(0,0,0,0.5);
+        z-index: 1039;
+    }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+        .sidebar {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* Ajustement du contenu principal sur mobile */
+        .main-content {
+            margin-left: 0 !important;
+        }
+    }
+
+    @media (min-width: 992px) {
+        /* Ajustement du contenu principal sur desktop */
+        .main-content {
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: 0;
+        }
+    }
+
+    /* Scrollbar personnalisée */
+    .sidebar::-webkit-scrollbar {
+        width: 6px;
+        background: rgba(0,0,0,0.1);
+    }
+    .sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.3);
+        border-radius: 3px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255,255,255,0.5);
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+</style>
+<script>
+    // Fonction pour basculer la sidebar
+    TabLogistique.toggleSidebar = function() {
+        const sidebar = document.getElementById('mainSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('collapsed');
+        overlay.classList.toggle('show');
+    };
+
+    // Fonction pour fermer la sidebar
+    TabLogistique.closeSidebar = function() {
+        const sidebar = document.getElementById('mainSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.add('collapsed');
+        overlay.classList.remove('show');
+    };
+    // Fonction pour afficher les infos système
+    TabLogistique.showSystemInfo = function() {
+        // Logique pour afficher les infos système
+        alert('Affichage des informations système (à implémenter)');
+    };
+    // Fonction pour afficher l'aide
+    TabLogistique.showHelp = function() {
+        // Logique pour afficher l'aide
+        alert('Affichage de l\'aide (à implémenter)');
+    };
+    // Fonction pour afficher les infos de contact
+    TabLogistique.showContactInfo = function() {
+        // Logique pour afficher les infos de contact
+        alert('Affichage des informations de contact (à implémenter)');
+    };
+    // Fonction pour signaler un bug
+    TabLogistique.reportBug = function() {
+        // Logique pour signaler un bug
+        alert('Signalement de bug (à implémenter)');
+    };
+    // Fonction pour les actions groupées
+    TabLogistique.bulkActions = function() {
+        // Logique pour les actions groupées
+        alert('Actions groupées (à implémenter)');
+    };
+
+    // Fonction pour imprimer les étiquettes
+    TabLogistique.printLabels = function() {
+        // Logique pour imprimer les étiquettes
+        alert('Impression des étiquettes (à implémenter)');
+    };
+    // Initialisation de la sidebar au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('mainSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        // Écouteur pour fermer la sidebar en cliquant sur l'overlay
+        overlay.addEventListener('click', TabLogistique.closeSidebar);
+
+        // Vérification de la route actuelle pour ajuster l'état de la sidebar
+        if (sidebar.classList.contains('collapsed')) {
+            overlay.classList.remove('show');
+        } else {
+            overlay.classList.add('show');
+        }
+    });
+
+    // Gestion des raccourcis clavier
+    document.addEventListener('keydown', function(event) {
+        if (event.ctrlKey && event.key === 'k') {
+            event.preventDefault();
+            TabLogistique.toggleSidebar();
+        }
+        if (event.ctrlKey && event.key === 'n') {
+            event.preventDefault();
+            window.location.href = '{{ path('app_colis_wizard_start') }}';
+        }
+        if (event.ctrlKey && event.key === 'l') {
+            event.preventDefault();
+            window.location.href = '{{ path('app_colis_index') }}';
+        }
+    });
+</script>

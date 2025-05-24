@@ -1,0 +1,574 @@
+{# templates/components/navbar.html.twig #}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <!-- Logo et nom de l'application -->
+        <a class="navbar-brand" href="{{ path('app_home') }}">
+            <i class="fas fa-shipping-fast me-2"></i>TAB Logistique
+        </a>
+        
+        <!-- Bouton hamburger pour mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Menu principal -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Navigation principale (côté gauche) -->
+            <ul class="navbar-nav me-auto">
+                
+                {# ============================================ #}
+                {# GESTION DES COLIS (Fonctionnalité principale) #}
+                {# ============================================ #}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
+                       aria-expanded="false" data-bs-toggle="tooltip" title="Gestion complète des colis">
+                        <i class="fas fa-box me-1"></i>Colis
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_colis_index') }}">
+                                <i class="fas fa-list me-2"></i>Liste des colis
+                                <small class="text-muted d-block">Voir tous les colis</small>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_colis_wizard_start') }}">
+                                <i class="fas fa-plus-circle me-2"></i>Nouveau colis
+                                <small class="text-muted d-block">Assistant de création</small>
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="dropdown-header">
+                            <i class="fas fa-download me-2"></i>Exports
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_colis_export', {format: 'pdf'}) }}">
+                                <i class="fas fa-file-pdf me-2 text-danger"></i>Export PDF
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_colis_export', {format: 'excel'}) }}">
+                                <i class="fas fa-file-excel me-2 text-success"></i>Export Excel
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_colis_export', {format: 'csv'}) }}">
+                                <i class="fas fa-file-csv me-2 text-info"></i>Export CSV
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_colis_print') }}?ids=">
+                                <i class="fas fa-print me-2"></i>Impression groupée
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_colis_labels') }}?ids=">
+                                <i class="fas fa-tags me-2"></i>Étiquettes
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {# ============================================ #}
+                {# GESTION DES CONTACTS #}
+                {# ============================================ #}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
+                       aria-expanded="false" data-bs-toggle="tooltip" title="Gestion des expéditeurs et destinataires">
+                        <i class="fas fa-users me-1"></i>Contacts
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_expediteur_index') }}">
+                                <i class="fas fa-paper-plane me-2 text-primary"></i>Expéditeurs
+                                <small class="text-muted d-block">Gérer les expéditeurs</small>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_expediteur_new') }}">
+                                <i class="fas fa-plus me-2"></i>Nouvel expéditeur
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_destinataire_index') }}">
+                                <i class="fas fa-map-marker-alt me-2 text-success"></i>Destinataires
+                                <small class="text-muted d-block">Gérer les destinataires</small>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_destinataire_new') }}">
+                                <i class="fas fa-plus me-2"></i>Nouveau destinataire
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {# ============================================ #}
+                {# LOGISTIQUE ET TRANSPORT #}
+                {# ============================================ #}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
+                       aria-expanded="false" data-bs-toggle="tooltip" title="Gestion logistique et transport">
+                        <i class="fas fa-truck me-1"></i>Logistique
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_transport_index') }}">
+                                <i class="fas fa-shipping-fast me-2 text-info"></i>Transports
+                                <small class="text-muted d-block">Moyens de transport</small>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_transport_new') }}">
+                                <i class="fas fa-plus me-2"></i>Nouveau transport
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_warehouse_index') }}">
+                                <i class="fas fa-warehouse me-2 text-warning"></i>Entrepôts
+                                <small class="text-muted d-block">Gestion des entrepôts</small>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_warehouse_new') }}">
+                                <i class="fas fa-plus me-2"></i>Nouvel entrepôt
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_statut_index') }}">
+                                <i class="fas fa-tasks me-2 text-secondary"></i>Statuts
+                                <small class="text-muted d-block">Suivi des statuts</small>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_statut_new') }}">
+                                <i class="fas fa-plus me-2"></i>Nouveau statut
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {# ============================================ #}
+                {# GESTION DOCUMENTAIRE #}
+                {# ============================================ #}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
+                       aria-expanded="false" data-bs-toggle="tooltip" title="Gestion des documents et photos">
+                        <i class="fas fa-folder me-1"></i>Documents
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_photo_index') }}">
+                                <i class="fas fa-camera me-2 text-purple"></i>Photos
+                                <small class="text-muted d-block">Galerie de photos</small>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_photo_new') }}">
+                                <i class="fas fa-plus me-2"></i>Nouvelle photo
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_document_support_index') }}">
+                                <i class="fas fa-file-alt me-2 text-primary"></i>Documents support
+                                <small class="text-muted d-block">Documents techniques</small>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_document_support_new') }}">
+                                <i class="fas fa-plus me-2"></i>Nouveau document
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- Navigation secondaire (côté droit) -->
+            <ul class="navbar-nav">
+                
+                {# ============================================ #}
+                {# SUIVI PUBLIC (accessible à tous) #}
+                {# ============================================ #}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_tracking') }}" 
+                       data-bs-toggle="tooltip" title="Suivi de colis public">
+                        <i class="fas fa-search me-1"></i>Suivi
+                        <span class="badge bg-light text-dark ms-1">Public</span>
+                    </a>
+                </li>
+
+                {# ============================================ #}
+                {# ADMINISTRATION (ROLE_ADMIN uniquement) #}
+                {# ============================================ #}
+                {% if is_granted('ROLE_ADMIN') %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
+                       aria-expanded="false" data-bs-toggle="tooltip" title="Administration système">
+                        <i class="fas fa-cog me-1"></i>Admin
+                        <span class="badge-custom role-badge admin-badge ms-1">ADMIN</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_admin_dashboard') }}">
+                                <i class="fas fa-chart-line me-2 text-primary"></i>Tableau de bord
+                                <small class="text-muted d-block">Vue d'ensemble système</small>
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="dropdown-header">
+                            <i class="fas fa-users-cog me-2"></i>Gestion Utilisateurs
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_user_index') }}">
+                                <i class="fas fa-users me-2"></i>Liste utilisateurs
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_register') }}">
+                                <i class="fas fa-user-plus me-2"></i>Nouvel utilisateur
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="dropdown-header">
+                            <i class="fas fa-cogs me-2"></i>Configuration
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_departement_index') }}">
+                                <i class="fas fa-building me-2"></i>Départements
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="TabLogistique.showSystemInfo()">
+                                <i class="fas fa-info-circle me-2"></i>Infos système
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+
+                {# ============================================ #}
+                {# PROFIL UTILISATEUR #}
+                {# ============================================ #}
+                {% if app.user %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
+                       aria-expanded="false" data-bs-toggle="tooltip" title="Mon profil">
+                        <i class="fas fa-user me-1"></i>
+                        {{ app.user.prenom ?? app.user.nom ?? 'Utilisateur' }}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <span class="badge-custom role-badge admin-badge ms-1">ADMIN</span>
+                        {% else %}
+                            <span class="badge-custom role-badge user-badge ms-1">USER</span>
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li class="dropdown-header">
+                            <i class="fas fa-user-circle me-2"></i>{{ app.user.email }}
+                            <small class="text-muted d-block">
+                                Connecté {{ app.user.dernierConnexion ? app.user.dernierConnexion|date('d/m/Y H:i') : 'depuis longtemps' }}
+                            </small>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ path('app_forgot_password_request') }}">
+                                <i class="fas fa-key me-2"></i>Changer mot de passe
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="TabLogistique.toggleTheme()">
+                                <i class="fas fa-moon me-2"></i>Mode sombre/clair
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="{{ path('app_logout') }}"
+                               data-confirm="Êtes-vous sûr de vouloir vous déconnecter ?">
+                                <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% else %}
+                {# ============================================ #}
+                {# CONNEXION (utilisateur non connecté) #}
+                {# ============================================ #}
+                <li class="nav-item">
+                    <a class="nav-link btn btn-outline-light btn-sm" href="{{ path('app_login') }}"
+                       data-bs-toggle="tooltip" title="Se connecter au système">
+                        <i class="fas fa-sign-in-alt me-1"></i>Connexion
+                    </a>
+                </li>
+                {% endif %}
+
+                {# ============================================ #}
+                {# INDICATEUR D'ÉTAT SYSTÈME #}
+                {# ============================================ #}
+                <li class="nav-item">
+                    <span class="nav-link" id="systemStatus" data-bs-toggle="tooltip" title="État du système">
+                        <i class="fas fa-circle text-success" id="statusIndicator"></i>
+                        <span class="visually-hidden">Système opérationnel</span>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+{# Styles CSS spécifiques à la navbar #}
+<style>
+    /* Améliorations visuelles pour la navbar */
+    .navbar {
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%) !important;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-brand {
+        font-weight: bold;
+        font-size: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+        transform: scale(1.05);
+    }
+
+    /* Styles pour les dropdowns */
+    .dropdown-menu {
+        border: none;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        border-radius: 10px;
+        overflow: hidden;
+        min-width: 280px;
+    }
+
+    .dropdown-item {
+        padding: 12px 20px;
+        border-radius: 6px;
+        margin: 2px 5px;
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+    }
+
+    .dropdown-item:hover {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+        color: white;
+        transform: translateX(5px);
+        border-left-color: white;
+    }
+
+    .dropdown-item small {
+        font-size: 0.75rem;
+        opacity: 0.8;
+    }
+
+    .dropdown-header {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 0.9rem;
+        padding: 8px 20px 4px;
+    }
+
+    .dropdown-divider {
+        margin: 8px 0;
+        border-color: #e9ecef;
+    }
+
+    /* Badges de rôle */
+    .role-badge {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    .admin-badge {
+        background: linear-gradient(135deg, var(--danger-color) 0%, #b02a37 100%);
+        color: white;
+        animation: pulse 2s infinite;
+    }
+
+    .user-badge {
+        background: linear-gradient(135deg, var(--success-color) 0%, #157347 100%);
+        color: white;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
+    }
+
+    /* Indicateur de statut système */
+    #systemStatus {
+        cursor: help;
+    }
+
+    #statusIndicator {
+        animation: blink 3s infinite;
+    }
+
+    @keyframes blink {
+        0%, 90% { opacity: 1; }
+        95% { opacity: 0.3; }
+    }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+        .navbar-nav .dropdown-menu {
+            position: static !important;
+            transform: none !important;
+            border: none;
+            box-shadow: none;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .dropdown-item {
+            color: white;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .dropdown-header {
+            color: #ffc107;
+        }
+
+        .role-badge {
+            display: none;
+        }
+    }
+
+    /* Amélioration de l'accessibilité */
+    .nav-link:focus,
+    .dropdown-item:focus {
+        outline: 2px solid #ffc107;
+        outline-offset: 2px;
+    }
+
+    /* Animation d'apparition du menu */
+    .dropdown-menu {
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+{# JavaScript spécifique à la navbar #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fonction pour basculer le thème
+    window.TabLogistique = window.TabLogistique || {};
+    
+    TabLogistique.toggleTheme = function() {
+        const body = document.body;
+        const isDark = body.classList.contains('dark-theme');
+        
+        if (isDark) {
+            body.classList.remove('dark-theme');
+            localStorage.setItem('theme', 'light');
+        } else {
+            body.classList.add('dark-theme');
+            localStorage.setItem('theme', 'dark');
+        }
+        
+        // Mettre à jour l'icône
+        const themeIcon = document.querySelector('[onclick="TabLogistique.toggleTheme()"] i');
+        if (themeIcon) {
+            themeIcon.className = isDark ? 'fas fa-moon me-2' : 'fas fa-sun me-2';
+        }
+    };
+    
+    // Fonction pour afficher les infos système
+    TabLogistique.showSystemInfo = function() {
+        const info = `
+            Version: TAB Logistique 3.2
+            Symfony: {{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}
+            PHP: {{ app.request.server.get('SERVER_SOFTWARE') }}
+            Serveur: {{ app.request.server.get('SERVER_SOFTWARE') }}
+            Base de données: Connectée
+            
+            Routes disponibles: {{ app.debug ? 'Mode debug activé' : 'Mode production' }}
+        `;
+        alert(info);
+    };
+    
+    // Vérification périodique du statut système
+    function checkSystemStatus() {
+        const indicator = document.getElementById('statusIndicator');
+        const statusSpan = document.getElementById('systemStatus');
+        
+        // Simulation de vérification (remplacer par un vrai check)
+        const isOnline = navigator.onLine;
+        
+        if (isOnline) {
+            indicator.className = 'fas fa-circle text-success';
+            statusSpan.setAttribute('data-bs-original-title', 'Système opérationnel');
+        } else {
+            indicator.className = 'fas fa-circle text-danger';
+            statusSpan.setAttribute('data-bs-original-title', 'Problème de connexion');
+        }
+    }
+    
+    // Vérifier le statut toutes les 30 secondes
+    setInterval(checkSystemStatus, 30000);
+    checkSystemStatus(); // Check initial
+    
+    // Charger le thème sauvegardé
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+    }
+    
+    // Gestion des événements de navigation
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('.dropdown-item');
+        if (link && link.href && !link.href.includes('#')) {
+            // Ajouter un effet de chargement pour les vrais liens
+            const icon = link.querySelector('i');
+            if (icon) {
+                icon.className = 'fas fa-spinner fa-spin me-2';
+            }
+        }
+    });
+    
+    // Mise à jour de l'indicateur d'activité utilisateur
+    let lastActivity = Date.now();
+    
+    document.addEventListener('mousemove', function() {
+        lastActivity = Date.now();
+    });
+    
+    document.addEventListener('keypress', function() {
+        lastActivity = Date.now();
+    });
+    
+    // Vérifier l'inactivité toutes les minutes
+    setInterval(function() {
+        const inactiveTime = Date.now() - lastActivity;
+        const fiveMinutes = 5 * 60 * 1000;
+        
+        if (inactiveTime > fiveMinutes) {
+            // Optionnel: Afficher un avertissement d'inactivité
+            console.log('Utilisateur inactif depuis 5 minutes');
+        }
+    }, 60000);
+});
+</script>

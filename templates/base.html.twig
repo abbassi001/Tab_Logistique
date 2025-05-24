@@ -1,182 +1,867 @@
 <!DOCTYPE html>
 <html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}TAB Logistique{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>📦</text></svg>">
-        
-        {# Bootstrap CSS #}
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        
-        {# Font Awesome #}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        
-        {# Google Fonts #}
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        
-        {# Base CSS #}
-        <link rel="stylesheet" href="{{ asset('css/main.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/print.css') }}">
-        
-        {# Module specific CSS #}
-        {% block module_stylesheets %}{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TAB Logistique{% endblock %}</title>
+    <meta name="description" content="{% block description %}TAB Logistique - Système de gestion logistique professionnel{% endblock %}">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ asset('images/favicon.ico') }}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Styles personnalisés -->
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --dark-color: #212529;
+        }
 
-           <link rel="stylesheet" href="{{ asset('css/main.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/print.css') }}" media="print">
-    <link rel="stylesheet" href="{{ asset('css/animations.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/notifications.css') }}">
-    <!-- Modules CSS conditionnels -->
-    {% if app.request.attributes.get('_route') starts with 'app_admin_' %}
-        <link rel="stylesheet" href="{{ asset('css/modules/admin-user.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/modules/admin-forms.css') }}">
-    {% endif %}
-    {% if app.request.attributes.get('_route') starts with 'app_colis_' %}
-        <link rel="stylesheet" href="{{ asset('css/modules/colis.css') }}">
-    {% endif %}
-    {% if app.request.attributes.get('_route') starts with 'app_colis_wizard_' %}
-        <link rel="stylesheet" href="{{ asset('css/modules/wizard.css') }}">
-    {% endif %}
-        
-        {# Page specific CSS #}
-        {% block stylesheets %}{% endblock %}
-    </head>
-    <body>
-        <header>
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                <div class="container-fluid">
-                    <a class="navbar-brand">
-                        <i class="fas fa-box me-2"></i>TAB Logistique
-                    </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav me-auto">
-                            {% if is_granted('ROLE_USER') %}
-                                <li class="nav-item">
-                                    <a class="nav-link d-flex align-items-center" href="{{ path('app_colis_index') }}">
-                                        <i class="fas fa-box-open me-1"></i>
-                                        <span>Colis</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link d-flex align-items-center" href="{{ path('app_expediteur_index') }}">
-                                        <i class="fas fa-paper-plane me-1"></i>
-                                        <span>Expéditeurs</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link d-flex align-items-center" href="{{ path('app_destinataire_index') }}">
-                                        <i class="fas fa-map-marker-alt me-1"></i>
-                                        <span>Destinataires</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-clipboard-list me-1"></i>
-                                        <span>Plus</span>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item" href="{{ path('app_transport_index') }}">
-                                                <i class="fas fa-truck me-2"></i>Transports
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="{{ path('app_warehouse_index') }}">
-                                                <i class="fas fa-warehouse me-2"></i>Entrepôts
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="{{ path('app_warehouse_index') }}">
-                                                <i class="fas fa-dolly me-2"></i>Localisation des Colis
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            {% endif %}
-                        </ul>
-                        <div class="d-flex align-items-center">
-                            {% if is_granted('ROLE_USER') %}
-                                <form class="search-form me-3" action="{{ path('app_colis_index') }}" method="get">
-                                    <input class="form-control" type="search" name="search" placeholder="Rechercher un colis..." aria-label="Search">
-                                    <button class="search-btn" type="submit"><i class="fas fa-search"></i></button>
-                                </form>
-                            {% endif %}
-                            
-                            <!-- Affichage selon l'état de connexion -->
-                            {% if app.user %}
-                                <div class="dropdown">
-                                    <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-user-circle me-2"></i>
-                                        <span class="d-none d-sm-inline">{{ app.user.email }}</span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                                        <li><a class="dropdown-item" href="#"><i class="fas fa-id-card me-2"></i>Mon profil</a></li>
-                                        {% if is_granted('ROLE_ADMIN') %}
-                                            <li><a class="dropdown-item" href="{{ path('app_register') }}"><i class="fas fa-user-plus me-2"></i>Créer un utilisateur</a></li>
-                                            <li><a class="dropdown-item" href="{{ path('app_user_index') }}"><i class="fas fa-users me-2"></i>Gestion des employés</a></li>
-                                            <li><a class="dropdown-item" href="{{ path('app_departement_index') }}"><i class="fas fa-building me-2"></i>Départements</a></li>
-                                        {% endif %}
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Déconnexion</a></li>
-                                    </ul>
-                                </div>
-                            {% else %}
-                                <a href="{{ path('app_login') }}" class="btn btn-outline-light d-flex align-items-center">
-                                    <i class="fas fa-sign-in-alt me-2"></i>
-                                    <span>Connexion</span>
-                                </a>
-                            {% endif %}
-                        </div>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Layout principal */
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+            overflow-y: auto;
+            min-height: calc(100vh - 76px - 120px); /* navbar + footer */
+        }
+
+        /* Navbar styles */
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%) !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1050;
+            height: 76px;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-radius: 10px;
+        }
+
+        .dropdown-item {
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin: 2px 5px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+        }
+
+        .btn-action {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-action:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+            color: white;
+        }
+
+        .btn-success-custom {
+            background: linear-gradient(135deg, var(--success-color) 0%, #157347 100%);
+            color: white;
+        }
+
+        .btn-warning-custom {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #f0ad4e 100%);
+            color: #212529;
+        }
+
+        .role-badge {
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 15px;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #b02a37 100%);
+            color: white;
+        }
+
+        .user-badge {
+            background: linear-gradient(135deg, var(--success-color) 0%, #157347 100%);
+            color: white;
+        }
+
+        .badge-custom {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #b02a37 100%);
+            border-radius: 15px;
+            padding: 5px 10px;
+            font-size: 0.75rem;
+        }
+
+        /* Styles pour les alertes */
+        .alert {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Flash messages */
+        .flash-messages {
+            position: fixed;
+            top: 90px; /* Ajusté pour la navbar fixe */
+            right: 20px;
+            z-index: 1055;
+            min-width: 300px;
+        }
+
+        .flash-message {
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Styles responsives */
+        @media (max-width: 768px) {
+            .navbar-nav .dropdown-menu {
+                position: static !important;
+                transform: none !important;
+                border: none;
+                box-shadow: none;
+                background: transparent;
+            }
+
+            .flash-messages {
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+
+            .main-content {
+                padding: 10px;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .main-content {
+                margin-left: 280px; /* Largeur de la sidebar */
+            }
+            
+            .sidebar.collapsed + .content-wrapper .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Loading indicator */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.8);
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .spinner-border-custom {
+            width: 3rem;
+            height: 3rem;
+            border: 0.3em solid var(--primary-color);
+            border-right: 0.3em solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ecf0f1;
+            border-top: 5px solid var(--primary-color);
+            margin-top: auto;
+        }
+
+        /* Ajustements pour la page avec sidebar */
+        .page-with-sidebar {
+            padding-top: 76px; /* Hauteur de la navbar */
+        }
+
+        .page-without-sidebar {
+            padding-top: 76px; /* Hauteur de la navbar */
+        }
+
+        /* Mode sombre */
+        .dark-theme {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ecf0f1;
+        }
+
+        .dark-theme .card {
+            background: #34495e;
+            color: #ecf0f1;
+        }
+
+        .dark-theme .navbar {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+        }
+
+        .dark-theme .dropdown-menu {
+            background: #34495e;
+            border: 1px solid #5a6c7d;
+        }
+
+        .dark-theme .dropdown-item {
+            color: #ecf0f1;
+        }
+
+        .dark-theme .dropdown-item:hover {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+        }
+
+        .dark-theme .text-muted {
+            color: #95a5a6 !important;
+        }
+
+        .dark-theme .main-content {
+            background: inherit;
+        }
+    </style>
+    
+    {% block stylesheets %}{% endblock %}
+</head>
+<body class="{% if app.user %}page-with-sidebar{% else %}page-without-sidebar{% endif %}">
+    <div class="main-layout">
+        <!-- Navigation -->
+        {% include 'components/navbar.html.twig' %}
+
+        <!-- Flash messages -->
+        <div class="flash-messages">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="flash-message alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
+                        {% if type == 'success' %}
+                            <i class="fas fa-check-circle me-2"></i>
+                        {% elseif type == 'error' or type == 'danger' %}
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                        {% elseif type == 'warning' %}
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                        {% elseif type == 'info' %}
+                            <i class="fas fa-info-circle me-2"></i>
+                        {% endif %}
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <!-- Loading overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner-border-custom"></div>
+                <div class="mt-3">
+                    <strong>Chargement...</strong>
                 </div>
-            </nav>
-        </header>
-        
-        <div class="container-fluid p-0">
-            <div class="row g-0">
-                {% block sidebar %}{% endblock %}
-                
-                <main class="{% block main_class %}col-md-12{% endblock %}">
-                    {% block body %}{% endblock %}
-                </main>
             </div>
         </div>
-        
-        <footer>
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6 text-center text-md-start">
-                        <span>TAB Logistique &copy; {{ "now"|date("Y") }} - Système de Tracking de Colis</span>
-                    </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <span>Développé par <a href="#" class="text-light">TAB Team</a></span>
-                    </div>
-                </div>
-            </div>
-        </footer>
-        
-        {# Bootstrap JS Bundle #}
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        
-        {# Base JavaScript #}
-        <script src="{{ asset('js/main.js') }}"></script>
-        
-        {# Module specific JavaScript #}
-        {% block module_javascripts %}{% endblock %}
-            <script src="{{ asset('js/main.js') }}"></script>
-    <script src="{{ asset('js/modules/advanced-ui.js') }}"></script>
-    <!-- Modules JS conditionnels -->
-    {% if app.request.attributes.get('_route') starts with 'app_colis_' %}
-        <script src="{{ asset('js/modules/colis.js') }}"></script>
-    {% endif %}
-    {% if app.request.attributes.get('_route') starts with 'app_colis_wizard_' %}
-        <script src="{{ asset('js/modules/wizard.js') }}"></script>
-    {% endif %}
-        
-        {# Page specific JavaScript #}
-        {% block javascripts %}{% endblock %}
-    </body>
+
+        <!-- Contenu principal avec sidebar conditionnelle -->
+        <div class="content-wrapper">
+            <!-- Sidebar (uniquement pour les utilisateurs connectés) -->
+            {% if app.user %}
+                {% include 'components/sidebar.html.twig' %}
+            {% endif %}
+
+            <!-- Contenu principal -->
+            <main class="main-content">
+                {% block body %}{% endblock %}
+            </main>
+        </div>
+
+        <!-- Footer -->
+        {% include 'components/footer.html.twig' %}
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Scripts personnalisés -->
+    <script>
+        // Gestionnaire d'état global de l'application
+        window.TabLogistique = {
+            // Configuration
+            config: {
+                apiBaseUrl: '{{ app.request.getSchemeAndHttpHost() }}',
+                csrfToken: '{{ csrf_token('default') }}',
+                locale: '{{ app.request.locale }}',
+                userId: {{ app.user ? app.user.id : 'null' }},
+                userRole: '{{ is_granted('ROLE_ADMIN') ? 'ADMIN' : 'USER' }}',
+                debug: {{ app.debug ? 'true' : 'false' }}
+            },
+            
+            // État de l'application
+            state: {
+                sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+                theme: localStorage.getItem('theme') || 'light',
+                notifications: [],
+                lastActivity: Date.now()
+            },
+            
+            // Initialisation
+            init: function() {
+                this.setupEventListeners();
+                this.initTooltips();
+                this.autoHideFlashMessages();
+                this.initTheme();
+                this.startActivityMonitoring();
+                this.loadUserPreferences();
+            },
+            
+            // Configuration des écouteurs d'événements
+            setupEventListeners: function() {
+                // Raccourcis clavier globaux
+                document.addEventListener('keydown', this.handleKeyboardShortcuts.bind(this));
+                
+                // Gestion des formulaires AJAX
+                document.addEventListener('submit', this.handleFormSubmit.bind(this));
+                
+                // Gestion des liens avec confirmation
+                document.addEventListener('click', this.handleConfirmLinks.bind(this));
+                
+                // Gestion de la connectivité
+                window.addEventListener('online', this.handleOnline.bind(this));
+                window.addEventListener('offline', this.handleOffline.bind(this));
+                
+                // Gestion du redimensionnement
+                window.addEventListener('resize', this.handleResize.bind(this));
+                
+                // Gestion de l'activité utilisateur
+                ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+                    document.addEventListener(event, this.updateActivity.bind(this), true);
+                });
+            },
+            
+            // Initialiser les tooltips Bootstrap
+            initTooltips: function() {
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            },
+            
+            // Auto-masquer les messages flash après 5 secondes
+            autoHideFlashMessages: function() {
+                setTimeout(() => {
+                    const flashMessages = document.querySelectorAll('.flash-message');
+                    flashMessages.forEach(message => {
+                        const alert = new bootstrap.Alert(message);
+                        alert.close();
+                    });
+                }, 5000);
+            },
+            
+            // Initialiser le thème
+            initTheme: function() {
+                if (this.state.theme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                }
+            },
+            
+            // Surveiller l'activité utilisateur
+            startActivityMonitoring: function() {
+                setInterval(() => {
+                    const inactiveTime = Date.now() - this.state.lastActivity;
+                    const warningTime = 25 * 60 * 1000; // 25 minutes
+                    const logoutTime = 30 * 60 * 1000; // 30 minutes
+                    
+                    if (inactiveTime > warningTime && inactiveTime < logoutTime) {
+                        this.showInactivityWarning();
+                    } else if (inactiveTime > logoutTime && {{ app.user ? 'true' : 'false' }}) {
+                        this.handleAutoLogout();
+                    }
+                }, 60000); // Vérifier chaque minute
+            },
+            
+            // Charger les préférences utilisateur
+            loadUserPreferences: function() {
+                {% if app.user %}
+                const savedPrefs = localStorage.getItem('userPrefs_{{ app.user.id }}');
+                if (savedPrefs) {
+                    try {
+                        const prefs = JSON.parse(savedPrefs);
+                        // Appliquer les préférences
+                        if (prefs.sidebarCollapsed !== undefined) {
+                            this.state.sidebarCollapsed = prefs.sidebarCollapsed;
+                        }
+                    } catch (e) {
+                        console.warn('Erreur lors du chargement des préférences:', e);
+                    }
+                }
+                {% endif %}
+            },
+            
+            // Sauvegarder les préférences utilisateur
+            saveUserPreferences: function() {
+                {% if app.user %}
+                const prefs = {
+                    sidebarCollapsed: this.state.sidebarCollapsed,
+                    theme: this.state.theme,
+                    lastSaved: new Date().toISOString()
+                };
+                localStorage.setItem('userPrefs_{{ app.user.id }}', JSON.stringify(prefs));
+                {% endif %}
+            },
+            
+            // Gestion des raccourcis clavier
+            handleKeyboardShortcuts: function(e) {
+                // Ctrl + K pour recherche
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    window.location.href = '{{ path('app_tracking') }}';
+                }
+                
+                // Ctrl + N pour nouveau colis
+                if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                    e.preventDefault();
+                    {% if app.user %}
+                    window.location.href = '{{ path('app_colis_wizard_start') }}';
+                    {% endif %}
+                }
+                
+                // Ctrl + L pour liste des colis
+                if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+                    e.preventDefault();
+                    {% if app.user %}
+                    window.location.href = '{{ path('app_colis_index') }}';
+                    {% endif %}
+                }
+                
+                // Ctrl + B pour basculer la sidebar
+                if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                    e.preventDefault();
+                    {% if app.user %}
+                    this.toggleSidebar();
+                    {% endif %}
+                }
+                
+                // Escape pour fermer les modals/sidebar
+                if (e.key === 'Escape') {
+                    this.handleEscape();
+                }
+            },
+            
+            // Gestion des soumissions de formulaire
+            handleFormSubmit: function(e) {
+                const form = e.target;
+                if (form.classList.contains('ajax-form')) {
+                    e.preventDefault();
+                    this.submitAjaxForm(form);
+                }
+            },
+            
+            // Gestion des liens avec confirmation
+            handleConfirmLinks: function(e) {
+                const link = e.target.closest('[data-confirm]');
+                if (link) {
+                    e.preventDefault();
+                    const message = link.dataset.confirm;
+                    if (confirm(message)) {
+                        if (link.href) {
+                            window.location.href = link.href;
+                        } else if (link.onclick) {
+                            link.onclick();
+                        }
+                    }
+                }
+            },
+            
+            // Gestion de la reconnexion
+            handleOnline: function() {
+                this.showNotification('Connexion rétablie', 'success');
+                this.updateSystemStatus(true);
+            },
+            
+            // Gestion de la déconnexion
+            handleOffline: function() {
+                this.showNotification('Connexion perdue - Mode hors ligne', 'warning');
+                this.updateSystemStatus(false);
+            },
+            
+            // Gestion du redimensionnement
+            handleResize: function() {
+                // Réajuster la sidebar si nécessaire
+                if (typeof this.adjustMainContent === 'function') {
+                    this.adjustMainContent();
+                }
+            },
+            
+            // Gestion de l'échappement
+            handleEscape: function() {
+                // Fermer la sidebar sur mobile
+                if (window.innerWidth < 992 && typeof this.closeSidebar === 'function') {
+                    this.closeSidebar();
+                }
+                
+                // Fermer les modals ouvertes
+                const openModals = document.querySelectorAll('.modal.show');
+                openModals.forEach(modal => {
+                    const modalInstance = bootstrap.Modal.getInstance(modal);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                });
+            },
+            
+            // Mettre à jour l'activité
+            updateActivity: function() {
+                this.state.lastActivity = Date.now();
+            },
+            
+            // Afficher un avertissement d'inactivité
+            showInactivityWarning: function() {
+                if (!document.getElementById('inactivityWarning')) {
+                    const warning = document.createElement('div');
+                    warning.id = 'inactivityWarning';
+                    warning.className = 'alert alert-warning alert-dismissible position-fixed';
+                    warning.style.cssText = 'top: 100px; right: 20px; z-index: 1060; min-width: 300px;';
+                    warning.innerHTML = `
+                        <i class="fas fa-clock me-2"></i>
+                        <strong>Session bientôt expirée</strong><br>
+                        Votre session expirera dans 5 minutes par inactivité.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    document.body.appendChild(warning);
+                    
+                    setTimeout(() => {
+                        if (warning.parentNode) {
+                            warning.parentNode.removeChild(warning);
+                        }
+                    }, 10000);
+                }
+            },
+            
+            // Gestion de la déconnexion automatique
+            handleAutoLogout: function() {
+                alert('Votre session a expiré par inactivité. Vous allez être redirigé vers la page de connexion.');
+                window.location.href = '{{ path('app_logout') }}';
+            },
+            
+            // Soumission AJAX de formulaire
+            submitAjaxForm: function(form) {
+                this.showLoading();
+                
+                const formData = new FormData(form);
+                
+                fetch(form.action, {
+                    method: form.method || 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-Token': this.config.csrfToken
+                    }
+                })
+                .then(response => {
+                    this.hideLoading();
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        this.showNotification(data.message || 'Opération réussie', 'success');
+                        if (data.redirect) {
+                            setTimeout(() => {
+                                window.location.href = data.redirect;
+                            }, 1500);
+                        }
+                        if (data.reload) {
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        }
+                    } else {
+                        this.showNotification(data.message || 'Une erreur est survenue', 'danger');
+                    }
+                })
+                .catch(error => {
+                    this.hideLoading();
+                    this.showNotification('Erreur de connexion', 'danger');
+                    console.error('Erreur AJAX:', error);
+                });
+            },
+            
+            // Afficher l'indicateur de chargement
+            showLoading: function() {
+                document.getElementById('loadingOverlay').style.display = 'block';
+            },
+            
+            // Masquer l'indicateur de chargement
+            hideLoading: function() {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            },
+            
+            // Afficher une notification
+            showNotification: function(message, type = 'info') {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `flash-message alert alert-${type} alert-dismissible fade show`;
+                alertDiv.innerHTML = `
+                    <i class="fas fa-${this.getIconForType(type)} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                const container = document.querySelector('.flash-messages');
+                container.appendChild(alertDiv);
+                
+                // Auto-suppression après 5 secondes
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        const alert = new bootstrap.Alert(alertDiv);
+                        alert.close();
+                    }
+                }, 5000);
+                
+                // Ajouter à l'historique des notifications
+                this.state.notifications.push({
+                    message,
+                    type,
+                    timestamp: new Date()
+                });
+            },
+            
+            // Obtenir l'icône pour le type d'alerte
+            getIconForType: function(type) {
+                const icons = {
+                    'success': 'check-circle',
+                    'danger': 'exclamation-triangle',
+                    'warning': 'exclamation-circle',
+                    'info': 'info-circle'
+                };
+                return icons[type] || 'info-circle';
+            },
+            
+            // Basculer le thème
+            toggleTheme: function() {
+                const body = document.body;
+                const isDark = body.classList.contains('dark-theme');
+                
+                if (isDark) {
+                    body.classList.remove('dark-theme');
+                    this.state.theme = 'light';
+                } else {
+                    body.classList.add('dark-theme');
+                    this.state.theme = 'dark';
+                }
+                
+                localStorage.setItem('theme', this.state.theme);
+                this.saveUserPreferences();
+                
+                // Mettre à jour l'icône du bouton de thème
+                const themeIcon = document.querySelector('[onclick*="toggleTheme"] i');
+                if (themeIcon) {
+                    themeIcon.className = isDark ? 'fas fa-moon me-2' : 'fas fa-sun me-2';
+                }
+                
+                this.showNotification(`Mode ${isDark ? 'clair' : 'sombre'} activé`, 'info');
+            },
+            
+            // Mettre à jour le statut système
+            updateSystemStatus: function(isOnline) {
+                const indicators = document.querySelectorAll('#statusIndicator, .status-indicator');
+                indicators.forEach(indicator => {
+                    if (isOnline) {
+                        indicator.className = 'fas fa-circle text-success';
+                        indicator.setAttribute('title', 'Système opérationnel');
+                    } else {
+                        indicator.className = 'fas fa-circle text-danger';
+                        indicator.setAttribute('title', 'Problème de connexion');
+                    }
+                });
+            },
+            
+            // Afficher les informations système
+            showSystemInfo: function() {
+                const info = `
+🖥️ Informations Système TAB Logistique
+
+📋 Application :
+• Version : 3.2
+• Environnement : {{ app.environment }}
+• Mode Debug : {{ app.debug ? 'Activé' : 'Désactivé' }}
+
+🔧 Technique :
+• Symfony : {{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}
+• PHP : {{ constant('PHP_VERSION') }}
+• Serveur : {{ app.request.server.get('SERVER_SOFTWARE') }}
+
+👤 Session Utilisateur :
+• ID : {{ app.user ? app.user.id : 'Non connecté' }}
+• Rôle : {{ is_granted('ROLE_ADMIN') ? 'ADMIN' : (app.user ? 'USER' : 'GUEST') }}
+• Dernière activité : ${new Date(this.state.lastActivity).toLocaleString('fr-FR')}
+
+🌐 Navigateur :
+• User Agent : ${navigator.userAgent.substring(0, 50)}...
+• Langue : {{ app.request.locale }}
+• Timezone : ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+
+📊 Performance :
+• Mémoire JS : ${(performance.memory?.usedJSHeapSize / 1024 / 1024).toFixed(2) || 'N/A'} MB
+• Connexion : ${navigator.onLine ? 'En ligne' : 'Hors ligne'}
+• Notifications : ${this.state.notifications.length} en session
+
+Généré le : ${new Date().toLocaleString('fr-FR')}
+                `;
+                
+                alert(info);
+            },
+            
+            // Fonction utilitaire pour les appels API
+            apiCall: function(url, options = {}) {
+                const defaultOptions = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-Token': this.config.csrfToken
+                    }
+                };
+                
+                return fetch(url, { ...defaultOptions, ...options })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        this.showNotification(`Erreur API: ${error.message}`, 'danger');
+                        throw error;
+                    });
+            }
+        };
+
+        // Initialiser l'application au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            TabLogistique.init();
+            
+            // Initialisation spécifique selon la page
+            {% if app.user %}
+            // Initialiser la sidebar si présente
+            if (typeof TabLogistique.initSidebar === 'function') {
+                TabLogistique.initSidebar();
+            }
+            {% endif %}
+        });
+
+        // Sauvegarder l'état avant de quitter
+        window.addEventListener('beforeunload', function() {
+            TabLogistique.saveUserPreferences();
+        });
+    </script>
+    
+    {% block javascripts %}{% endblock %}
+</body>
 </html>
