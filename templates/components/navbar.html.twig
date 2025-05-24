@@ -1,574 +1,1415 @@
-{# templates/components/navbar.html.twig #}
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-        <!-- Logo et nom de l'application -->
-        <a class="navbar-brand" href="{{ path('app_home') }}">
-            <i class="fas fa-shipping-fast me-2"></i>TAB Logistique
-        </a>
-        
-        <!-- Bouton hamburger pour mobile -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <!-- Menu principal -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <!-- Navigation principale (côté gauche) -->
-            <ul class="navbar-nav me-auto">
-                
-                {# ============================================ #}
-                {# GESTION DES COLIS (Fonctionnalité principale) #}
-                {# ============================================ #}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
-                       aria-expanded="false" data-bs-toggle="tooltip" title="Gestion complète des colis">
-                        <i class="fas fa-box me-1"></i>Colis
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_colis_index') }}">
-                                <i class="fas fa-list me-2"></i>Liste des colis
-                                <small class="text-muted d-block">Voir tous les colis</small>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_colis_wizard_start') }}">
-                                <i class="fas fa-plus-circle me-2"></i>Nouveau colis
-                                <small class="text-muted d-block">Assistant de création</small>
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li class="dropdown-header">
-                            <i class="fas fa-download me-2"></i>Exports
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_colis_export', {format: 'pdf'}) }}">
-                                <i class="fas fa-file-pdf me-2 text-danger"></i>Export PDF
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_colis_export', {format: 'excel'}) }}">
-                                <i class="fas fa-file-excel me-2 text-success"></i>Export Excel
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_colis_export', {format: 'csv'}) }}">
-                                <i class="fas fa-file-csv me-2 text-info"></i>Export CSV
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_colis_print') }}?ids=">
-                                <i class="fas fa-print me-2"></i>Impression groupée
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_colis_labels') }}?ids=">
-                                <i class="fas fa-tags me-2"></i>Étiquettes
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAB Logistique - Navigation Professionnelle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --secondary-gradient: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            --accent-color: #3b82f6;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --navbar-height: 72px;
+            --sidebar-width: 300px;
+            --sidebar-collapsed-width: 80px;
+            --border-color: rgba(255,255,255,0.1);
+            --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-                {# ============================================ #}
-                {# GESTION DES CONTACTS #}
-                {# ============================================ #}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
-                       aria-expanded="false" data-bs-toggle="tooltip" title="Gestion des expéditeurs et destinataires">
-                        <i class="fas fa-users me-1"></i>Contacts
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_expediteur_index') }}">
-                                <i class="fas fa-paper-plane me-2 text-primary"></i>Expéditeurs
-                                <small class="text-muted d-block">Gérer les expéditeurs</small>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_expediteur_new') }}">
-                                <i class="fas fa-plus me-2"></i>Nouvel expéditeur
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_destinataire_index') }}">
-                                <i class="fas fa-map-marker-alt me-2 text-success"></i>Destinataires
-                                <small class="text-muted d-block">Gérer les destinataires</small>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_destinataire_new') }}">
-                                <i class="fas fa-plus me-2"></i>Nouveau destinataire
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+        * {
+            box-sizing: border-box;
+        }
 
-                {# ============================================ #}
-                {# LOGISTIQUE ET TRANSPORT #}
-                {# ============================================ #}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
-                       aria-expanded="false" data-bs-toggle="tooltip" title="Gestion logistique et transport">
-                        <i class="fas fa-truck me-1"></i>Logistique
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_transport_index') }}">
-                                <i class="fas fa-shipping-fast me-2 text-info"></i>Transports
-                                <small class="text-muted d-block">Moyens de transport</small>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_transport_new') }}">
-                                <i class="fas fa-plus me-2"></i>Nouveau transport
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_warehouse_index') }}">
-                                <i class="fas fa-warehouse me-2 text-warning"></i>Entrepôts
-                                <small class="text-muted d-block">Gestion des entrepôts</small>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_warehouse_new') }}">
-                                <i class="fas fa-plus me-2"></i>Nouvel entrepôt
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_statut_index') }}">
-                                <i class="fas fa-tasks me-2 text-secondary"></i>Statuts
-                                <small class="text-muted d-block">Suivi des statuts</small>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_statut_new') }}">
-                                <i class="fas fa-plus me-2"></i>Nouveau statut
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8fafc;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
 
-                {# ============================================ #}
-                {# GESTION DOCUMENTAIRE #}
-                {# ============================================ #}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
-                       aria-expanded="false" data-bs-toggle="tooltip" title="Gestion des documents et photos">
-                        <i class="fas fa-folder me-1"></i>Documents
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_photo_index') }}">
-                                <i class="fas fa-camera me-2 text-purple"></i>Photos
-                                <small class="text-muted d-block">Galerie de photos</small>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_photo_new') }}">
-                                <i class="fas fa-plus me-2"></i>Nouvelle photo
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_document_support_index') }}">
-                                <i class="fas fa-file-alt me-2 text-primary"></i>Documents support
-                                <small class="text-muted d-block">Documents techniques</small>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_document_support_new') }}">
-                                <i class="fas fa-plus me-2"></i>Nouveau document
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+        /* ===========================================
+           NAVBAR PRINCIPALE
+        =========================================== */
+        .main-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--navbar-height);
+            background: var(--primary-gradient);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            z-index: 1050;
+            transition: var(--transition-smooth);
+        }
 
-            <!-- Navigation secondaire (côté droit) -->
-            <ul class="navbar-nav">
-                
-                {# ============================================ #}
-                {# SUIVI PUBLIC (accessible à tous) #}
-                {# ============================================ #}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_tracking') }}" 
-                       data-bs-toggle="tooltip" title="Suivi de colis public">
-                        <i class="fas fa-search me-1"></i>Suivi
-                        <span class="badge bg-light text-dark ms-1">Public</span>
-                    </a>
-                </li>
+        .navbar-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 2rem;
+            max-width: 100%;
+        }
 
-                {# ============================================ #}
-                {# ADMINISTRATION (ROLE_ADMIN uniquement) #}
-                {# ============================================ #}
-                {% if is_granted('ROLE_ADMIN') %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
-                       aria-expanded="false" data-bs-toggle="tooltip" title="Administration système">
-                        <i class="fas fa-cog me-1"></i>Admin
-                        <span class="badge-custom role-badge admin-badge ms-1">ADMIN</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_admin_dashboard') }}">
-                                <i class="fas fa-chart-line me-2 text-primary"></i>Tableau de bord
-                                <small class="text-muted d-block">Vue d'ensemble système</small>
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li class="dropdown-header">
-                            <i class="fas fa-users-cog me-2"></i>Gestion Utilisateurs
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_user_index') }}">
-                                <i class="fas fa-users me-2"></i>Liste utilisateurs
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_register') }}">
-                                <i class="fas fa-user-plus me-2"></i>Nouvel utilisateur
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li class="dropdown-header">
-                            <i class="fas fa-cogs me-2"></i>Configuration
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_departement_index') }}">
-                                <i class="fas fa-building me-2"></i>Départements
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#" onclick="TabLogistique.showSystemInfo()">
-                                <i class="fas fa-info-circle me-2"></i>Infos système
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                {% endif %}
+        /* Logo et branding */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.5rem;
+            transition: var(--transition-smooth);
+        }
 
-                {# ============================================ #}
-                {# PROFIL UTILISATEUR #}
-                {# ============================================ #}
-                {% if app.user %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
-                       aria-expanded="false" data-bs-toggle="tooltip" title="Mon profil">
-                        <i class="fas fa-user me-1"></i>
-                        {{ app.user.prenom ?? app.user.nom ?? 'Utilisateur' }}
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <span class="badge-custom role-badge admin-badge ms-1">ADMIN</span>
-                        {% else %}
-                            <span class="badge-custom role-badge user-badge ms-1">USER</span>
-                        {% endif %}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li class="dropdown-header">
-                            <i class="fas fa-user-circle me-2"></i>{{ app.user.email }}
-                            <small class="text-muted d-block">
-                                Connecté {{ app.user.dernierConnexion ? app.user.dernierConnexion|date('d/m/Y H:i') : 'depuis longtemps' }}
-                            </small>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ path('app_forgot_password_request') }}">
-                                <i class="fas fa-key me-2"></i>Changer mot de passe
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#" onclick="TabLogistique.toggleTheme()">
-                                <i class="fas fa-moon me-2"></i>Mode sombre/clair
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="{{ path('app_logout') }}"
-                               data-confirm="Êtes-vous sûr de vouloir vous déconnecter ?">
-                                <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                {% else %}
-                {# ============================================ #}
-                {# CONNEXION (utilisateur non connecté) #}
-                {# ============================================ #}
-                <li class="nav-item">
-                    <a class="nav-link btn btn-outline-light btn-sm" href="{{ path('app_login') }}"
-                       data-bs-toggle="tooltip" title="Se connecter au système">
-                        <i class="fas fa-sign-in-alt me-1"></i>Connexion
-                    </a>
-                </li>
-                {% endif %}
+        .navbar-brand:hover {
+            color: white;
+            transform: scale(1.02);
+        }
 
-                {# ============================================ #}
-                {# INDICATEUR D'ÉTAT SYSTÈME #}
-                {# ============================================ #}
-                <li class="nav-item">
-                    <span class="nav-link" id="systemStatus" data-bs-toggle="tooltip" title="État du système">
-                        <i class="fas fa-circle text-success" id="statusIndicator"></i>
-                        <span class="visually-hidden">Système opérationnel</span>
-                    </span>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
 
-{# Styles CSS spécifiques à la navbar #}
-<style>
-    /* Améliorations visuelles pour la navbar */
-    .navbar {
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%) !important;
-        transition: all 0.3s ease;
-    }
+        /* Navigation principale */
+        .main-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            justify-content: center;
+        }
 
-    .navbar-brand {
-        font-weight: bold;
-        font-size: 1.5rem;
-        transition: transform 0.3s ease;
-    }
+        .nav-item {
+            position: relative;
+        }
 
-    .navbar-brand:hover {
-        transform: scale(1.05);
-    }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
 
-    /* Styles pour les dropdowns */
-    .dropdown-menu {
-        border: none;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        border-radius: 10px;
-        overflow: hidden;
-        min-width: 280px;
-    }
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.6s ease;
+        }
 
-    .dropdown-item {
-        padding: 12px 20px;
-        border-radius: 6px;
-        margin: 2px 5px;
-        transition: all 0.3s ease;
-        border-left: 3px solid transparent;
-    }
-
-    .dropdown-item:hover {
-        background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
-        color: white;
-        transform: translateX(5px);
-        border-left-color: white;
-    }
-
-    .dropdown-item small {
-        font-size: 0.75rem;
-        opacity: 0.8;
-    }
-
-    .dropdown-header {
-        font-weight: 600;
-        color: var(--primary-color);
-        font-size: 0.9rem;
-        padding: 8px 20px 4px;
-    }
-
-    .dropdown-divider {
-        margin: 8px 0;
-        border-color: #e9ecef;
-    }
-
-    /* Badges de rôle */
-    .role-badge {
-        font-size: 0.7rem;
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-weight: 600;
-    }
-
-    .admin-badge {
-        background: linear-gradient(135deg, var(--danger-color) 0%, #b02a37 100%);
-        color: white;
-        animation: pulse 2s infinite;
-    }
-
-    .user-badge {
-        background: linear-gradient(135deg, var(--success-color) 0%, #157347 100%);
-        color: white;
-    }
-
-    @keyframes pulse {
-        0% { opacity: 1; }
-        50% { opacity: 0.7; }
-        100% { opacity: 1; }
-    }
-
-    /* Indicateur de statut système */
-    #systemStatus {
-        cursor: help;
-    }
-
-    #statusIndicator {
-        animation: blink 3s infinite;
-    }
-
-    @keyframes blink {
-        0%, 90% { opacity: 1; }
-        95% { opacity: 0.3; }
-    }
-
-    /* Responsive */
-    @media (max-width: 991px) {
-        .navbar-nav .dropdown-menu {
-            position: static !important;
-            transform: none !important;
-            border: none;
-            box-shadow: none;
+        .nav-link:hover {
+            color: white;
             background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
+            transform: translateY(-1px);
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Dropdown menus */
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 0.5rem;
+            min-width: 280px;
+            margin-top: 0.5rem;
+            animation: slideDown 0.2s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .dropdown-item {
-            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: #374151;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            margin-bottom: 2px;
+            border-left: 3px solid transparent;
         }
 
         .dropdown-item:hover {
-            background: rgba(255,255,255,0.2);
+            background: #f3f4f6;
+            color: var(--accent-color);
+            transform: translateX(4px);
+            border-left-color: var(--accent-color);
         }
 
         .dropdown-header {
-            color: #ffc107;
+            font-weight: 600;
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.5rem 1rem 0.25rem;
         }
 
-        .role-badge {
+        .dropdown-divider {
+            margin: 0.5rem 0;
+            border-color: #e5e7eb;
+        }
+
+        /* Actions utilisateur */
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Sidebar toggle */
+        .sidebar-toggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .sidebar-toggle:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* ===========================================
+           SIDEBAR CONTEXTUELLE
+        =========================================== */
+        .sidebar {
+            position: fixed;
+            top: var(--navbar-height);
+            left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--navbar-height));
+            background: var(--secondary-gradient);
+            color: white;
+            transform: translateX(0);
+            transition: var(--transition-smooth);
+            z-index: 1040;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        /* Header sidebar */
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(0,0,0,0.1);
+        }
+
+        .sidebar-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar.collapsed .sidebar-title span {
             display: none;
         }
-    }
 
-    /* Amélioration de l'accessibilité */
-    .nav-link:focus,
-    .dropdown-item:focus {
-        outline: 2px solid #ffc107;
-        outline-offset: 2px;
-    }
+        .collapse-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
 
-    /* Animation d'apparition du menu */
-    .dropdown-menu {
-        animation: slideDown 0.3s ease-out;
-    }
+        .collapse-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
 
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
+        .sidebar.collapsed .collapse-btn i {
+            transform: rotate(180deg);
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-</style>
 
-{# JavaScript spécifique à la navbar #}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Fonction pour basculer le thème
-    window.TabLogistique = window.TabLogistique || {};
-    
-    TabLogistique.toggleTheme = function() {
-        const body = document.body;
-        const isDark = body.classList.contains('dark-theme');
-        
-        if (isDark) {
-            body.classList.remove('dark-theme');
-            localStorage.setItem('theme', 'light');
-        } else {
-            body.classList.add('dark-theme');
-            localStorage.setItem('theme', 'dark');
+        /* Contenu sidebar */
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
         }
-        
-        // Mettre à jour l'icône
-        const themeIcon = document.querySelector('[onclick="TabLogistique.toggleTheme()"] i');
-        if (themeIcon) {
-            themeIcon.className = isDark ? 'fas fa-moon me-2' : 'fas fa-sun me-2';
+
+        .sidebar-section {
+            margin-bottom: 2rem;
         }
-    };
-    
-    // Fonction pour afficher les infos système
-    TabLogistique.showSystemInfo = function() {
-        const info = `
-            Version: TAB Logistique 3.2
-            Symfony: {{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}
-            PHP: {{ app.request.server.get('SERVER_SOFTWARE') }}
-            Serveur: {{ app.request.server.get('SERVER_SOFTWARE') }}
-            Base de données: Connectée
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0 1.5rem 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--warning-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+        }
+
+        .sidebar.collapsed .section-header span {
+            display: none;
+        }
+
+        .sidebar.collapsed .section-header {
+            justify-content: center;
+            padding: 0 0 0.75rem;
+        }
+
+        .sidebar-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 0 0.75rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition-smooth);
+            position: relative;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .sidebar-link.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-color);
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .sidebar-link.primary {
+            background: var(--accent-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        .sidebar-link.primary:hover {
+            background: #2563eb;
+            transform: translateX(0) scale(1.02);
+        }
+
+        .sidebar.collapsed .sidebar-link {
+            justify-content: center;
+            padding: 0.75rem;
+        }
+
+        .sidebar.collapsed .sidebar-link span {
+            display: none;
+        }
+
+        /* Statistiques */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            padding: 0 1.5rem;
+        }
+
+        .sidebar.collapsed .stats-grid {
+            grid-template-columns: 1fr;
+            padding: 0 0.75rem;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.25rem;
+        }
+
+        .sidebar.collapsed .stat-label {
+            display: none;
+        }
+
+        /* Footer sidebar */
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background: rgba(0,0,0,0.1);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar.collapsed .user-info {
+            display: none;
+        }
+
+        /* ===========================================
+           CONTENU PRINCIPAL
+        =========================================== */
+        .main-content {
+            margin-top: var(--navbar-height);
+            margin-left: var(--sidebar-width);
+            min-height: calc(100vh - var(--navbar-height));
+            padding: 2rem;
+            transition: var(--transition-smooth);
+            background: #f8fafc;
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar.hidden + .main-content {
+            margin-left: 0;
+        }
+
+        /* ===========================================
+           RESPONSIVE DESIGN
+        =========================================== */
+        @media (max-width: 1024px) {
+            .sidebar-toggle {
+                display: flex;
+            }
             
-            Routes disponibles: {{ app.debug ? 'Mode debug activé' : 'Mode production' }}
-        `;
-        alert(info);
-    };
-    
-    // Vérification périodique du statut système
-    function checkSystemStatus() {
-        const indicator = document.getElementById('statusIndicator');
-        const statusSpan = document.getElementById('systemStatus');
-        
-        // Simulation de vérification (remplacer par un vrai check)
-        const isOnline = navigator.onLine;
-        
-        if (isOnline) {
-            indicator.className = 'fas fa-circle text-success';
-            statusSpan.setAttribute('data-bs-original-title', 'Système opérationnel');
-        } else {
-            indicator.className = 'fas fa-circle text-danger';
-            statusSpan.setAttribute('data-bs-original-title', 'Problème de connexion');
-        }
-    }
-    
-    // Vérifier le statut toutes les 30 secondes
-    setInterval(checkSystemStatus, 30000);
-    checkSystemStatus(); // Check initial
-    
-    // Charger le thème sauvegardé
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-theme');
-    }
-    
-    // Gestion des événements de navigation
-    document.addEventListener('click', function(e) {
-        const link = e.target.closest('.dropdown-item');
-        if (link && link.href && !link.href.includes('#')) {
-            // Ajouter un effet de chargement pour les vrais liens
-            const icon = link.querySelector('i');
-            if (icon) {
-                icon.className = 'fas fa-spinner fa-spin me-2';
+            .main-nav {
+                display: none;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .navbar-container {
+                padding: 0 1rem;
             }
         }
-    });
-    
-    // Mise à jour de l'indicateur d'activité utilisateur
-    let lastActivity = Date.now();
-    
-    document.addEventListener('mousemove', function() {
-        lastActivity = Date.now();
-    });
-    
-    document.addEventListener('keypress', function() {
-        lastActivity = Date.now();
-    });
-    
-    // Vérifier l'inactivité toutes les minutes
-    setInterval(function() {
-        const inactiveTime = Date.now() - lastActivity;
-        const fiveMinutes = 5 * 60 * 1000;
-        
-        if (inactiveTime > fiveMinutes) {
-            // Optionnel: Afficher un avertissement d'inactivité
-            console.log('Utilisateur inactif depuis 5 minutes');
+
+        @media (max-width: 768px) {
+            .navbar-container {
+                padding: 0 1rem;
+            }
+            
+            .user-actions {
+                gap: 0.5rem;
+            }
+            
+            .action-btn span {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
         }
-    }, 60000);
-});
-</script>
+
+        /* ===========================================
+           ANIMATIONS ET EFFETS
+        =========================================== */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Scrollbar personnalisée */
+        .sidebar-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* Badge système */
+        .system-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Overlay mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: var(--navbar-height);
+            left: 0;
+            width: 100%;
+            height: calc(100vh - var(--navbar-height));
+            background: rgba(0,0,0,0.5);
+            z-index: 1039;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* États de chargement */
+        .loading-shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Indicateurs de notification */
+        .notification-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger-color);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        /* Tooltips personnalisés */
+        .tooltip-custom {
+            position: relative;
+        }
+
+        .tooltip-custom::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+
+        .tooltip-custom:hover::after {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation principale -->
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <!-- Logo et branding -->
+            <a href="#" class="navbar-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <span>TAB Logistique</span>
+            </a>
+
+            <!-- Navigation principale -->
+            <div class="main-nav">
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link" data-bs-toggle="dropdown">
+                        <i class="fas fa-box"></i>
+                        <span>Colis</span>
+                        <i class="fas fa-chevron-down ms-1" style="font-size: 0.7rem;"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">Gestion des Colis</div>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-list text-primary"></i>
+                            <div>
+                                <div>Liste des colis</div>
+                                <small class="text-muted">Voir tous les colis</small>
+                            </div>
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-plus-circle text-success"></i>
+                            <div>
+                                <div>Nouveau colis</div>
+                                <small class="text-muted">Assistant de création</small>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-header">Exports</div>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-file-pdf text-danger"></i>
+                            <span>Export PDF</span>
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-file-excel text-success"></i>
+                            <span>Export Excel</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link" data-bs-toggle="dropdown">
+                        <i class="fas fa-users"></i>
+                        <span>Contacts</span>
+                        <i class="fas fa-chevron-down ms-1" style="font-size: 0.7rem;"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-paper-plane text-primary"></i>
+                            <span>Expéditeurs</span>
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-map-marker-alt text-success"></i>
+                            <span>Destinataires</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link" data-bs-toggle="dropdown">
+                        <i class="fas fa-truck"></i>
+                        <span>Logistique</span>
+                        <i class="fas fa-chevron-down ms-1" style="font-size: 0.7rem;"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-shipping-fast text-info"></i>
+                            <span>Transports</span>
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-warehouse text-warning"></i>
+                            <span>Entrepôts</span>
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-tasks text-secondary"></i>
+                            <span>Statuts</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="#" class="nav-link">
+                    <i class="fas fa-search"></i>
+                    <span>Suivi</span>
+                </a>
+            </div>
+
+            <!-- Actions utilisateur -->
+            <div class="user-actions">
+                <!-- Toggle sidebar mobile -->
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <!-- Notifications -->
+                <a href="#" class="action-btn tooltip-custom" data-tooltip="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <div class="notification-dot"></div>
+                </a>
+
+                <!-- Profil utilisateur -->
+                <div class="dropdown">
+                    <a href="#" class="action-btn" data-bs-toggle="dropdown">
+                        <i class="fas fa-user"></i>
+                        <span>Jean Dupont</span>
+                        <i class="fas fa-chevron-down ms-1" style="font-size: 0.7rem;"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <div class="dropdown-header">jean.dupont@email.com</div>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Mon profil</span>
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-key"></i>
+                            <span>Changer mot de passe</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item text-danger">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Indicateur système -->
+                <div class="system-badge tooltip-custom" data-tooltip="Système opérationnel">
+                    <div class="status-indicator"></div>
+                    <span class="d-none d-md-inline">En ligne</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar contextuelle -->
+    <aside class="sidebar" id="mainSidebar">
+        <!-- Header -->
+        <div class="sidebar-header">
+            <div class="sidebar-title">
+                <i class="fas fa-bolt"></i>
+                <span>Gestion Colis</span>
+            </div>
+            <button class="collapse-btn" onclick="toggleSidebarCollapse()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <!-- Contenu -->
+        <div class="sidebar-content">
+            <!-- Actions rapides -->
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <i class="fas fa-rocket"></i>
+                    <span>Actions Rapides</span>
+                </div>
+                <div class="sidebar-links">
+                    <a href="#" class="sidebar-link primary">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Nouveau Colis</span>
+                    </a>
+                    <a href="#" class="sidebar-link active">
+                        <i class="fas fa-list"></i>
+                        <span>Liste des Colis</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-search"></i>
+                        <span>Recherche Avancée</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistiques</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number">24</span>
+                        <div class="stat-label">En cours</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">8</span>
+                        <div class="stat-label">Livrés</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">12</span>
+                        <div class="stat-label">En attente</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">2</span>
+                        <div class="stat-label">Problèmes</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outils -->
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <i class="fas fa-tools"></i>
+                    <span>Outils</span>
+                </div>
+                <div class="sidebar-links">
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-file-pdf text-danger"></i>
+                        <span>Export PDF</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-file-excel text-success"></i>
+                        <span>Export Excel</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-tags"></i>
+                        <span>Étiquettes</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-print"></i>
+                        <span>Impression</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Raccourcis -->
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <i class="fas fa-keyboard"></i>
+                    <span>Raccourcis</span>
+                </div>
+                <div class="sidebar-links">
+                    <div class="sidebar-link" style="justify-content: space-between; cursor: default;">
+                        <span style="font-size: 0.8rem;">Nouveau colis</span>
+                        <div style="display: flex; gap: 0.25rem;">
+                            <kbd style="background: rgba(255,255,255,0.1); padding: 0.125rem 0.375rem; border-radius: 3px; font-size: 0.7rem;">Ctrl</kbd>
+                            <kbd style="background: rgba(255,255,255,0.1); padding: 0.125rem 0.375rem; border-radius: 3px; font-size: 0.7rem;">N</kbd>
+                        </div>
+                    </div>
+                    <div class="sidebar-link" style="justify-content: space-between; cursor: default;">
+                        <span style="font-size: 0.8rem;">Recherche</span>
+                        <div style="display: flex; gap: 0.25rem;">
+                            <kbd style="background: rgba(255,255,255,0.1); padding: 0.125rem 0.375rem; border-radius: 3px; font-size: 0.7rem;">Ctrl</kbd>
+                            <kbd style="background: rgba(255,255,255,0.1); padding: 0.125rem 0.375rem; border-radius: 3px; font-size: 0.7rem;">K</kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aide -->
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Aide</span>
+                </div>
+                <div class="sidebar-links">
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-book"></i>
+                        <span>Documentation</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-headset"></i>
+                        <span>Support</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-bug"></i>
+                        <span>Signaler un bug</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">
+                    JD
+                </div>
+                <div class="user-info">
+                    <div class="user-name">Jean Dupont</div>
+                    <div class="user-role">Administrateur</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay pour mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <!-- Exemple de contenu -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h1 class="h3 mb-4">
+                                <i class="fas fa-shipping-fast text-primary me-3"></i>
+                                Tableau de Bord TAB Logistique
+                            </h1>
+                            
+                            <div class="row g-4">
+                                <!-- Statistiques principales -->
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="card border-0 bg-primary text-white">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-box fa-2x opacity-75"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <div class="h4 mb-0">1,247</div>
+                                                    <div class="small">Colis traités</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="card border-0 bg-success text-white">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <div class="h4 mb-0">1,089</div>
+                                                    <div class="small">Livrés</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="card border-0 bg-warning text-white">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-clock fa-2x opacity-75"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <div class="h4 mb-0">124</div>
+                                                    <div class="small">En transit</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="card border-0 bg-danger text-white">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-exclamation-triangle fa-2x opacity-75"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <div class="h4 mb-0">34</div>
+                                                    <div class="small">Problèmes</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Actions rapides -->
+                            <div class="row mt-5">
+                                <div class="col-12">
+                                    <h5 class="mb-3">Actions Rapides</h5>
+                                    <div class="d-flex flex-wrap gap-3">
+                                        <button class="btn btn-primary btn-lg">
+                                            <i class="fas fa-plus-circle me-2"></i>
+                                            Nouveau Colis
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-lg">
+                                            <i class="fas fa-search me-2"></i>
+                                            Recherche Avancée
+                                        </button>
+                                        <button class="btn btn-outline-secondary btn-lg">
+                                            <i class="fas fa-file-excel me-2"></i>
+                                            Export Excel
+                                        </button>
+                                        <button class="btn btn-outline-info btn-lg">
+                                            <i class="fas fa-print me-2"></i>
+                                            Impression
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Démonstration des fonctionnalités -->
+                            <div class="row mt-5">
+                                <div class="col-lg-8">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-list me-2"></i>
+                                                Colis Récents
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Référence</th>
+                                                            <th>Expéditeur</th>
+                                                            <th>Destinataire</th>
+                                                            <th>Statut</th>
+                                                            <th>Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><strong>#COL001247</strong></td>
+                                                            <td>Entreprise ABC</td>
+                                                            <td>Client XYZ</td>
+                                                            <td><span class="badge bg-success">Livré</span></td>
+                                                            <td>15/01/2024</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>#COL001246</strong></td>
+                                                            <td>Fournisseur DEF</td>
+                                                            <td>Magasin GHI</td>
+                                                            <td><span class="badge bg-warning">En transit</span></td>
+                                                            <td>14/01/2024</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>#COL001245</strong></td>
+                                                            <td>Société JKL</td>
+                                                            <td>Bureau MNO</td>
+                                                            <td><span class="badge bg-info">Préparation</span></td>
+                                                            <td>13/01/2024</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-4">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-bell me-2"></i>
+                                                Notifications
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-start mb-3">
+                                                <div class="flex-shrink-0">
+                                                    <div class="badge bg-warning rounded-pill">!</div>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <div class="small fw-semibold">Colis bloqué</div>
+                                                    <div class="small text-muted">2 colis en douane</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="d-flex align-items-start mb-3">
+                                                <div class="flex-shrink-0">
+                                                    <div class="badge bg-info rounded-pill">i</div>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <div class="small fw-semibold">Nouveau transport</div>
+                                                    <div class="small text-muted">Transport disponible</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="d-flex align-items-start">
+                                                <div class="flex-shrink-0">
+                                                    <div class="badge bg-success rounded-pill">✓</div>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <div class="small fw-semibold">Livraison réussie</div>
+                                                    <div class="small text-muted">8 colis livrés aujourd'hui</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Variables globales
+        let sidebarCollapsed = false;
+        let sidebarHidden = false;
+
+        // Toggle sidebar (mobile)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (window.innerWidth <= 1024) {
+                sidebar.classList.toggle('show');
+                overlay.classList.toggle('show');
+                sidebarHidden = !sidebar.classList.contains('show');
+            }
+        }
+
+        // Toggle sidebar collapse (desktop)
+        function toggleSidebarCollapse() {
+            const sidebar = document.getElementById('mainSidebar');
+            
+            if (window.innerWidth > 1024) {
+                sidebar.classList.toggle('collapsed');
+                sidebarCollapsed = sidebar.classList.contains('collapsed');
+                
+                // Sauvegarder l'état
+                localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Charger l'état sauvegardé de la sidebar
+            const savedState = localStorage.getItem('sidebarCollapsed');
+            if (savedState === 'true' && window.innerWidth > 1024) {
+                document.getElementById('mainSidebar').classList.add('collapsed');
+                sidebarCollapsed = true;
+            }
+
+            // Gestion du redimensionnement
+            window.addEventListener('resize', function() {
+                const sidebar = document.getElementById('mainSidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                
+                if (window.innerWidth > 1024) {
+                    // Mode desktop
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('show');
+                    
+                    // Restaurer l'état de collapse si nécessaire
+                    if (sidebarCollapsed) {
+                        sidebar.classList.add('collapsed');
+                    }
+                } else {
+                    // Mode mobile
+                    sidebar.classList.remove('collapsed');
+                    if (!sidebarHidden) {
+                        sidebar.classList.remove('show');
+                        overlay.classList.remove('show');
+                    }
+                }
+            });
+
+            // Raccourcis clavier
+            document.addEventListener('keydown', function(e) {
+                // Ctrl + K pour toggle sidebar
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    if (window.innerWidth <= 1024) {
+                        toggleSidebar();
+                    } else {
+                        toggleSidebarCollapse();
+                    }
+                }
+                
+                // Ctrl + N pour nouveau colis
+                if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                    e.preventDefault();
+                    showNotification('Raccourci: Nouveau colis', 'info');
+                }
+                
+                // Escape pour fermer la sidebar mobile
+                if (e.key === 'Escape' && window.innerWidth <= 1024) {
+                    const sidebar = document.getElementById('mainSidebar');
+                    const overlay = document.getElementById('sidebarOverlay');
+                    if (sidebar.classList.contains('show')) {
+                        sidebar.classList.remove('show');
+                        overlay.classList.remove('show');
+                    }
+                }
+            });
+
+            // Animation d'entrée
+            document.body.classList.add('fade-in');
+            
+            // Initialiser les tooltips
+            initTooltips();
+        });
+
+        // Fonction pour afficher des notifications
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed slide-in-right`;
+            notification.style.cssText = 'top: 90px; right: 20px; z-index: 1060; min-width: 300px; max-width: 400px;';
+            notification.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${getIconForType(type)} me-2"></i>
+                    <div class="flex-grow-1">${message}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-suppression après 5 secondes
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    const alert = new bootstrap.Alert(notification);
+                    alert.close();
+                }
+            }, 5000);
+        }
+
+        // Obtenir l'icône pour le type d'alerte
+        function getIconForType(type) {
+            const icons = {
+                'success': 'check-circle',
+                'danger': 'exclamation-triangle',
+                'warning': 'exclamation-circle',
+                'info': 'info-circle'
+            };
+            return icons[type] || 'info-circle';
+        }
+
+        // Initialiser les tooltips personnalisés
+        function initTooltips() {
+            // Bootstrap tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+
+        // Gestionnaire d'événements pour les liens
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a[href="#"]');
+            if (link) {
+                e.preventDefault();
+                const text = link.textContent.trim() || link.querySelector('span')?.textContent.trim() || 'Action';
+                showNotification(`Action: ${text}`, 'info');
+            }
+        });
+
+        // Simulation d'activité réseau
+        function simulateNetworkActivity() {
+            const indicator = document.querySelector('.status-indicator');
+            if (indicator) {
+                indicator.style.background = '#f59e0b'; // Warning color
+                setTimeout(() => {
+                    indicator.style.background = '#10b981'; // Success color
+                }, 1000);
+            }
+        }
+
+        // Lancer la simulation périodiquement
+        setInterval(simulateNetworkActivity, 10000);
+
+        // Gestion des états de hover pour les effets visuels
+        document.addEventListener('mouseover', function(e) {
+            if (e.target.matches('.nav-link, .sidebar-link, .action-btn')) {
+                e.target.style.transition = 'all 0.2s ease';
+            }
+        });
+
+        // Animation de chargement pour les statistiques
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const target = parseInt(counter.textContent);
+                let current = 0;
+                const increment = target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    counter.textContent = Math.floor(current);
+                }, 30);
+            });
+        }
+
+        // Lancer l'animation des compteurs après le chargement
+        setTimeout(animateCounters, 500);
+
+        // Gestion de l'état de connexion
+        window.addEventListener('online', () => {
+            showNotification('Connexion rétablie', 'success');
+        });
+
+        window.addEventListener('offline', () => {
+            showNotification('Connexion perdue - Mode hors ligne', 'warning');
+        });
+
+        // Sauvegarde automatique des préférences
+        window.addEventListener('beforeunload', function() {
+            localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+            localStorage.setItem('lastVisit', new Date().toISOString());
+        });
+
+        // Message de bienvenue
+        setTimeout(() => {
+            showNotification('Bienvenue dans TAB Logistique ! Navigation modernisée et professionnelle.', 'success');
+        }, 1500);
+    </script>
+</body>
+</html>
