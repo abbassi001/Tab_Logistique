@@ -1,661 +1,712 @@
-{# templates/components/footer.html.twig #}
-<footer class="footer mt-5">
-    <div class="container-fluid">
-        <!-- Section principale du footer -->
-        <div class="row py-4">
-            <!-- Colonne 1: Informations sur l'entreprise -->
-            <div class="col-lg-3 col-md-6 mb-4">
-                <h5 class="footer-title">
-                    <i class="fas fa-shipping-fast me-2"></i>TAB Logistique
-                </h5>
-                <p class="footer-description">
-                    Votre partenaire de confiance pour la gestion logistique professionnelle. 
-                    Solutions complètes de suivi et gestion de colis.
-                </p>
-                <div class="footer-stats">
-                    <small class="text-muted">
-                        <i class="fas fa-box me-1"></i>
-                        {% if app.user and is_granted('ROLE_USER') %}
-                            {{ app.user.colisCount }}
-                        {% elseif app.user and is_granted('ROLE_ADMIN') %}
-                            {{ app.user.colisCountAdmin }}
-                        {% else %}
-                            0
-                        {% endif %}
-                        {% if app.user and app.user.colisCount > 1000 %}
-                            1000+
-                        {% elseif app.user and app.user.colisCountAdmin > 1000 %}
-                            1000+
-                        {% else %}
-                            1000+
-                        {% endif %}
-                        colis traités
-                    </small>
-                </div>
-            </div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer TAB Logistique - Modernisé</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Variables CSS pour la cohérence */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+            --secondary-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            --accent-color: #3498db;
+            --danger-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --text-light: #ecf0f1;
+            --text-muted: #95a5a6;
+            --border-subtle: rgba(255,255,255,0.1);
+            --shadow-soft: 0 4px 15px rgba(0,0,0,0.1);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-            <!-- Colonne 2: Liens rapides -->
-            <div class="col-lg-2 col-md-6 mb-4">
-                <h6 class="footer-subtitle">
-                    <i class="fas fa-link me-2"></i>Liens Rapides
-                </h6>
-                <ul class="footer-links">
-                    <li><a href="{{ path('app_home') }}">
-                        <i class="fas fa-home me-1"></i>Accueil
-                    </a></li>
-                    <li><a href="{{ path('app_tracking') }}">
-                        <i class="fas fa-search me-1"></i>Suivi de colis
-                    </a></li>
-                    {% if app.user %}
-                        <li><a href="{{ path('app_colis_index') }}">
-                            <i class="fas fa-list me-1"></i>Mes colis
-                        </a></li>
-                        <li><a href="{{ path('app_colis_wizard_start') }}">
-                            <i class="fas fa-plus me-1"></i>Nouveau colis
-                        </a></li>
-                    {% endif %}
-                </ul>
-            </div>
+        body {
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
 
-            <!-- Colonne 3: Fonctionnalités -->
-            <div class="col-lg-2 col-md-6 mb-4">
-                <h6 class="footer-subtitle">
-                    <i class="fas fa-cogs me-2"></i>Fonctionnalités
-                </h6>
-                <ul class="footer-links">
-                    {% if app.user %}
-                        <li><a href="{{ path('app_expediteur_index') }}">
-                            <i class="fas fa-paper-plane me-1"></i>Expéditeurs
-                        </a></li>
-                        <li><a href="{{ path('app_destinataire_index') }}">
-                            <i class="fas fa-map-marker-alt me-1"></i>Destinataires
-                        </a></li>
-                        <li><a href="{{ path('app_transport_index') }}">
-                            <i class="fas fa-truck me-1"></i>Transports
-                        </a></li>
-                        <li><a href="{{ path('app_warehouse_index') }}">
-                            <i class="fas fa-warehouse me-1"></i>Entrepôts
-                        </a></li>
-                    {% else %}
-                        <li><span class="text-muted">Gestion des expéditeurs</span></li>
-                        <li><span class="text-muted">Gestion des destinataires</span></li>
-                        <li><span class="text-muted">Suivi des transports</span></li>
-                        <li><span class="text-muted">Gestion d'entrepôts</span></li>
-                    {% endif %}
-                </ul>
-            </div>
+        /* Main footer container */
+        .modern-footer {
+            background: var(--secondary-gradient);
+            color: var(--text-light);
+            margin-top: auto;
+            border-top: 4px solid var(--accent-color);
+            position: relative;
+            overflow: hidden;
+        }
 
-            <!-- Colonne 4: Exports et Outils -->
-            <div class="col-lg-2 col-md-6 mb-4">
-                <h6 class="footer-subtitle">
-                    <i class="fas fa-tools me-2"></i>Outils
-                </h6>
-                <ul class="footer-links">
-                    {% if app.user %}
-                        <li><a href="{{ path('app_colis_export', {format: 'pdf'}) }}" target="_blank">
-                            <i class="fas fa-file-pdf me-1 text-danger"></i>Export PDF
-                        </a></li>
-                        <li><a href="{{ path('app_colis_export', {format: 'excel'}) }}" target="_blank">
-                            <i class="fas fa-file-excel me-1 text-success"></i>Export Excel
-                        </a></li>
-                        <li><a href="{{ path('app_colis_export', {format: 'csv'}) }}" target="_blank">
-                            <i class="fas fa-file-csv me-1 text-info"></i>Export CSV
-                        </a></li>
-                        {% if is_granted('ROLE_ADMIN') %}
-                        <li><a href="{{ path('app_admin_dashboard') }}">
-                            <i class="fas fa-chart-line me-1 text-warning"></i>Dashboard
-                        </a></li>
-                        {% endif %}
-                    {% else %}
-                        <li><span class="text-muted">Exports de données</span></li>
-                        <li><span class="text-muted">Rapports détaillés</span></li>
-                        <li><span class="text-muted">Statistiques</span></li>
-                        <li><a href="{{ path('app_login') }}" class="text-primary">
-                            <i class="fas fa-sign-in-alt me-1"></i>Se connecter
-                        </a></li>
-                    {% endif %}
-                </ul>
-            </div>
+        .modern-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.5), transparent);
+        }
 
-            <!-- Colonne 5: Support et Contact -->
-            <div class="col-lg-3 col-md-12 mb-4">
-                <h6 class="footer-subtitle">
-                    <i class="fas fa-headset me-2"></i>Support & Contact
-                </h6>
-                
-                <!-- Informations de contact -->
-                <div class="contact-info mb-3">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope me-2 text-primary"></i>
-                        <a href="mailto:support@tablogistique.fr" class="footer-link">
-                            support@tablogistique.fr
-                        </a>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-phone me-2 text-success"></i>
-                        <a href="tel:+33123456789" class="footer-link">
-                            +33 1 23 45 67 89
-                        </a>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-clock me-2 text-warning"></i>
-                        <span class="footer-text">Lun-Ven 8h-18h</span>
-                    </div>
-                </div>
+        /* Header styling */
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
 
-                <!-- Liens support -->
-                <div class="support-links">
-                    <a href="#" class="btn btn-outline-light btn-sm me-2 mb-2" 
-                       onclick="TabLogistique.showHelp()" title="Centre d'aide">
-                        <i class="fas fa-question-circle me-1"></i>Aide
-                    </a>
-                    <a href="#" class="btn btn-outline-light btn-sm me-2 mb-2" 
-                       onclick="TabLogistique.showSystemInfo()" title="Informations système">
-                        <i class="fas fa-info-circle me-1"></i>Info
-                    </a>
-                    {% if app.user %}
-                    <a href="#" class="btn btn-outline-light btn-sm mb-2" 
-                       onclick="TabLogistique.reportBug()" title="Signaler un problème">
-                        <i class="fas fa-bug me-1"></i>Bug
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+        .footer-brand .brand-icon {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-right: 1rem;
+            animation: pulse 3s infinite;
+        }
 
-        <!-- Section bottom du footer -->
-        <hr class="footer-divider">
-        
-        <div class="row py-3 align-items-center">
-            <!-- Copyright et version -->
-            <div class="col-md-6">
-                <div class="footer-bottom-left">
-                    <p class="mb-1">
-                        &copy; {{ "now"|date("Y") }} <strong>TAB Logistique</strong>. Tous droits réservés.
-                    </p>
-                    <small class="version-info">
-                        <i class="fas fa-code me-1"></i>Version 3.2
-                        {% if app.debug %}
-                            <span class="badge bg-warning text-dark ms-2">DEBUG</span>
-                        {% endif %}
-                        {% if app.environment == 'dev' %}
-                            <span class="badge bg-info ms-1">DEV</span>
-                        {% endif %}
-                    </small>
-                </div>
-            </div>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
 
-            <!-- Informations techniques et liens légaux -->
-            <div class="col-md-6 text-md-end">
-                <div class="footer-bottom-right">
-                    <!-- Statut système -->
-                    <div class="system-status mb-2">
-                        <small class="text-muted">
-                            <i class="fas fa-server me-1"></i>
-                            Statut: 
-                            <span class="status-indicator text-success">
-                                <i class="fas fa-circle"></i> Opérationnel
-                            </span>
-                        </small>
-                    </div>
-                    
-                    <!-- Liens légaux -->
-                    <div class="legal-links">
-                        <small>
-                            <a href="#" class="footer-link me-3" onclick="TabLogistique.showPrivacyPolicy()">
-                                <i class="fas fa-shield-alt me-1"></i>Confidentialité
-                            </a>
-                            <a href="#" class="footer-link me-3" onclick="TabLogistique.showTerms()">
-                                <i class="fas fa-file-contract me-1"></i>CGU
-                            </a>
-                            {% if app.user %}
-                            <a href="{{ path('app_logout') }}" class="footer-link text-warning"
-                               data-confirm="Êtes-vous sûr de vouloir vous déconnecter ?">
-                                <i class="fas fa-sign-out-alt me-1"></i>Déconnexion
-                            </a>
-                            {% endif %}
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
+        .footer-brand .brand-text h3 {
+            color: var(--accent-color);
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.5rem;
+        }
 
-        <!-- Informations utilisateur connecté -->
-        {% if app.user %}
-        <div class="row py-2">
-            <div class="col-12">
-                <div class="user-session-info">
-                    <small class="text-muted">
-                        <i class="fas fa-user me-1"></i>
-                        Connecté en tant que <strong>{{ app.user.prenom ?? app.user.nom ?? 'Utilisateur' }}</strong>
-                        ({{ app.user.email }})
-                        
-                        {% if app.user.dernierConnexion %}
-                            <span class="ms-3">
-                                <i class="fas fa-clock me-1"></i>
-                                Dernière connexion: {{ app.user.dernierConnexion|date('d/m/Y H:i') }}
-                            </span>
-                        {% endif %}
-                        
-                        <span class="ms-3">
-                            <i class="fas fa-key me-1"></i>
-                            Rôle: 
-                            {% if is_granted('ROLE_ADMIN') %}
-                                <span class="text-danger">Administrateur</span>
-                            {% else %}
-                                <span class="text-success">Utilisateur</span>
-                            {% endif %}
-                        </span>
+        .footer-brand .brand-text p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 0.9rem;
+        }
 
-                        <span class="ms-3">
-                            <i class="fas fa-stopwatch me-1"></i>
-                            Session: <span id="sessionTimer">00:00</span>
-                        </span>
-                    </small>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-</footer>
+        /* Section headers */
+        .footer-section-title {
+            color: var(--danger-color);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(231, 76, 60, 0.3);
+            position: relative;
+        }
 
-{# Styles CSS pour le footer #}
-<style>
-    /* Footer principal */
-    .footer {
-        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-        color: #ecf0f1;
-        margin-top: auto;
-        border-top: 5px solid var(--primary-color);
-    }
+        .footer-section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--danger-color);
+        }
 
-    .footer-title {
-        color: #3498db;
-        font-weight: bold;
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
-    }
+        /* Links styling */
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
 
-    .footer-subtitle {
-        color: #e74c3c;
-        font-weight: 600;
-        font-size: 1rem;
-        margin-bottom: 0.8rem;
-        padding-bottom: 0.3rem;
-        border-bottom: 2px solid rgba(231, 76, 60, 0.3);
-    }
+        .footer-links li {
+            margin-bottom: 0.75rem;
+            transform: translateX(0);
+            transition: var(--transition-smooth);
+        }
 
-    .footer-description {
-        color: #bdc3c7;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        margin-bottom: 1rem;
-    }
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            transition: var(--transition-smooth);
+            padding: 0.25rem 0;
+        }
 
-    .footer-stats {
-        background: rgba(52, 152, 219, 0.1);
-        padding: 8px 12px;
-        border-radius: 6px;
-        border-left: 3px solid #3498db;
-    }
+        .footer-links a:hover {
+            color: var(--accent-color);
+            transform: translateX(8px);
+            text-decoration: none;
+        }
 
-    /* Liens du footer */
-    .footer-links {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .footer-links li {
-        margin-bottom: 0.5rem;
-    }
-
-    .footer-links a,
-    .footer-link {
-        color: #bdc3c7;
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-        display: inline-block;
-    }
-
-    .footer-links a:hover,
-    .footer-link:hover {
-        color: #3498db;
-        transform: translateX(5px);
-        text-decoration: none;
-    }
-
-    .footer-text {
-        color: #95a5a6;
-        font-size: 0.9rem;
-    }
-
-    /* Section contact */
-    .contact-info .contact-item {
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-    }
-
-    .contact-info i {
-        width: 20px;
-        text-align: center;
-    }
-
-    /* Boutons support */
-    .support-links .btn {
-        border-color: rgba(255,255,255,0.3);
-        transition: all 0.3s ease;
-    }
-
-    .support-links .btn:hover {
-        background: rgba(255,255,255,0.1);
-        border-color: rgba(255,255,255,0.6);
-        transform: translateY(-2px);
-    }
-
-    /* Divider */
-    .footer-divider {
-        border-color: rgba(255,255,255,0.2);
-        margin: 0;
-    }
-
-    /* Bottom section */
-    .footer-bottom-left,
-    .footer-bottom-right {
-        color: #95a5a6;
-    }
-
-    .version-info {
-        color: #7f8c8d;
-    }
-
-    .system-status .status-indicator {
-        animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
-    }
-
-    /* Session info */
-    .user-session-info {
-        background: rgba(52, 73, 94, 0.5);
-        padding: 10px 15px;
-        border-radius: 6px;
-        border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .footer {
+        .footer-links a i {
+            width: 20px;
+            margin-right: 0.5rem;
             text-align: center;
         }
 
-        .footer-subtitle {
-            margin-top: 2rem;
+        /* Stats counter */
+        .stats-counter {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
         }
 
-        .footer-subtitle:first-child {
-            margin-top: 0;
+        .counter-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            display: block;
+            line-height: 1;
         }
 
-        .contact-info .contact-item {
+        .counter-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.25rem;
+        }
+
+        /* Contact info */
+        .contact-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            border-left: 3px solid transparent;
+            transition: var(--transition-smooth);
+        }
+
+        .contact-item:hover {
+            border-left-color: var(--accent-color);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
             justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.1rem;
         }
 
-        .support-links {
+        .contact-icon.email {
+            background: rgba(52, 152, 219, 0.2);
+            color: var(--accent-color);
+        }
+
+        .contact-icon.phone {
+            background: rgba(39, 174, 96, 0.2);
+            color: var(--success-color);
+        }
+
+        .contact-icon.schedule {
+            background: rgba(243, 156, 18, 0.2);
+            color: var(--warning-color);
+        }
+
+        .contact-text a {
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .contact-text a:hover {
+            color: var(--accent-color);
+        }
+
+        /* Action buttons */
+        .footer-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
             margin-top: 1rem;
         }
 
-        .user-session-info {
+        .btn-footer {
+            border: 1px solid var(--border-subtle);
+            background: rgba(255,255,255,0.1);
+            color: var(--text-light);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            transition: var(--transition-smooth);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-footer:hover {
+            background: rgba(52, 152, 219, 0.2);
+            border-color: var(--accent-color);
+            color: var(--text-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* Bottom section */
+        .footer-bottom {
+            border-top: 1px solid var(--border-subtle);
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+        }
+
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(52, 152, 219, 0.2);
+            color: var(--accent-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
             font-size: 0.8rem;
+            font-weight: 500;
         }
 
-        .user-session-info span {
-            display: block;
-            margin: 0.2rem 0;
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-    }
 
-    /* Mode sombre */
-    .dark-theme .footer {
-        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-        border-top-color: var(--warning-color);
-    }
-
-    .dark-theme .footer-title {
-        color: var(--warning-color);
-    }
-
-    .dark-theme .footer-subtitle {
-        color: var(--primary-color);
-        border-bottom-color: rgba(13, 110, 253, 0.3);
-    }
-
-    /* Animation d'apparition */
-    .footer {
-        animation: slideUp 0.6s ease-out;
-    }
-
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success-color);
+            animation: blink 2s infinite;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
         }
-    }
-</style>
 
-{# JavaScript pour le footer #}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Étendre l'objet TabLogistique pour le footer
-    window.TabLogistique = window.TabLogistique || {};
-    
-    // Session timer
-    let sessionStartTime = Date.now();
-    
-    function updateSessionTimer() {
-        const sessionElement = document.getElementById('sessionTimer');
-        if (sessionElement) {
-            const elapsed = Date.now() - sessionStartTime;
-            const minutes = Math.floor(elapsed / 60000);
-            const seconds = Math.floor((elapsed % 60000) / 1000);
-            sessionElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        /* Session info */
+        .session-info {
+            background: rgba(44, 62, 80, 0.8);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
         }
-    }
-    
-    // Mettre à jour le timer toutes les secondes
-    {% if app.user %}
-    setInterval(updateSessionTimer, 1000);
-    {% endif %}
-    
-    // Fonctions du footer
-    TabLogistique.showHelp = function() {
-        const helpContent = `
-# 🚀 Centre d'Aide TAB Logistique
 
-## 📦 Gestion des Colis
-- **Nouveau colis** : Utilisez l'assistant de création (Ctrl+N)
-- **Liste des colis** : Accédez via le menu Colis > Liste (Ctrl+L)
-- **Suivi** : Recherchez par numéro de tracking (Ctrl+K)
+        .session-timer {
+            font-family: 'Courier New', monospace;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
 
-## 👥 Contacts
-- **Expéditeurs** : Gérez vos expéditeurs dans Contacts > Expéditeurs
-- **Destinataires** : Gérez vos destinataires dans Contacts > Destinataires
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .footer-brand {
+                text-align: center;
+                justify-content: center;
+            }
 
-## 📊 Exports
-- **PDF** : Export formaté pour impression
-- **Excel** : Pour analyse de données
-- **CSV** : Format universel
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
 
-## ⌨️ Raccourcis Clavier
-- **Ctrl+K** : Ouvrir la recherche de suivi
-- **Ctrl+N** : Nouveau colis
-- **Ctrl+L** : Liste des colis
+            .footer-actions {
+                justify-content: center;
+            }
 
-## 🔧 Support
-- Email: support@tablogistique.fr
-- Téléphone: +33 1 23 45 67 89
-- Horaires: Lun-Ven 8h-18h
+            .session-info {
+                text-align: center;
+                font-size: 0.85rem;
+            }
 
----
-Version 3.2 - TAB Logistique
-        `;
-        
-        // Créer une modal pour l'aide
-        const modal = document.createElement('div');
-        modal.className = 'modal fade';
-        modal.innerHTML = `
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            <i class="fas fa-question-circle me-2"></i>Centre d'Aide
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            .session-info .d-none.d-md-inline {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .modern-footer {
+                font-size: 0.9rem;
+            }
+
+            .footer-brand .brand-icon {
+                font-size: 1.5rem;
+            }
+
+            .footer-brand .brand-text h3 {
+                font-size: 1.3rem;
+            }
+
+            .counter-number {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Dark theme support */
+        .dark-theme .modern-footer {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-top-color: var(--warning-color);
+        }
+
+        .dark-theme .footer-section-title {
+            color: var(--accent-color);
+            border-bottom-color: rgba(52, 152, 219, 0.3);
+        }
+
+        .dark-theme .footer-section-title::after {
+            background: var(--accent-color);
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus styles for keyboard navigation */
+        .footer-links a:focus,
+        .btn-footer:focus {
+            outline: 2px solid var(--warning-color);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Simuler le contenu principal pour le contexte -->
+    <div style="height: 100vh; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); display: flex; align-items: center; justify-content: center;">
+        <div class="text-center">
+            <h1 class="display-4 text-primary mb-3">
+                <i class="fas fa-shipping-fast me-3"></i>TAB Logistique
+            </h1>
+            <p class="lead text-muted">Votre système de gestion logistique professionnel</p>
+            <p class="text-muted">Faites défiler pour voir le footer modernisé ⬇️</p>
+        </div>
+    </div>
+
+    <!-- Footer modernisé -->
+    <footer class="modern-footer">
+        <div class="container-fluid py-5">
+            <!-- Section principale -->
+            <div class="row">
+                <!-- Colonne 1: Branding et présentation -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="footer-brand">
+                        <div class="brand-icon">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <div class="brand-text">
+                            <h3>TAB Logistique</h3>
+                            <p>Excellence logistique</p>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        <pre style="white-space: pre-wrap; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">${helpContent}</pre>
+                    
+                    <p class="mb-4" style="color: #bdc3c7; line-height: 1.6;">
+                        Votre partenaire de confiance pour la gestion logistique professionnelle. 
+                        Solutions complètes de suivi et gestion de colis avec une approche moderne et efficace.
+                    </p>
+                    
+                    <div class="stats-counter">
+                        <span class="counter-number" id="colisCounter">1247</span>
+                        <div class="counter-label">Colis traités ce mois</div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
-                            <i class="fas fa-check me-2"></i>Compris
+                </div>
+
+                <!-- Colonne 2: Navigation rapide -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="footer-section-title">
+                        <i class="fas fa-rocket me-2"></i>Navigation
+                    </h6>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-home"></i>Accueil</a></li>
+                        <li><a href="#"><i class="fas fa-search"></i>Suivi</a></li>
+                        <li><a href="#"><i class="fas fa-box"></i>Mes Colis</a></li>
+                        <li><a href="#"><i class="fas fa-plus-circle"></i>Nouveau</a></li>
+                        <li><a href="#"><i class="fas fa-users"></i>Contacts</a></li>
+                    </ul>
+                </div>
+
+                <!-- Colonne 3: Fonctionnalités -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="footer-section-title">
+                        <i class="fas fa-cogs me-2"></i>Outils
+                    </h6>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-file-pdf text-danger"></i>Export PDF</a></li>
+                        <li><a href="#"><i class="fas fa-file-excel text-success"></i>Export Excel</a></li>
+                        <li><a href="#"><i class="fas fa-file-csv text-info"></i>Export CSV</a></li>
+                        <li><a href="#"><i class="fas fa-print"></i>Impression</a></li>
+                        <li><a href="#"><i class="fas fa-tags"></i>Étiquettes</a></li>
+                    </ul>
+                </div>
+
+                <!-- Colonne 4: Contact -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h6 class="footer-section-title">
+                        <i class="fas fa-headset me-2"></i>Support & Contact
+                    </h6>
+                    
+                    <div class="contact-grid">
+                        <div class="contact-item">
+                            <div class="contact-icon email">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-text">
+                                <strong>Support Email</strong><br>
+                                <a href="mailto:support@tablogistique.fr">support@tablogistique.fr</a>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon phone">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-text">
+                                <strong>Téléphone</strong><br>
+                                <a href="tel:+33123456789">+33 1 23 45 67 89</a>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon schedule">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="contact-text">
+                                <strong>Horaires</strong><br>
+                                Lun-Ven 8h-18h
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer-actions">
+                        <button class="btn-footer" onclick="showHelp()">
+                            <i class="fas fa-question-circle me-1"></i>Aide
+                        </button>
+                        <button class="btn-footer" onclick="showSystemInfo()">
+                            <i class="fas fa-info-circle me-1"></i>Système
+                        </button>
+                        <button class="btn-footer" onclick="reportIssue()">
+                            <i class="fas fa-bug me-1"></i>Signaler
                         </button>
                     </div>
                 </div>
             </div>
-        `;
-        
-        document.body.appendChild(modal);
-        const bootstrapModal = new bootstrap.Modal(modal);
-        bootstrapModal.show();
-        
-        // Supprimer la modal après fermeture
-        modal.addEventListener('hidden.bs.modal', function() {
-            document.body.removeChild(modal);
-        });
-    };
-    
-    TabLogistique.showPrivacyPolicy = function() {
-        alert(`
-🔒 Politique de Confidentialité - TAB Logistique
 
-Nous respectons votre vie privée et protégeons vos données personnelles.
+            <!-- Section bottom -->
+            <div class="footer-bottom">
+                <div class="row align-items-center">
+                    <!-- Copyright et version -->
+                    <div class="col-md-6">
+                        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3">
+                            <div>
+                                <p class="mb-1">
+                                    &copy; <span id="currentYear">2024</span> 
+                                    <strong>TAB Logistique</strong>. Tous droits réservés.
+                                </p>
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="version-badge">
+                                        <i class="fas fa-code me-1"></i>v3.2.1
+                                    </span>
+                                    <small class="text-muted">•</small>
+                                    <small class="text-muted">Symfony 6.4</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-📋 Données collectées :
-- Informations de compte (nom, email)
-- Données de colis (expéditeurs, destinataires)
-- Logs de connexion
+                    <!-- Statut et liens -->
+                    <div class="col-md-6 text-md-end">
+                        <div class="d-flex flex-column align-items-md-end gap-2">
+                            <div class="status-indicator">
+                                <span class="status-dot"></span>
+                                <small class="text-muted">Système opérationnel</small>
+                            </div>
+                            
+                            <div class="d-flex flex-wrap gap-3 justify-content-md-end">
+                                <small>
+                                    <a href="#" onclick="showPrivacy()" class="text-muted">
+                                        <i class="fas fa-shield-alt me-1"></i>Confidentialité
+                                    </a>
+                                </small>
+                                <small>
+                                    <a href="#" onclick="showTerms()" class="text-muted">
+                                        <i class="fas fa-file-contract me-1"></i>CGU
+                                    </a>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-🛡️ Protection :
-- Chiffrement des données sensibles
-- Accès sécurisé par authentification
-- Sauvegarde automatique
+                <!-- Informations de session (simulées) -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="session-info">
+                            <div class="row align-items-center text-center text-md-start">
+                                <div class="col-md-4 mb-2 mb-md-0">
+                                    <i class="fas fa-user-circle me-2"></i>
+                                    <strong>Jean Dupont</strong>
+                                    <small class="text-muted d-block d-md-inline">
+                                        <span class="d-none d-md-inline">•</span> Admin
+                                    </small>
+                                </div>
+                                <div class="col-md-4 mb-2 mb-md-0">
+                                    <i class="fas fa-clock me-2"></i>
+                                    Session: <span class="session-timer" id="sessionTimer">02:34:12</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <i class="fas fa-calendar me-2"></i>
+                                    <span id="lastConnection">Dernière connexion: 15/01/2024 14:30</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-📞 Contact :
-Pour toute question concernant vos données :
-support@tablogistique.fr
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Application principale
+        const TabLogistique = {
+            init() {
+                this.updateYear();
+                this.startSessionTimer();
+                this.animateCounter();
+                this.setupEventListeners();
+            },
 
-Dernière mise à jour : {{ "now"|date("d/m/Y") }}
-        `);
-    };
-    
-    TabLogistique.showTerms = function() {
-        alert(`
-📄 Conditions Générales d'Utilisation - TAB Logistique
+            updateYear() {
+                document.getElementById('currentYear').textContent = new Date().getFullYear();
+            },
 
-1. 🎯 OBJET
-   Le présent système est destiné à la gestion logistique professionnelle.
+            startSessionTimer() {
+                let sessionStart = Date.now() - (2 * 3600 + 34 * 60 + 12) * 1000; // Simuler 2h34m12s
+                
+                setInterval(() => {
+                    const elapsed = Date.now() - sessionStart;
+                    const hours = Math.floor(elapsed / 3600000);
+                    const minutes = Math.floor((elapsed % 3600000) / 60000);
+                    const seconds = Math.floor((elapsed % 60000) / 1000);
+                    
+                    document.getElementById('sessionTimer').textContent = 
+                        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }, 1000);
+            },
 
-2. 👤 UTILISATION
-   - Accès réservé aux utilisateurs autorisés
-   - Respect des procédures de sécurité
-   - Utilisation conforme aux objectifs métier
+            animateCounter() {
+                const counter = document.getElementById('colisCounter');
+                const target = 1247;
+                let current = 0;
+                const increment = target / 100;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    counter.textContent = Math.floor(current).toLocaleString();
+                }, 30);
+            },
 
-3. 🔒 SÉCURITÉ
-   - Mots de passe sécurisés obligatoires
-   - Déconnexion automatique après inactivité
-   - Signalement des incidents requis
+            setupEventListeners() {
+                // Gestion des événements pour l'accessibilité
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Tab') {
+                        document.body.classList.add('keyboard-navigation');
+                    }
+                });
 
-4. 📊 DONNÉES
-   - Sauvegarde automatique
-   - Traçabilité des opérations
-   - Export possible selon autorisations
+                document.addEventListener('mousedown', () => {
+                    document.body.classList.remove('keyboard-navigation');
+                });
+            },
 
-5. 📞 SUPPORT
-   Support technique : support@tablogistique.fr
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+                notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+                notification.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 5000);
+            }
+        };
 
-Version 3.2 - Effective au {{ "now"|date("d/m/Y") }}
-        `);
-    };
-    
-    TabLogistique.reportBug = function() {
-        const bugReport = prompt(`
-🐛 Signaler un Bug
-
-Décrivez brièvement le problème rencontré :
-(Cette information sera envoyée au support technique)
-
-Exemples :
-- "Erreur lors de l'export PDF"
-- "Page qui ne charge pas"
-- "Données manquantes"
-        `);
-        
-        if (bugReport && bugReport.trim()) {
-            // Dans un vrai projet, envoyer le rapport au serveur
-            TabLogistique.showNotification(
-                'Rapport de bug envoyé avec succès. Merci !', 
-                'success'
-            );
-            
-            // Log pour le développement
-            console.log('Bug Report:', {
-                message: bugReport,
-                url: window.location.href,
-                userAgent: navigator.userAgent,
-                timestamp: new Date().toISOString(),
-                user: '{{ app.user ? app.user.email : "anonymous" }}'
-            });
+        // Fonctions globales pour les boutons
+        function showHelp() {
+            TabLogistique.showNotification(`
+                <i class="fas fa-question-circle me-2"></i>
+                <strong>Centre d'Aide</strong><br>
+                Documentation et guides d'utilisation disponibles.
+            `, 'info');
         }
-    };
-    
-    // Vérification périodique du statut système
-    function updateSystemStatus() {
-        const statusIndicator = document.querySelector('.status-indicator');
-        if (statusIndicator) {
-            // Simulation de vérification système
-            const isOnline = navigator.onLine;
-            const statusText = statusIndicator.parentElement;
-            
-            if (isOnline) {
-                statusIndicator.innerHTML = '<i class="fas fa-circle text-success"></i> Opérationnel';
-            } else {
-                statusIndicator.innerHTML = '<i class="fas fa-circle text-danger"></i> Hors ligne';
+
+        function showSystemInfo() {
+            TabLogistique.showNotification(`
+                <i class="fas fa-server me-2"></i>
+                <strong>Informations Système</strong><br>
+                Version 3.2.1 • Symfony 6.4 • PHP 8.2
+            `, 'info');
+        }
+
+        function reportIssue() {
+            const issue = prompt('Décrivez brièvement le problème rencontré :');
+            if (issue && issue.trim()) {
+                TabLogistique.showNotification(`
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Rapport envoyé</strong><br>
+                    Merci pour votre retour !
+                `, 'success');
             }
         }
-    }
-    
-    // Vérifier le statut toutes les 30 secondes
-    setInterval(updateSystemStatus, 30000);
-    updateSystemStatus();
-    
-    // Gestion des événements offline/online
-    window.addEventListener('online', function() {
-        TabLogistique.showNotification('Connexion rétablie', 'success');
-        updateSystemStatus();
-    });
-    
-    window.addEventListener('offline', function() {
-        TabLogistique.showNotification('Connexion perdue', 'warning');
-        updateSystemStatus();
-    });
-});
-</script>
+
+        function showPrivacy() {
+            TabLogistique.showNotification(`
+                <i class="fas fa-shield-alt me-2"></i>
+                <strong>Politique de Confidentialité</strong><br>
+                Vos données sont protégées selon nos standards de sécurité.
+            `, 'info');
+        }
+
+        function showTerms() {
+            TabLogistique.showNotification(`
+                <i class="fas fa-file-contract me-2"></i>
+                <strong>Conditions d'Utilisation</strong><br>
+                Consultez nos CGU pour plus d'informations.
+            `, 'info');
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            TabLogistique.init();
+        });
+
+        // Gestion des thèmes
+        const toggleTheme = () => {
+            document.body.classList.toggle('dark-theme');
+            const isDark = document.body.classList.contains('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            
+            TabLogistique.showNotification(`
+                <i class="fas fa-${isDark ? 'moon' : 'sun'} me-2"></i>
+                Mode ${isDark ? 'sombre' : 'clair'} activé
+            `, 'info');
+        };
+
+        // Charger le thème sauvegardé
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-theme');
+        }
+    </script>
+</body>
+</html>
