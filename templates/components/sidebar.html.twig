@@ -1,0 +1,431 @@
+{% set current_route = app.request.get('_route') %}
+
+<nav class="sidebar bg-dark navbar-dark" id="sidebar">
+    <div class="sidebar-content">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <i class="fas fa-shipping-fast text-primary me-2"></i>
+                <span class="brand-text">TAB Logistique</span>
+            </div>
+            <button class="btn btn-sm btn-outline-light d-lg-none" type="button" id="sidebarClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- User Info Section -->
+        {% if app.user %}
+        <div class="sidebar-user">
+            <div class="user-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="user-details">
+                <div class="user-name">{{ app.user.prenom ?? app.user.email|split('@')[0] }}</div>
+                <div class="user-role">
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <span class="badge bg-danger">Administrateur</span>
+                    {% else %}
+                        <span class="badge bg-primary">Utilisateur</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Navigation Menu -->
+        <div class="sidebar-menu">
+            {% if is_granted('ROLE_USER') %}
+                
+                <!-- Dashboard (Admin only) -->
+                {% if is_granted('ROLE_ADMIN') %}
+                <div class="menu-section">
+                    <div class="menu-section-title">Tableau de bord</div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {{ current_route starts with 'app_admin_dashboard' ? 'active' : '' }}" href="{{ path('app_admin_dashboard') }}">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
+                                <span class="nav-indicator"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                {% endif %}
+
+                <!-- Gestion des Colis -->
+                <div class="menu-section">
+                    <div class="menu-section-title">Gestion des Colis</div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {{ current_route == 'app_colis_index' ? 'active' : '' }}" href="{{ path('app_colis_index') }}">
+                                <i class="fas fa-list"></i>
+                                <span>Liste des colis</span>
+                                <span class="nav-indicator"></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ current_route starts with 'app_colis_wizard' ? 'active' : '' }}" href="{{ path('app_colis_wizard_start') }}">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Nouveau colis</span>
+                                <span class="nav-indicator"></span>
+                            </a>
+                        </li>
+                        
+                        <!-- Submenu for Colis Management -->
+                        <li class="nav-item">
+                            <a class="nav-link nav-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#colisSubmenu" aria-expanded="false">
+                                <i class="fas fa-boxes"></i>
+                                <span>Statuts des colis</span>
+                                <i class="fas fa-chevron-down nav-arrow"></i>
+                            </a>
+                            <ul class="nav flex-column collapse" id="colisSubmenu">
+                                <li class="nav-item">
+                                    <a class="nav-link sub-nav-link" href="{{ path('app_colis_index') }}?status=en_attente">
+                                        <i class="fas fa-clock text-warning"></i>
+                                        <span>En attente</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link sub-nav-link" href="{{ path('app_colis_index') }}?status=en_transit">
+                                        <i class="fas fa-truck text-info"></i>
+                                        <span>En transit</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link sub-nav-link" href="{{ path('app_colis_index') }}?status=livre">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        <span>Livrés</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Gestion des Contacts -->
+                <div class="menu-section">
+                    <div class="menu-section-title">Contacts</div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {{ current_route starts with 'app_expediteur' ? 'active' : '' }}" href="{{ path('app_expediteur_index') }}">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>Expéditeurs</span>
+                                <span class="nav-indicator"></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ current_route starts with 'app_destinataire' ? 'active' : '' }}" href="{{ path('app_destinataire_index') }}">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Destinataires</span>
+                                <span class="nav-indicator"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Logistique -->
+                <div class="menu-section">
+                    <div class="menu-section-title">Logistique</div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {{ current_route starts with 'app_transport' ? 'active' : '' }}" href="{{ path('app_transport_index') }}">
+                                <i class="fas fa-shipping-fast"></i>
+                                <span>Transports</span>
+                                <span class="nav-indicator"></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ current_route starts with 'app_warehouse' ? 'active' : '' }}" href="{{ path('app_warehouse_index') }}">
+                                <i class="fas fa-warehouse"></i>
+                                <span>Entrepôts</span>
+                                <span class="nav-indicator"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Administration (Admin only) -->
+                {% if is_granted('ROLE_ADMIN') %}
+                <div class="menu-section">
+                    <div class="menu-section-title text-danger">Administration</div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {{ current_route starts with 'app_user' ? 'active' : '' }}" href="{{ path('app_user_index') }}">
+                                <i class="fas fa-users"></i>
+                                <span>Utilisateurs</span>
+                                <span class="nav-indicator"></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ current_route == 'app_register' ? 'active' : '' }}" href="{{ path('app_register') }}">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Créer utilisateur</span>
+                                <span class="nav-indicator"></span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ current_route starts with 'app_departement' ? 'active' : '' }}" href="{{ path('app_departement_index') }}">
+                                <i class="fas fa-building"></i>
+                                <span>Départements</span>
+                                <span class="nav-indicator"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                {% endif %}
+
+            {% endif %}
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+            <div class="footer-links">
+                <a href="#" class="footer-link" title="Aide">
+                    <i class="fas fa-question-circle"></i>
+                </a>
+                <a href="#" class="footer-link" title="Paramètres">
+                    <i class="fas fa-cog"></i>
+                </a>
+                {% if app.user %}
+                <a href="{{ path('app_logout') }}" class="footer-link text-danger" title="Déconnexion">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+                {% endif %}
+            </div>
+            <div class="footer-text">
+                <small>&copy; {{ "now"|date("Y") }} TAB Logistique</small>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Sidebar Toggle Button (Mobile) -->
+<button class="btn btn-primary sidebar-toggle d-lg-none" type="button" id="sidebarToggle">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- Sidebar Overlay (Mobile) -->
+<div class="sidebar-overlay d-lg-none" id="sidebarOverlay"></div>
+
+<style>
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 1040;
+    background: linear-gradient(180deg, #1a1a1a 0%, #2c2c2c 100%);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.show {
+    transform: translateX(0);
+}
+
+@media (min-width: 992px) {
+    .sidebar {
+        position: relative;
+        transform: translateX(0);
+        flex-shrink: 0;
+    }
+}
+
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.3) transparent;
+}
+
+.sidebar-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+    background-color: rgba(255,255,255,0.3);
+    border-radius: 2px;
+}
+
+/* Sidebar Header */
+.sidebar-header {
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.brand-text {
+    color: #fff;
+}
+
+/* User Info */
+.sidebar-user {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+}
+
+.user-avatar {
+    font-size: 2rem;
+    color: #fff;
+    margin-right: 0.75rem;
+}
+
+.user-name {
+    color: #fff;
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.user-role .badge {
+    font-size: 0.7rem;
+}
+
+/* Menu Sections */
+.menu-section {
+    padding: 1rem 0 0.5rem 0;
+}
+
+.menu-section-title {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 1rem 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Navigation Links */
+.nav-link {
+    color: rgba(255,255,255,0.8);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    border-radius: 0;
+    position: relative;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    color: #fff;
+    background-color: rgba(255,255,255,0.1);
+    transform: translateX(5px);
+}
+
+.nav-link.active {
+    color: #fff;
+    background-color: rgba(13, 110, 253, 0.3);
+    border-right: 3px solid #0d6efd;
+}
+
+.nav-link.active .nav-indicator {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.nav-link i {
+    width: 20px;
+    margin-right: 0.75rem;
+    text-align: center;
+}
+
+.nav-link span {
+    flex-grow: 1;
+}
+
+.nav-indicator {
+    width: 6px;
+    height: 6px;
+    background-color: #0d6efd;
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s ease;
+}
+
+/* Navigation Toggle */
+.nav-toggle {
+    cursor: pointer;
+}
+
+.nav-arrow {
+    transition: transform 0.3s ease;
+    margin-left: auto;
+    font-size: 0.8rem;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-arrow {
+    transform: rotate(180deg);
+}
+
+/* Submenu */
+.sub-nav-link {
+    padding-left: 2.5rem;
+    font-size: 0.9rem;
+}
+
+.sub-nav-link i {
+    width: 16px;
+    font-size: 0.8rem;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+    margin-top: auto;
+    padding: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.footer-link {
+    color: rgba(255,255,255,0.6);
+    margin: 0 0.5rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: #fff;
+}
+
+.footer-text {
+    text-align: center;
+    color: rgba(255,255,255,0.5);
+}
+
+/* Mobile Toggle Button */
+.sidebar-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1050;
+    border-radius: 50%;

@@ -1,0 +1,301 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container-fluid">
+        <!-- Brand -->
+        <a class="navbar-brand d-flex align-items-center" href="{{ path('app_home') }}">
+            <div class="brand-icon me-2">
+                <i class="fas fa-shipping-fast text-primary"></i>
+            </div>
+            <span class="brand-text">TAB Logistique</span>
+        </a>
+
+        <!-- Mobile toggle button -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Main Navigation - Only show if user is logged in -->
+            {% if is_granted('ROLE_USER') %}
+                <ul class="navbar-nav me-auto">
+                    <!-- Dashboard -->
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.get('_route') starts with 'app_admin_dashboard' ? 'active' : '' }}" href="{{ path('app_admin_dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-1"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <!-- Colis Management -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ app.request.get('_route') starts with 'app_colis' ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-boxes me-1"></i>
+                            <span>Colis</span>
+                        </a>
+                        <ul class="dropdown-menu shadow">
+                            <li><a class="dropdown-item" href="{{ path('app_colis_index') }}">
+                                <i class="fas fa-list me-2 text-primary"></i>Liste des colis
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ path('app_colis_wizard_start') }}">
+                                <i class="fas fa-plus me-2 text-success"></i>Nouveau colis
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ path('app_colis_index') }}?status=en_transit">
+                                <i class="fas fa-truck me-2 text-info"></i>En transit
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ path('app_colis_index') }}?status=livre">
+                                <i class="fas fa-check-circle me-2 text-success"></i>Livrés
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Contacts -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ app.request.get('_route') starts with 'app_expediteur' or app.request.get('_route') starts with 'app_destinataire' ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-address-book me-1"></i>
+                            <span>Contacts</span>
+                        </a>
+                        <ul class="dropdown-menu shadow">
+                            <li><a class="dropdown-item" href="{{ path('app_expediteur_index') }}">
+                                <i class="fas fa-paper-plane me-2 text-primary"></i>Expéditeurs
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ path('app_destinataire_index') }}">
+                                <i class="fas fa-map-marker-alt me-2 text-danger"></i>Destinataires
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Logistics -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ app.request.get('_route') starts with 'app_transport' or app.request.get('_route') starts with 'app_warehouse' ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-truck me-1"></i>
+                            <span>Logistique</span>
+                        </a>
+                        <ul class="dropdown-menu shadow">
+                            <li><a class="dropdown-item" href="{{ path('app_transport_index') }}">
+                                <i class="fas fa-shipping-fast me-2 text-info"></i>Transports
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ path('app_warehouse_index') }}">
+                                <i class="fas fa-warehouse me-2 text-warning"></i>Entrepôts
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            {% endif %}
+
+            <!-- Right side navigation -->
+            <div class="d-flex align-items-center ms-auto">
+                <!-- Search - Only show if user is logged in -->
+                {% if is_granted('ROLE_USER') %}
+                    <form class="search-form me-3 d-none d-md-flex" action="{{ path('app_colis_index') }}" method="get">
+                        <div class="input-group input-group-sm">
+                            <input class="form-control search-input" type="search" name="search" placeholder="Code de suivi..." aria-label="Search" style="width: 200px;">
+                            <button class="btn btn-outline-light" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
+
+                <!-- User menu or login -->
+                {% if app.user %}
+                    <!-- Notifications (placeholder for future implementation) -->
+                    <div class="dropdown me-2">
+                        <button class="btn btn-outline-light btn-sm position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bell"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6em;">
+                                3
+                                <span class="visually-hidden">notifications non lues</span>
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationDropdown" style="width: 300px;">
+                            <li><h6 class="dropdown-header">Notifications récentes</h6></li>
+                            <li><a class="dropdown-item" href="#">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-box text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1 ms-2">
+                                        <div class="small">Nouveau colis reçu</div>
+                                        <div class="small text-muted">Il y a 5 minutes</div>
+                                    </div>
+                                </div>
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-center small" href="#">Voir toutes les notifications</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- User dropdown -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar me-2">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="user-info d-none d-sm-block text-start">
+                                <div class="user-name small">{{ app.user.prenom ?? app.user.email|split('@')[0] }}</div>
+                                <div class="user-role text-muted" style="font-size: 0.75em;">
+                                    {% if is_granted('ROLE_ADMIN') %}Administrateur{% else %}Utilisateur{% endif %}
+                                </div>
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                            <li><h6 class="dropdown-header">
+                                <i class="fas fa-user me-2"></i>{{ app.user.email }}
+                            </h6></li>
+                            <li><hr class="dropdown-divider"></li>
+                            
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-user-edit me-2 text-primary"></i>Mon profil
+                            </a></li>
+                            
+                            <li><a class="dropdown-item" href="#">
+                                <i class="fas fa-cog me-2 text-secondary"></i>Paramètres
+                            </a></li>
+
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header text-danger">Administration</h6></li>
+                                <li><a class="dropdown-item" href="{{ path('app_user_index') }}">
+                                    <i class="fas fa-users me-2 text-info"></i>Gestion des utilisateurs
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ path('app_register') }}">
+                                    <i class="fas fa-user-plus me-2 text-success"></i>Créer un utilisateur
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ path('app_departement_index') }}">
+                                    <i class="fas fa-building me-2 text-warning"></i>Départements
+                                </a></li>
+                            {% endif %}
+                            
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+                            </a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <!-- Login button for non-authenticated users -->
+                    <a href="{{ path('app_login') }}" class="btn btn-outline-light">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        <span>Connexion</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+/* Navbar custom styles */
+.navbar-brand .brand-text {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.navbar-brand .brand-icon {
+    font-size: 1.5rem;
+}
+
+.search-form .search-input {
+    border: 1px solid rgba(255,255,255,0.3);
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.search-form .search-input::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+.search-form .search-input:focus {
+    background-color: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.5);
+    color: white;
+    box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.25);
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+    border-radius: 0.375rem;
+    margin: 0 0.2rem;
+}
+
+.nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    transform: translateY(-1px);
+}
+
+.nav-link.active {
+    background-color: rgba(13, 110, 253, 0.3);
+    color: #fff !important;
+}
+
+.dropdown-menu {
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+    transform: translateX(5px);
+}
+
+.user-avatar {
+    font-size: 1.5rem;
+}
+
+.navbar-toggler {
+    padding: 0.25rem 0.5rem;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 991.98px) {
+    .navbar-nav {
+        padding-top: 1rem;
+    }
+    
+    .nav-link {
+        margin: 0.2rem 0;
+    }
+    
+    .search-form {
+        margin-top: 1rem;
+        width: 100%;
+    }
+    
+    .search-form .input-group {
+        width: 100%;
+    }
+    
+    .search-form .search-input {
+        width: 100% !important;
+    }
+}
+
+/* Notification badge animation */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+.badge {
+    animation: pulse 2s infinite;
+}
+</style>
